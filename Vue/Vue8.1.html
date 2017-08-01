@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>vue8.1</title>
+</head>
+<body>
+<div id="app">
+    <!--插入值-->
+    <span>{{message|capitalize|lowerCase}}</span><br>
+    <!--改变一次-->
+    <span v-once>this is never change{{msg}}</span>
+    <!--纯Html-->
+    <div v-html="relHtml"></div>
+    <!--属性-->
+    <div v-bind:id="changeSth|capitalize|lowerCase"></div>
+    <button v-bind:disabled="yes">{{message}}</button>
+    <!--js表达式-->
+    <div v-bind:id="'list_'+Math.random(0,1)"></div>
+    <!--指令-->
+    <p v-if="seen">可以看得到</p>
+    <!--参数-->
+    <a v-bind:href="baidu">{{message}}</a>
+    <button v-on:click="dosomething">aaa</button>
+    <button @click="removeClass">bbb</button>
+    <!--修饰符-->
+    <button v-on:submit.prevent="onSubmit">submit</button>
+    <!--计算属性  可以缓存数据（不是响应式依赖除外，例如new Date()）如果不想缓存可以用methods代替-->
+    <div>{{message.split("").reverse().join("")}}</div>
+    <div>{{message|reverse}}</div>
+    <div>Computed reverse message++{{reverseMessage}}</div>
+    <!--计算属性VSwatch-->
+    <div>{{fullName}}</div>
+    <!--观察watchers-->
+    <div>
+        <p>
+            ask a yes/no question
+            <input type="text" v-model="question">
+        </p>
+        <p>{{answer}}</p>
+    </div>
+    <!--Class与style 绑定-->
+    <div v-bind:class="{ active : actived }"></div>
+    <div class="active" v-bind:class="{ actived : yes ,'text-denger':haserror}">aaaaaaaaaaa</div>
+</div>
+<link rel="stylesheet" href="css/me.css">
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+<script>
+    var app = new Vue({
+        el:"#app",
+        data:{
+            message:"hello Vue",
+            msg:"不会改变",
+            relHtml:"<span>asasasas</span>",
+            changeSth:"me",
+            yes:"disabled",
+            id:3,
+            seen:true,
+            baidu:"http://www.baidu.com",
+            firstName:"foo",
+            lastName:"bar",
+            question:"",
+            answer:"I cant give you an answer until you ask a question",
+            actived:true,
+            haserror:false
+            //fullName:"foo bar"
+        },
+        methods:{
+            dosomething:function () {
+                $("#me").addClass("me");
+                $("#me")[0].innerHTML="<a href='http://www.baidu.com'>aaa</a>";
+            },
+            removeClass:function () {
+                $("#me").removeClass("me")
+            },
+            getAnswer:_.debounce(
+                function () {
+                    if(this.question.indexOf('?') == -1){
+                        this.answer = 'Questions usually contain a question mark. ;-)'
+                        return
+                    }
+                    this.answer = "thinking...";
+                    var app = this;
+                    axios.get('https://yesno.wtf.api')
+                        .then(function (response){
+                            app.answer = _.capitalize(response.data.answer)
+                        })
+                        .catch(function (error) {
+                            app.answer = "Error! couldnt reach the api" + error;
+                        })
+                },500
+            )
+
+        },
+        filters:{
+            capitalize:function (value){
+               if(!value) return "";
+               return value.toString().charAt(0).toUpperCase()+value.slice(1)
+            },
+            lowerCase:function (value) {
+                if(!value) return "";
+                return value.charAt(0).toLowerCase()+value.slice(1)
+            },
+            reverse:function (value) {
+                if(!value) return "";
+                return value.split("").reverse().join("");
+            }
+        },
+        computed:{
+            reverseMessage:function () {
+                return this.message.split("").reverse().join("")
+            },
+            fullName:{
+                get:function () {//getter
+                    return this.firstName + this.lastName;
+                },
+                set:function (newValue) { //setter
+                    var name = newValue.split(" ");
+                    this.firstName = name[0];
+                    this.lastName = name[1];
+
+                }
+            }
+        },
+        watch:{
+            question:function (newQuestion) {
+                this.answer = "waiting for you stop typing... ";
+                this.getAnswer();
+            }
+        }
+
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+.me{
+    width: 100px;
+    height: 100px;
+    border: 1px solid red;
+    margin:auto;
+}
+.active{
+    width: 300px;
+    height: 260px;
+    margin-right:0;
+    background: blue;
+}
+.actived{
+    width: 200px;
+    height: 200px;
+    margin: auto;
+    background: magenta;
+}
+.text-denger{
+    width: 100px;
+    height: 100px;
+    background: aqua;
+}
