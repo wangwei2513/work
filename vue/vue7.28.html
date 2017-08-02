@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>vue7.28</title>
+</head>
+<body>
+	<!-- 模版语法 -->
+		<!-- 插值 -->
+	<div id="app">
+		<span>Message:{{message | formatId}}</span><br>
+		<input type="text" v-model="message"><br>
+		<span v-once>this will never change:{{msg}}</span>
+		<!-- 纯html -->
+		<div v-html="html">
+
+		</div>
+		<!-- 属性 -->
+		<div v-bind:id="id">
+			id是aaaaa
+		</div>
+		<button v-bind:disabled="a" v-on:click="ifDisabled">aaaaa</button>
+		<!-- js表达式 -->
+		<div>
+			{{someData+2}}
+		</div>
+		<!-- 指令 -->
+		<div v-if="seen">现在可以看到了</div>
+		<!-- 参数 -->
+		<a v-bind:href="url">aaaa</a>
+		<div v-bind:id="anther | formatId | third"></div>
+	</div>
+	
+<script src="js/vue.js"></script>
+<script>
+	var app = new Vue({
+		el:"#app",
+		data:{
+			message:"aaaaaaaaaa",
+			msg:"aaaaaaaaaaaaaaaa",
+			html:"<span>aaaaaaa</span>",
+			id:"aaaaa",
+			a:"0",
+			someData:"45",
+			seen:"true",
+			url:"http://www.baidu.com",
+			anther:"aasadas"
+		},
+		methods:{
+			ifDisabled:function () {
+				alert("qqqq")
+			}
+		},
+		filters:{
+			formatId:function (value) {
+				if (!value) return ''
+      			value = value.toString()
+      			return value.charAt(0).toUpperCase() + value.slice(1)
+			},
+			third:function () {
+				if (!value) return ""
+				return value.charAt(0).toLowerCase() + value.slice(1)
+			}
+		}
+
+		
+		
+	})
+
+	// app.html = "<span>aaaaaaa</span>"
+</script>		
+</body>
+</html>
