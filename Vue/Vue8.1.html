@@ -42,12 +42,52 @@
     <!--Class与style 绑定-->
     <div v-bind:class="{ active : actived }"></div>
     <div class="active" v-bind:class="{ actived : yes ,'text-denger':haserror}">aaaaaaaaaaa</div>
+    <!-- 同样可以计算属性 -->
+    <div class="active" v-bind:class="{ classObj }"></div>
+    <!-- <my-compnent><li v-for="a in texts">{{a.text}}</li></my-compnent> -->
+    <div v-bind:class=[class1,class2]></div>
+    <!-- 绑定内联样式 -->
+    <div v-bind:style="{ color:color1 , fontSize: mid, lineHeight: mid }">aaaaaaaa</div>
+    <!-- 直接绑定到一个样式obj -->
+    <div v-bind:style="styleObj"></div>
+    <!-- 条件渲染 -->
+    <h1 v-if="ok">ok</h1>
+    <h1 v-else>no</h1>
+    <h1 v-if="X > 0.5">大于0.5</h1>
+    <h1 v-else>小于0.5</h1>
+    <!-- key管理可复用元素 -->
+    <template v-if="loginType == 'userName'">
+        <label >userName</label>
+        <input type="text" placeHolder="enter your name">
+    </template>
+    <template v-else> 
+        <label>email</label>
+        <input type="text" placeHolder="enter your email">
+    </template><br>
+    <button @click="toggle">toggle</button><br>
+    <!-- 如果不想复用 -->
+    <template v-if="loginType == 'userName'">
+        <label>userName</label>
+        <input type="text" placeHolder="enter your name" key="name">
+    </template>
+    <template v-else>
+        <label>email</label>
+        <input type="text" placeHolder="enter Your email" key="email">
+    </template><br>
+    <button @click="changeEle">ChangeEle</button>
+    <!-- v-show 高的初始渲染开销，底的切换渲染开销 -->
+    <div v-show="ok"><h1>v-show</h1></div>
+    <!-- 列表渲染 -->
+    <!-- v-for -->
+    <ul>
+        <li v-for="a in items">{{a.text}}</li>
+    </ul>
 </div>
 <link rel="stylesheet" href="css/me.css">
 <script type="text/javascript" src="js/vue.js"></script>
 <script type="text/javascript" src="js/jquery-3.2.1.js"></script>
-<script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script>
-<script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script>
+<!-- <script src="https://unpkg.com/axios@0.12.0/dist/axios.min.js"></script> -->
+<!-- <script src="https://unpkg.com/lodash@4.13.1/lodash.min.js"></script> -->
 <script>
     var app = new Vue({
         el:"#app",
@@ -65,7 +105,33 @@
             question:"",
             answer:"I cant give you an answer until you ask a question",
             actived:true,
-            haserror:false
+            haserror:false,
+            texts:[
+                {text:"aaa"},
+                {text:"bbb"},
+                {text:"ccc"}
+
+            ],
+            items:[
+                {text:"aaa"},
+                {text:"bbb"},
+                {text:"ccc"}
+
+            ],
+            class1:"active",
+            class2:"text-denger",
+            color1:"#ffa400",
+            mid:"24px",
+            styleObj:{
+                width:"400px",
+                height:"200px",
+                borderRadius:"10px",
+                boxShadow:"0 0 10px 10px #ffa400"
+            },
+            ok:true,
+            X : Math.random(),
+            loginType:"userName"                
+        
             //fullName:"foo bar"
         },
         methods:{
@@ -76,23 +142,37 @@
             removeClass:function () {
                 $("#me").removeClass("me")
             },
-            getAnswer:_.debounce(
-                function () {
-                    if(this.question.indexOf('?') == -1){
-                        this.answer = 'Questions usually contain a question mark. ;-)'
-                        return
-                    }
-                    this.answer = "thinking...";
-                    var app = this;
-                    axios.get('https://yesno.wtf.api')
-                        .then(function (response){
-                            app.answer = _.capitalize(response.data.answer)
-                        })
-                        .catch(function (error) {
-                            app.answer = "Error! couldnt reach the api" + error;
-                        })
-                },500
-            )
+            toggle:function () {
+                if(this.loginType == "userName"){
+                    this.loginType = "email"
+                }else{
+                    this.loginType = "userName"
+                }
+            },
+            changeEle:function () {
+                if(this.loginType == "userName"){
+                    this.loginType = "email"
+                }else{
+                    this.loginType = "userName"
+                }
+            }
+            // getAnswer:_.debounce(
+            //     function () {
+            //         if(this.question.indexOf('?') == -1){
+            //             this.answer = 'Questions usually contain a question mark. ;-)'
+            //             return
+            //         }
+            //         this.answer = "thinking...";
+            //         var app = this;
+            //         axios.get('https://yesno.wtf.api')
+            //             .then(function (response){
+            //                 app.answer = _.capitalize(response.data.answer)
+            //             })
+            //             .catch(function (error) {
+            //                 app.answer = "Error! couldnt reach the api" + error;
+            //             })
+            //     },500
+            // )
 
         },
         filters:{
@@ -123,16 +203,30 @@
                     this.lastName = name[1];
 
                 }
+            },
+            classObj:function () {
+                return {
+                    actived: this.actived && this.haserror,
+                    "text-danger": this.haserror
+                }
             }
         },
         watch:{
-            question:function (newQuestion) {
-                this.answer = "waiting for you stop typing... ";
-                this.getAnswer();
-            }
+            // question:function (newQuestion) {
+            //     this.answer = "waiting for you stop typing... ";
+            //     this.getAnswer();
+            // }
+        },
+        components: {
+             // <my-component> 将只在父模板可用
+            'my-component': Child
         }
 
     })
+    var Child = {
+        template: '<div>A custom component!</div>'
+        }
+    Vue.component()
 </script>
 </body>
 </html>
