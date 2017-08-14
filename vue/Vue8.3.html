@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue8.3</title>
+</head>
+<body>
+	<div id="app">
+		<input type="text" 
+		v-model="newTodoList" 
+		v-on:keyup.enter="addNewTodo"
+		palceholder="addtodo"
+		:id="red"
+		class="red"
+		>
+	<ul>
+		<li is="toItem"
+			v-for="(todo,index) in items"
+			v-bind:key="todo.key"
+			v-bind:title="todo.title"
+			
+			v-on:remove="items.splice(index,1)"
+		></li>
+	</ul>
+	<!-- 监听事件 -->
+	<button v-on:click="aaa" :id="ccc" class="red">red</button>
+	<button @click="num += 1 ">{{num}}</button>
+	<!-- 内联处理器方法 -->
+	<button @click="say('hi')">say</button>
+	</div>
+
+
+<!-- <script scr="js/jquery-3.2.1.js"></script> -->
+<script src="js/vue.js"></script>
+<link rel="stylesheet" href="css/me.css">
+<!-- <script type="text/javascript" src="js/vue.js"></script> -->
+<script type="text/javascript" src="js/jquery-3.2.1.js"></script>
+<script>
+Vue.component('toItem', {
+  template: '\
+    <li>\
+      {{ title }}\
+      <button v-on:click="$emit(\'remove\')">X</button>\
+    </li>\
+  ',
+  props: ['title']
+})
+var app = new Vue({
+	el:"#app",
+	data:{
+		newTodoList:"",
+		items:[
+			{
+				key:1,
+				title:"kaer"
+			}
+		],
+		ccc:"me",
+		red:"red",
+		num:0
+	},
+	methods:{
+		addNewTodo:function () {
+			if (this.newTodoList) {
+				this.items.push(
+				{
+					id:this.nextTodoId++,
+					title:this.newTodoList
+				})
+				this.newTodoList = ""
+			}else{
+				alert(0)
+			}
+			
+		},
+		aaa:function () {
+			$("app").removeClass("red")
+			// alert(1)
+		},
+		say:function (a) {
+			alert(a)
+		}
+	}
+})
+
+
+
+</script>	
+</body>
+</html>
