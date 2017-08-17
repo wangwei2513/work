@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue8.17</title>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="message">
+        <p>{{message}}</p>
+        <child props-c="asdas" :props-a="121212" :props-b='5465545'></child>
+        <add-new-class class='active'></add-new-class>
+        <p>{{totle}}</p>
+        <counter @addone='addone'></counter>
+        <counter @addone="addone"></counter>
+        <!-- 添加自己定义事件 -->
+        <counter @click.native='gotobaidu'></counter>
+        <!-- .sync修饰符 、props数据的双向绑定-->
+        <!-- 使用自定义事件的表单输入组件 -->
+        <inputforsomeone label="A" v-model='a'></inputforsomeone>
+        <inputforsomeone label="B" v-model='b'></inputforsomeone>
+        <inputforsomeone label="C" v-model='c'></inputforsomeone>
+        <inputforsomeone label="D" v-model='d'></inputforsomeone>
+        <p>totle:{{Totle}}</p>
+        <div>
+            <h2>父组件</h2>
+            <singleslot>
+                <!-- <p>有内容</p> -->
+            </singleslot>
+
+        </div>
+        <!-- 具名slot -->
+        <slotfornam>
+            <h2 slot="header">header</h2>
+            <p>neursdas</p>
+            <p>asdnjacibaiscb</p>
+            <h3 slot="footer">footer</h3>
+        </slotfornam>
+        <!-- 作用域插槽 -->
+        <somedataforslots>
+            <template scope="a">
+                <h2>{{a.text}}</h2>
+                <!-- <h2>{{a.text}}</h2> -->
+            </template>
+        </somedataforslots>
+        <slotol>
+            <template scope='a' slot="item">
+                <li>{{a.text}}</li>
+            </template>
+        </slotol>
+        <!-- 动态组件 -->
+        <component :is="current"></component>
+        <p>{{computedContent}}</p>
+        <!-- keep Alive -->
+        <keep-alive>
+            <component :is="current"></component>
+        </keep-alive>
+    </div>
+    <script src="js/jquery-3.2.1.js"></script>
+    <script src="js/vue.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdn.rawgit.com/chrisvfritz/5f0a639590d6e648933416f90ba7ae4e/raw/974aa47f8f9c5361c5233bd56be37db8ed765a09/currency-validator.js"></script>
+    <link rel="stylesheet" href="js/bootstrap.min.css">
+    <link rel="stylesheet" href="css/me.css">
+    <script>
+        // <!-- 验证props -->
+        Vue.component('child', {
+                props: {
+                    propsA: Number,
+                    propsB: [String, Number],
+                    propsC: {
+                        type: String,
+                        required: false
+                    }
+                },
+                template: '<div>{{propsA+propsB+propsC}}</div>'
+            })
+            // 非props属性
+        Vue.component('notProps', {
+                template: '<p>{{aaa}}</p>'
+            })
+            // 替换覆盖现有特性
+        Vue.component("addNewClass", {
+                template: "<div class='me'>asdasdas</div>"
+            })
+            // 使用v-on绑定自定义事件    
+        Vue.component('counter', {
+                template: '<button @click="addNum">{{num}}</button>',
+                data: function() {
+                    return {
+                        num: 0
+                    }
+                },
+                methods: {
+                    addNum: function() {
+                        this.num += 1;
+                        this.$emit('addone')
+                    }
+                }
+            })
+            // 自定义事件的表单输入组件
+        Vue.component('inputforsomeone', {
+            template: '<div>\
+            <label v-if="label">{{label}}</label>\
+            <input\
+            ref="input"                      \
+            :value="value"\
+            v-on:input="updateValue($event.target.value)"\
+            v-on:focus="selectAll"\
+            v-on:blur="formatValue"\
+            >\
+            </div>',
+            props: {
+                value: {
+                    type: Number,
+                    default: 0
+                },
+                label: {
+                    type: String,
+                    default: ""
+                }
+            },
+            mounted: function() {
+                this.formatValue();
+            },
+            methods: {
+                updateValue: function(value) {
+                    var result = currencyValidator.parse(value, this.value);
+                    if (result.warning) {
+                        this.$refs.input.value = result.value;
+                    }
+                    this.$emit('input', result.value);
+                },
+                formatValue: function() {
+                    this.$refs.input.value = currencyValidator.format(this.value)
+                },
+                selectAll: function(event) {
+                    setTimeout(function() {
+                        event.target.select;
+                    }, 0);
+                }
+            }
+        })
+        Vue.component('v-modeforme', {
+                template: '<input >'
+            })
+            // 非父子组件通信
+            // 内容分发
+            // 单个slot
+        Vue.component('singleslot', {
+                template: '<div>\
+            <h2>子组件的内容</h2>\
+            <slot>没有内容时才分发</slot>\
+            </div>'
+            })
+            // 具名slot
+        Vue.component('slotfornam', {
+                template: '<div>\
+            <header>\
+            <slot name="header"></slot>\
+            </header>\
+            <main>\
+            <slot></slot>\
+            </main>\
+            <footer>\
+            <slot name="footer"></slot>\
+            </footer>\
+            </div>'
+            })
+            // 作用域插槽
+        Vue.component('somedataforslots', {
+            template: '<div>\
+            <slot text="a"></slot>\
+            <slot text="b"></slot>\
+            <slot text="a"></slot>\
+            <slot text="b"></slot>\
+            </div>'
+        })
+        Vue.component('slotol', {
+                template: '<ol>\
+            <slot name="item" v-for="item in items" :text="item.text"></slot>\
+            </ol>',
+                data: function() {
+                    return ({
+                            items: [{
+                                text: "aaa"
+                            }, {
+                                text: "bbb"
+                            }, {
+                                text: "ccc"
+                            }]
+                        }
+
+                    )
+                }
+            })
+            // 子组件索引 ref
+            // 异步组件
+
+        var app = new Vue({
+            el: "#app",
+            data: {
+                message: 'aaa',
+                totle: 0,
+                a: 0,
+                b: 0,
+                c: 0,
+                d: 0,
+                totle: 0,
+                current: "first"
+
+            },
+            methods: {
+                addone: function() {
+                    this.totle += 1;
+                },
+                gotobaidu: function() {
+                    window.location.href = 'http://www.baidu.com'
+                }
+            },
+            computed: {
+                Totle: function() {
+                    return (this.a + this.b + this.c + this.d)
+                },
+                computedContent: function() {
+                    return this.current;
+                }
+            },
+            // 动态组件
+            components: {
+                'first': {
+                    template: '<h2>1</h2>'
+                },
+                'second': {
+                    template: '<h2>2</h2>'
+                },
+                'third': {
+                    template: '<h2>3</h2>'
+                }
+            }
+        })
+    </script>
+</body>
+
+
+</html>

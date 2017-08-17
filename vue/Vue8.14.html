@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Vue8.14</title>
+	<link rel="stylesheet" href="css/me.css">
+</head>
+<body>
+	<div id="app">
+		<button @click="conter += 1 ">{{conter}}</button>
+		<!-- 绑定方法 -->
+		<button @click="addClass" :id="someone">改变样式</button>
+		<div :class="someone"></div>
+		<!-- 内联处理器 -->
+		<div @mouseover = "toggleClass" :class="someone">点击改变样式</div>
+	</div>
+
+	<script src="js/jquery-3.2.1.js"></script>
+	<script src="js/vue.js" ></script>
+	<script>
+	var app = new Vue({
+		el:"#app",
+		data:{
+			conter:0,
+			someone:"me"
+
+		},
+		methods:{
+			addClass:function () {
+				$("#me").toggleClass("active")
+				$(".me").toggleClass("active")
+			},
+			toggleClass:function () {
+				$(".me").toggleClass("active")
+			}
+		}
+	})
+	</script>
+	
+</body>
+</html>
