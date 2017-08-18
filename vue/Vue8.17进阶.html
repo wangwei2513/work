@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<div id="app">
+    <!-- 深度响应 -->
+    <!-- 变化检测问题 -->
+    <!-- 异步更新队列 -->
+    {{message}}
+    <button @click='toggle'>toggle</button>
+    <!-- css过度 -->
+    <transition name='fade'>
+        <!-- <p v-if='show'>{{message}}</p> -->
+    </transition>
+    <transition name='slide-fade'>
+        <p v-if='show'>{{message}}</p>
+    </transition>
+</div>
+
+
+<script src="js/jquery-3.2.1.js"></script>
+<script src="js/vue.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="css/me.css">
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            a: {
+                c: 0
+            }, //属性必须在对象上才能让它是响应的
+            message: "vue",
+            show: true
+        },
+        methods: {
+            toggle: function() {
+                this.show = !this.show
+            }
+        }
+    })
+    app.b = 1; //app.b 是非响应的
+    Vue.set(app.a, 'c', 2) //可以这样将属性添加到嵌套的对象上
+    app.a = Object.assign({}, app.a, {
+        a: 1,
+        b: 2
+    })
+    app.message = 'hello'
+    Vue.nextTick(function() {
+        app.$el.style.color = 'red'
+    })
+</script>
+
+<body>
+
+</body>
+
+</html>
