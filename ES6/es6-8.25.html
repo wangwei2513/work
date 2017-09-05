@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ES6-8.25</title>
+</head>
+<h3>数值的扩展</h3>
+<h4>1.二进制和八进制的表示方法</h4>
+<h4>2.Number.isFinit()\Number.isNan()</h4>
+<h4>3.Number.parsInt()\Number.parsFloat()</h4>
+<h4>4.Number.isInteger\\判断是否为整数</h4>
+<h4>5.Number.EPSILON\\极小的常量、判断浮点数运算是否精确</h4>
+<h4>6.安全整数和Num.isSafeInteger()</h4>
+<h4>7.Math对象的扩展</h4>
+<h3>函数的扩展</h3>
+<h4>函数参数的默认值</h4>
+
+<body>
+    <script>
+        {
+            let a = 0b11;
+            let b = 0o767;
+            console.log(a === 3)
+            console.log(b === 503)
+        }
+
+        {
+            let a = 5555555555555555555555555555555555555555555555555555;
+            let b = "asas";
+            console.log(Number.isFinite(a));
+            console.log(Number.isNaN(b));
+            console.log(Number.isNaN(NaN))
+        }
+
+        {
+            let a = "1212";
+            let b = "0.121212";
+            console.log(Number.parseInt(a));
+            console.log(Number.parseFloat(b) + Number.parseInt(a))
+        }
+
+        {
+            let a = 12.21212;
+            console.log(Number.isInteger(a));
+            console.log(Number.isInteger(Math.floor(a)))
+            console.log(0.1 + 0.2)
+
+        }
+
+        {
+            //JavaScript能够准确表示的整数范围在-2^53到2^53之间（不含两个端点），超过这个范围，无法精确表示这个值。
+            // Number.isSafeInteger是测试一个值是否在这个范围之内
+            Number.isSafeInteger(3) // true
+            Number.isSafeInteger(1.2) // false
+            Number.isSafeInteger(9007199254740990) // true
+            Number.isSafeInteger(9007199254740992) // false
+        }
+
+        {
+            // math对象的扩展
+            Math.trunc(2.1311) //2
+            Math.trunc(NaN); // NaN
+            Math.trunc('foo'); // NaN
+            Math.trunc(); // NaN
+            Math.trunc("3.1212") //3\\对于非数值先会转化为数值、
+                // 判断是否是负值
+            Math.sign(123); //1
+            Math.sign(-123); //-1
+            Math.sign(0); //0
+            Math.sign(-0); //0
+            Math.sign("aa") //NaN
+                // Math.cbrt()计算数值的立方根
+            console.log(Math.cbrt(169))
+
+            console.log(Math.clz32(25)) //方法返回一个数的32位无符号整数形式有多少个前导0。
+
+            Math.imul(-89, 2) //方法返回两个数以32位带符号整数形式相乘的结果，返回的也是一个32位的带符号整数。
+            Math.fround(3.12154) //Math.fround方法返回一个数的单精度浮点数形式。
+            Math.hypot(3, 4) //返回所有参数平方和的平方根
+                //对数方法
+            Math.expm1(44) //返回参数的对数-1
+            Math.log10(1000) //返回以10为底的对数
+            Math.log2(454) //...
+
+        }
+
+        {
+            function a(x, y = "world") {
+                console.log("hello " + y)
+            }
+
+            a("", "")
+            a()
+
+            function b(x = 0, y = 2) {
+
+            }
+            b()
+
+        }
+        // 函数的length属性、返回函数中未指定默认值的参数的个数\如果设置了默认值的参数不是尾参数，那么length属性也不再计入后面的参数了。
+        {
+            console.log((function(a, c, x, v, b) {}).length) //5
+            console.log((function(f = 0, g, j, k) {}).length)
+        }
+        // 作用域
+        {
+            let x = 1
+                // 指定默认参数后、函数就会形成一个单独的作用域
+            function a(x, y = x) {
+                console.log(y)
+            }
+            a(); //undefined
+            a(2) //2
+
+            function b(y = x) { //x处于单独作用域内、会指向外围的全局变量、如果全局变量中美定义x就会报错
+                let x = 2;
+                console.log(y)
+            }
+            b()
+        }
+        // rest参数
+
+        {
+            function add(...values) { //rest参数后不能再有其他的参数、不然会报错、函数的额length属性不包括rest参数
+                let sum = 1;
+                for (var val of values) {
+                    sum += val;
+                }
+                console.log(sum)
+            }
+
+            // function add(...values) {
+            //     let sum = 0;
+
+            //     for (var val of values) {
+            //         sum += val;
+            //     }
+            //     console.log(sum)
+            //         // return sum;
+            // }
+            add(1)
+        }
+
+        // 严格模式、、规定只要函数参数使用了默认值、解构赋值、或者扩展运算符，那么函数内部就不能显式设定为严格模式，否则会报错。
+        // 有两种方法可以解决这个问题1.全局声明严格模式2.v把函数包在一个立即执行的无参的函数里面
+
+        // 函数的name属性
+        {
+            function rename() {}
+            console.log(rename.name) //立即返回函数的名称
+        }
+
+        // 箭头函数
+        {
+            var foo = x => x //function(x){return x}
+
+                [1, 2, 3].map(function(x) {
+                console.log(x * x);
+            });
+            // 嵌套的函数箭头
+
+        }
+        // 绑定this
+        {
+
+        }
+
+        // 尾调用、、在函数的最后一步调用另一个函数、、最后一步操作
+        {
+
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ES6 8.24</title>
+</head>
+
+<body>
+
+    <h3>字符串扩展方法</h3>
+    <h4>8.repeat</h4>
+    <p></p>
+    <p></p>
+    <h4>9.padSatrt\padEnd</h4>
+    <p></p>
+    <p></p>
+    <p></p>
+    <h4>10.字符串模板</h4>
+    <script src="js/jquery-3.2.1.js"></script>
+    <script>
+        var s = "abc"
+        $("p")[0].innerText = s;
+        $("p")[1].innerText = s.repeat(3.999999999) //小数会取整、infinite会报错、NAN=0
+
+        {
+            let a = "1";
+            $("p")[2].innerHTML = a.padStart(5, "0") //头部补全\生成指定位数
+            $("P")[3].innerText = a.padEnd(6, "cac") //尾部补全、
+            $("p")[4].innerHTML = a.padEnd(7, "a") + a
+
+        }
+
+
+
+    </script>
+</body>
+
+</html>

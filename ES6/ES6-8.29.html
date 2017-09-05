@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ES6</title>
+</head>
+<h3>数组的扩展</h3>
+<h4>扩展运算符</h4>
+<h4>Array.from()</h4>
+<h4>Array.of()</h4>
+<h4>数组实例的 copyWithin()</h4>
+<h4>数组实例的 find()和 findIndex()</h4>
+<h4>数组实例的fill()</h4>
+<h4>数组实例的 entries()，keys() 和 values()</h4>
+<h4>数组实例的 includes()</h4>
+<h4>数组的空位</h4>
+<script>
+    // 扩展运算符：...将一个数组扩展为一个参数序列
+    console.log(...[1, 2, 3, 4]) //1,2,3,4
+    var arr0 = [1, 2, 3]
+    var arr1 = [4, 5, 6]
+    var arr2 = [7, 8, 9]
+    console.log([...arr0, ...arr1, ...arr2])
+    console.log(...["hello"]) //"h","e","l","l","o"
+
+    // array.from()
+    // 方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
+    {
+        let obj = {
+            0: 'a',
+            1: 'b',
+            2: 'c',
+            length: 3
+        }
+        console.log(Array.from(obj))
+        Array.from({
+                length: 2
+            }, () => 'jack') // ['jack', 'jack']
+
+
+    }
+    // array.of()、将一组值转化为数组
+    {
+        console.log(Array.of(1, 2, 3, 4, 5, 6)) //Array.of总是返回参数值组成的数组。如果没有参数，就返回一个空数组。
+    }
+    // copyWithIn()
+    {
+        console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4)) // [4, 2, 3, 4, 5],\从零开始替换、替换的元素来自从3位置开始到4(不包含)结束
+
+        // 将3号位复制到0号位
+        console.log([1, 2, 3, 4, 5].copyWithin(0, 3, 4)) // [4, 2, 3, 4, 5]
+
+        // -2相当于3号位，-1相当于4号位
+        console.log([1, 2, 3, 4, 5].copyWithin(0, -2, -1))
+            // [4, 2, 3, 4, 5]
+    }
+    // 数组实例的find()和findIndex()
+    {
+        // find()找到数组中第一个符合条件的成员
+        [1, 2, 3, 4, 5, 6].find((n) => n > 3) //4
+        console.log([1, 2, 3, 7, 4, 5, 6].find(function(n) {
+            return n > 6
+        }))
+
+        // findIndex()返回符合条件的成员下标
+        console.log([1, 2, 3, 4, 5, 6].findIndex((n) => n > 3)) //3
+        console.log([1, 2, 3, 7, 4, 5, 6].findIndex(function(n) {
+            return n > 6
+        }))
+
+        // 另外，这两个方法都可以发现NaN
+    }
+    // fill()\使用给定值去填充一个数组
+    {
+        [3].fill(7) //[7]
+
+        Log([1, 2, 3].fill(7, 1, 2)) //['a', 7, 'c']fill方法还可以接受第二个和第三个参数，用于指定填充的起始位置和结束位置。
+
+    }
+    // 数组实例的key(),values(),entris()\\key()对数组的键遍历、、values()对数组的值遍历、entries()对数组的键值对遍历
+    {
+        for (let index of['a', 'b'].keys()) {
+            console.log(index); // 0// 1
+
+
+        }
+        // for (let elem of['a', 'b'].values()) {
+        //     console.log(elem);
+        // }
+        // 'a'
+        // 'b'
+
+        for (let [index, elem] of['a', 'b'].entries()) {
+            console.log(index, elem);
+        }
+        // 0 "a"
+        // 1 "b"
+    }
+
+    function Log(str) {
+        console.log(str)
+    }
+    // 数组实例的includes()\\返回一个布尔值、表示该数组是否包含改元素
+    {
+        Log([1, 2, 5, 6, 3, 4, 8].includes(5))
+
+        Log([1, 2, 3].includes(3, 3)); // false
+
+        [1, 2, 3].includes(3, -1); // true
+    }
+
+    //空位、、避免出现空位
+</script>
+
+<body>
+
+</body>
+
+</html>
