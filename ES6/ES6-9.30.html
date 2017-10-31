@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>es6-9.30</title>
+</head>
+
+<body>
+    <h2>Symbol:一种新的原始数据类型</h2>
+    <script>
+        let s = Symbol();
+        typeof s
+        let s1 = Symbol("aaa");
+        // symbol不能与其他类型的值运算会报错
+        // symbol可以值tostring()
+        s1.toString();
+        // 可以转换为为布尔值
+        Boolean(s1);
+        // 但不能转换为数值
+        // 作为属性名的symbol
+        let mySymbol = Symbol();
+        let a = {};
+        a[mySymbol] = "hello";
+        // 不能使用点运算符
+        let obj = {
+            [s]: function(a) {
+                console.log(a)
+            }
+        }
+        let obj0 = {
+                [s](aaa) {
+                    console.log(aaa)
+                }
+            }
+            // symbol可以定义一组不同的常量
+        log.levels = {
+                DEBUG: Symbol("aaa"),
+                LOG: Symbol("bbb"),
+                WRON: Symbol("ccc")
+            }
+            // 消灭魔术字符串
+            // 魔术字符串：在代码中多次出现、与代码形成强耦合的一些字符串和数值
+            // 属性名遍历
+            // symbol作为属性名、不会出现在forIn、for..of里、不接受JSON.stringfy()返回。
+        const obj2 = {};
+        const akk = {};
+        akk[a] = "csacascas";
+    </script>
+
+</body>
+
+</html>
