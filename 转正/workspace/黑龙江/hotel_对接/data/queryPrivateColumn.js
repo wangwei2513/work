@@ -1,0 +1,26 @@
+{"data":
+[{
+	"Name":"酒店介绍",
+	"Url":"../hotel/myHotel_introduction.htm",
+	"NameEn":"jdjs","ID":195,
+	"Icon":"http://10.4.8.52:8080/ContentWS/res/Image-0-195-pricolumnicon.png"
+},{
+	"Name":"点餐服务",
+	"Url":"../hotel/myHotel_food.htm",
+	"NameEn":"ddpl","ID":255,
+	"Icon":"http://10.4.8.52:8080/ContentWS/res/Image-0-255-pricolumnicon.png"
+},{
+	"Name":"客房设施",
+	"Url":"../hotel/hotel_roomFacility.htm",
+	"NameEn":"jsfw","ID":254,
+	"Icon":"http://10.4.8.52:8080/ContentWS/res/Image-0-254-pricolumnicon.png"
+},{
+	"Name":"生活购物",
+	"Url":"../hotel/myHotel_lifeShop.htm",
+	"NameEn":"ddwh","ID":253,"Icon":"http://10.4.8.52:8080/ContentWS/res/Image-0-253-pricolumnicon.png"
+},{
+	"Name":"洗衣服务",
+	"Url":"../new_app/hotel_wash.htm",
+	"NameEn":"ddwq","ID":252,
+	"Icon":"http://10.4.8.52:8080/ContentWS/res/Image-0-252-pricolumnicon.png"
+}]}

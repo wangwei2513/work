@@ -1,0 +1,218 @@
+--------- beginning of main
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+E/WifiStateMachine( 1553): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=7.56 rxSuccessRate=6.20 targetRoamBSSID=56:c9:df:34:78:8f RSSI=-17
+D/WifiStateMachine( 1553): L2Connected CMD_START_SCAN source -2 29, 30 ignore when user is not setting wifi UI, because wifi sta is connected
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/com.chinanetcenter.iFlow( 2053): IptablesUtils > checkiSpeed iSpeed up, tcp        0      0 0.0.0.0:8123            0.0.0.0:*               LISTEN      2148/com.chinanetce
+I/com.chinanetcenter.iFlow( 2053): 
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 255.255.255.255
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 224.0.0.0/4
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 10.0.0.0/8
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 192.168.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 172.16.0.0/12
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 169.254.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 127.0.0.0/8
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:68
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:67
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:5353
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:53
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iSpeed( 2148): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/XulMessageCenter( 2659): Auto cleanup finished
+I/XulMessageCenter( 2659): Auto cleanup finished
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/DataCollector( 2659): Report heartbeat Data, state= view
+D/DataUploader( 2659): uploadData cache count= 4
+D/DataUploader( 2659): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.0.005.STB.GZGD_LIVE.AUTO.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080915Z","network_status":"2"}
+D/DataUploader( 2659): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.0.005.STB.GZGD_LIVE.AUTO.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080915Z","network_status":"2"}
+D/DataUploader( 2659): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.0.005.STB.GZGD_LIVE.AUTO.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080915Z","network_status":"2"}
+D/DataUploader( 2659): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.0.005.STB.GZGD_LIVE.AUTO.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080915Z","network_status":"2"}
+D/DataUploader( 2659): uploadData count= 4
+I/XulHttpClientFilter( 2659): taskId = n602_a_1, url = http://null?nns_buss_id=200000&nns_mac=1C-66-6D-FC-8D-D7&nns_mac_id=1C-66-6D-FC-8D-D7&nns_version=1.0.005.STB.GZGD_LIVE.AUTO.OTT01.Release&nns_user_agent=nn_player%2Fstd%2F1.0.0&nns_user_id=01010116091201000216&nns_webtoken=897b05ac83570ef5eae0bf32503cd447
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+I/XulMessageCenter( 2790): Auto cleanup finished
+I/XulMessageCenter( 2790): Auto cleanup finished
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/DataCollector( 2790): Report heartbeat Data, state= view
+D/DataUploader( 2790): uploadData cache count= 4
+D/DataUploader( 2790): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.1.113.RECORD.GZGD.RECORD.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080916Z","network_status":"2"}
+D/DataUploader( 2790): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.1.113.RECORD.GZGD.RECORD.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080916Z","network_status":"2"}
+D/DataUploader( 2790): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.1.113.RECORD.GZGD.RECORD.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080916Z","network_status":"2"}
+D/DataUploader( 2790): Report Data, data= {"type":"heartbeat","event_type":"view","device_id":"01010116091201000216","device_serial_number":"01010116091201000216","mac":"1C-66-6D-FC-8D-D7","apk_version":"1.1.113.RECORD.GZGD.RECORD.OTT01.Release","system_version":"5.1.1","model":"ponkan","licence":"","report_time":"19700101T080916Z","network_status":"2"}
+D/DataUploader( 2790): uploadData count= 4
+I/XulHttpClientFilter( 2790): taskId = n602_a_1, url = http://null?nns_mac=1C-66-6D-FC-8D-D7&nns_mac_id=1C-66-6D-FC-8D-D7&nns_version=1.1.113.RECORD.GZGD.RECORD.OTT01.Release&nns_user_agent=nn_player%2Fstd%2F1.0.0&nns_user_id=u1c666dfc8dd7
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+D/com.chinanetcenter.iSpeed( 2148): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > -------------- START --------------
+I/com.chinanetcenter.iFlow( 2053): IptablesUtils > checkiSpeed iSpeed up, tcp        0      0 0.0.0.0:8123            0.0.0.0:*               LISTEN      2148/com.chinanetce
+I/com.chinanetcenter.iFlow( 2053): 
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.6:8081)
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 255.255.255.255
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 224.0.0.0/4
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 10.0.0.0/8
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 192.168.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 172.16.0.0/12
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 169.254.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 127.0.0.0/8
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.7:8081)
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:68
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:67
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:5353
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:53
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.28:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.13:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.5:8081)
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.17:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.13:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.14:8081)
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.15:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.32.16:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.29:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.18:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > UDP SUCCESS: (10.64.4.14:8081)
+I/com.chinanetcenter.iSpeed( 2148): UdpProxyProbeTask > -------------- END --------------
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+D/com.chinanetcenter.iSpeed( 2148): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iSpeed( 2148): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+E/WifiStateMachine( 1553): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=9.19 rxSuccessRate=8.49 targetRoamBSSID=56:c9:df:34:78:8f RSSI=-18
+D/WifiStateMachine( 1553): L2Connected CMD_START_SCAN source -2 30, 31 ignore when user is not setting wifi UI, because wifi sta is connected
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iFlow( 2053): IptablesUtils > checkiSpeed iSpeed up, netstat: showing only processes with your user ID
+I/com.chinanetcenter.iFlow( 2053): tcp        0      0 0.0.0.0:8123            0.0.0.0:*               LISTEN      2148/com.chinanetce
+I/com.chinanetcenter.iFlow( 2053): 
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 255.255.255.255
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 224.0.0.0/4
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 10.0.0.0/8
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 192.168.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 172.16.0.0/12
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 169.254.0.0/16
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackIpList already exist 127.0.0.0/8
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:68
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:67
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:5353
+D/com.chinanetcenter.iFlow( 2053): IptablesUtils > setBlackPortList already exist dpt:53
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+--------- beginning of system
+W/ContextImpl( 1553): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+D/SogouIME( 1962): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 1553): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/webapp  ( 1836): [MainActivity]keycode:23
+D/webapp  ( 1836): [BaseActivity]keycode:23
+V/broadcast( 2533): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2533): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+D/webapp  ( 1836): [WebAppInterface]run cmd:am start -n com.example.para/com.example.para.activity.SplashActivity--es launch_object "other"
+D/LogWindowManageView( 1836): addLogText
+I/AmCommand( 1836): onRun : op = start
+D/LogWindowManageView( 1836): mLogList count:153  13391
+V/broadcast( 2533): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+I/ActivityManager( 1553): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 pkg=launch_object cmp=com.example.para/.activity.SplashActivity--es} from uid 10032 on display 0
+E/AmCommand( 1836): Unable to find explicit activity class {com.example.para/com.example.para.activity.SplashActivity--es}; have you declared this activity in your AndroidManifest.xml?
+D/live    ( 2533): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=570270, downTime=570270, deviceId=3, source=0x301 }
+I/MiSysSrv( 1131): [37m[INFO] Change to Voltage: 1030 mV (0x24)[m
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1962): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1553): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1553): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1962): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+D/webapp  ( 1836): [MainActivity]keycode:23
+D/webapp  ( 1836): [BaseActivity]keycode:23
+V/broadcast( 2533): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2533): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+D/webapp  ( 1836): [WebAppInterface]run cmd:am start -n com.example.para/com.example.para.activity.SplashActivity--es launch_object "other"
+D/LogWindowManageView( 1836): addLogText
+I/AmCommand( 1836): onRun : op = start
+D/LogWindowManageView( 1836): mLogList count:154  13511
+V/broadcast( 2533): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+I/ActivityManager( 1553): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 pkg=launch_object cmp=com.example.para/.activity.SplashActivity--es} from uid 10032 on display 0
+D/live    ( 2533): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=570876, downTime=570876, deviceId=3, source=0x301 }
+E/AmCommand( 1836): Unable to find explicit activity class {com.example.para/com.example.para.activity.SplashActivity--es}; have you declared this activity in your AndroidManifest.xml?
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1962): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iSpeed( 2148): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1553): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1553): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1962): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+D/webapp  ( 1836): [MainActivity]keycode:23
+D/webapp  ( 1836): [BaseActivity]keycode:23
+V/broadcast( 2533): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2533): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+D/webapp  ( 1836): [WebAppInterface]run cmd:am start -n com.example.para/com.example.para.activity.SplashActivity--es launch_object "other"
+D/LogWindowManageView( 1836): addLogText
+I/AmCommand( 1836): onRun : op = start
+D/LogWindowManageView( 1836): mLogList count:155  13631
+I/ActivityManager( 1553): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 pkg=launch_object cmp=com.example.para/.activity.SplashActivity--es} from uid 10032 on display 0
+V/broadcast( 2533): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+E/AmCommand( 1836): Unable to find explicit activity class {com.example.para/com.example.para.activity.SplashActivity--es}; have you declared this activity in your AndroidManifest.xml?
+D/live    ( 2533): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=571827, downTime=571827, deviceId=3, source=0x301 }
+V/netx    ( 2121): gointo 4  out true
+V/StatusBarService( 2121): true up0 true
+D/WindowManager( 1553): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1962): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+V/netx    ( 2121): gointo 4  in true
+V/StatusBarService( 2121): true up0 true
+I/com.chinanetcenter.iSpeed( 2148): IptablesWatchdogThread > checkThreads
+I/wpa_supplicant( 2518): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1553): for gzgd,change score (60)-->(56)

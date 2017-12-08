@@ -1,0 +1,22 @@
+﻿var menuData=[
+	{	
+		"itemName":"市委党建工作领导小组第一次会议召开",
+		"url":"http://10.191.85.203:90/remote_education/4.mpg"
+	},
+	{
+		"itemName":"全市先锋社区创建暨党建统领物业提升推进会议召开",
+		"url":"http://10.191.85.203:90/remote_education/video1.mpg"
+	},
+	{
+		"itemName":"农村党组织书记能力提升班开班",
+		"url":"http://10.191.85.203:90/remote_education/video2.mpg"
+	},
+	{
+		"itemName":"市委召开常委会议",
+		"url":"http://10.191.85.203:90/remote_education/video4.mpg"
+	},
+	{
+		"itemName":"市委理论学习中心组开展三严三实专题教育第三专题第二次集中学习",
+		"url":"http://10.191.85.203:90/remote_education/5.mpg"
+	}
+];

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="page-view-size" content="1280*720">
+<title>通用播放包括收看上级党课</title>
+<style type="text/css">
+.pItem{margin: 0px 0px 28px;line-height: 28px;}
+</style>
+</head>
+<body bgcolor="transparent" background="images/bg2.png" onload="init()" onunload="exit()">
+<!-- logo -->
+<img src="images/logo.png" width="475" height="67" style="position:absolute;left:73px;top:32px;">
+<!-- time -->
+<div id="h_m_s" style="position:absolute;width:130px;line-height:22px;left:1077px;top:56px;font-size:26px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">00:00:00</div>
+<div id="y_m_d" style="position:absolute;width:130px;line-height:18px;left:1077px;top:78px;font-size:18px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">1970/01/01</div>
+<!-- sidebar -->
+<img src="images/listR_bg3.png" width="453" height="451" style="position:absolute;left:754px;top:144px;">
+<div style="position:absolute;width:416px;height:392px;left:773px;top:173px;font-size:26px;color:#000000;word-break:break-all;overflow:hidden;">
+	<p class="pItem">会场名称：<span id="supPlaceName">暂无</span></p>
+	<p class="pItem">会议开始时间：<span id="startTime">暂无</span></p>
+	<p class="pItem">会议议题：<span id="title">暂无</span></p>
+	<p class="pItem">内容简介：<span id="content">暂无</span></p>
+</div>
+<!-- btn -->
+<div id="btn0" style="position:absolute;left:385px;top:545px;visibility:hidden;">
+	<img id="btn0Bg" src="images/btn1_ct.png" width="148" height="52" style="position:absolute;">
+	<div id="btn0Text" style="position:absolute;width:148px;line-height:52px;font-size:24px;color:#ffffff;text-align:center;"></div>
+</div>
+<div id="btn1" style="position:absolute;left:562px;top:545px;">
+	<img id="btn1Bg" src="images/btn1_ct.png" width="148" height="52" style="position:absolute;">
+	<div id="btn1Text" style="position:absolute;width:148px;line-height:52px;font-size:24px;color:#ffffff;text-align:center;"></div>
+</div>
+<img id="btnFocus" src="images/btn1_f2.png" width="180" height="84" style="position:absolute;left:546px;top:529px;">
+<!-- rec -->
+<div id="rec" style="position:absolute;width:214px;line-height:52px;padding-left:32px;left:74px;top:545px;font-size:24px;color:#ffffff;background:url(images/dot00.png) no-repeat left center;visibility:hidden;">共录制 <span id="recTime">00:00:00</span></div>
+<!-- footer -->
+<div style="position:absolute;width:720px;height:24px;line-height:24px;padding-left:36px;left:75px;top:662px;font-size:24px;color:#faf9f6;background:url(images/notice.png) no-repeat left center;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+<img src="images/tips01.png" width="305" height="40" style="position:absolute;left:903px;top:652px;">
+<div id="tips" style="position:absolute;left:365px;top:153px;visibility:hidden;">
+	<img src="images/tck_bg.png" width="560" height="360" style="position:absolute;">
+	<table border="0" cellpadding="0" cellspacing="0" width="500" height="339" style="position:absolute;left:30px;color:#ffffff;text-align:center;">
+		<tr>
+			<td height="97" style="font-size:28px;">温馨提示</td>
+		</tr>
+		<tr>
+			<td id="tipsCont" height="242" style="font-size:25px;"></td>
+		</tr>
+	</table>
+</div>
+<!-- <div id="denglcDiv" style="position:absolute;width:700px;height:500px;left:100px;top:100px;font-size:22px;color:#000000;word-break:break-all;"></div> -->
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+<script type="text/javascript" src="js/player.js"></script>
+<script type="text/javascript">
+//@denglc
+document.onkeydown = eventHandler;
+document.onirkeypress = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(e){
+	var e = e || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	iDebug(">>>denglc-->checkSubClass-->keycode:"+keycode);
+	var eventObj = Event.mapping(keycode);
+	switch(eventObj.code){
+		case "KEY_LEFT":
+			changeLR(-1);
+			return false;
+			break;
+		case "KEY_RIGHT":
+			changeLR(1);
+			return false;
+			break;
+		case "KEY_SELECT":
+			doSelect();
+			return false;
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+			if(type == 2){
+				window.location.href = backUrl;
+			}else{
+				if(type == 1 && isStartRec == 1){
+					ajaxStopRec();
+				}
+				ajaxStopMeeting();
+			}
+			return false;
+			break;
+		case "MSG_MEDIA_URL_VALID":
+			MPlayer.play();
+			break;
+		case "MSG_MEDIA_URL_INVALID":
+			break;
+		case "MSG_MEDIA_PLAY_SUCCESS":
+			break;
+		case "MSG_MEDIA_PLAY_FAILED":
+			break;
+	}
+}
+/**************************变量**************************/
+var type = 0;//0 分会场 1 主会场 2 下级收看上级党课
+var meetType = 0;//会议类型 type 0,1必传
+var channelId = "";//直播channelId
+var accesstoken = "";//token
+var deviceid = "";
+var playUrlBefore = "";
+var btnPos = 0;
+var isStartRec = 0;//0 未开始录制 1 正在录制 2 已结束录制
+var showTipsTimer = -1;
+var count = 0;//录制时间
+var countTimer = -1;
+var isOver = 0;//是否正在结束会议避免重复结束
+var backUrl = "";//返回的页面
+var meetingInfo = {};//当前会议数据
+/**************************方法**************************/
+function init(){
+	initPlayer();
+	initParams();
+	initTime();
+	initBtnBar();
+	onFocus();
+}
+
+function initPlayer(){
+	MPlayer.init();
+}
+
+function initParams(){
+	type = parseInt(getGlobalParms("thrOne_type"),10) || parseInt(getUrlParams("type"),10) || 0;
+	meetType = parseInt(getGlobalParms("thrOne_meetType"),10) || parseInt(getUrlParams("meetType"),10) || 0;
+	channelId = parseInt(getGlobalParms("thrOne_channelId"),10) || parseInt(getUrlParams("channelId"),10) || "";
+	backUrl = getGlobalParms("thrOne_backUrl") || "index.htm";
+	accesstoken = getGlobalParms("thrOne_accesstoken") || "TOKEN50001002";
+	deviceid = getGlobalParms("thrOne_deviceid") || "9999";
+	if(type != 2){
+		playMonitor(sliceMonitorAddr());
+		ajaxGetMeetingInfo();
+	}else{
+		ajaxGetSupMeeting();
+	}
+	removeGlobalParms(["thrOne_type","thrOne_channelId","thrOne_backUrl"]);
+}
+
+function initTime(){
+	var date = new Date();
+	var y = date.getFullYear();
+	var m = date.getMonth();
+	var d = date.getDate();
+	var h = date.getHours();
+	var mm = date.getMinutes();
+	var s = date.getSeconds();
+	$("h_m_s").innerText = addZero(h) + ":" + addZero(mm) + ":" + addZero(s);
+	$("y_m_d").innerText = y + "/" + addZero(m+1) + "/" + addZero(d);
+	setTimeout(initTime,1000);
+}
+
+function initBtnBar(){
+	if(type == 1){
+		$("btn0").style.visibility = "visible";
+		$("btn0Text").innerText = "开始录制";
+		$("btn1Text").innerText = "结束会议";
+	}else{
+		btnPos = 1;
+		$("btn1Text").innerText = "退出";
+	}
+}
+
+function onFocus(){
+	if(isStartRec == 2 && btnPos == 0){
+		$("btn"+btnPos+"Bg").src = "images/btn1_ct2.png";
+	}else{
+		$("btn"+btnPos+"Bg").src = "images/btn1_f1.png";
+	}
+	$("btnFocus").style.left = 369 + btnPos * 177 + "px";
+}
+
+function loseFocus(){
+	$("btn"+btnPos+"Bg").src = "images/btn1_ct.png";
+}
+
+function sliceMonitorAddr(){
+	return livePlay+"?accesstoken="+accesstoken+"&programid="+channelId+"&playtype=live&protocol=http&playtoken=ABCDEFGHIGK&verifycode="+deviceid+"&auth=no";
+}
+
+function playMonitor(__url){
+	iDebug(">>>denglc-->playMonitor-->url="+__url);
+	iDebug(">>>denglc-->playMonitor-->playUrlBefore="+playUrlBefore);
+	if(typeof __url == "undefined" || __url == "")return;
+	if(playUrlBefore == __url)return;
+	MPlayer.setPosition(74,144,636,358);	
+	if(browserType == "Inspur"){
+		MPlayer.play(__url);
+	}else{
+		MPlayer.setMediaSource(__url);
+	}
+	playUrlBefore = __url;
+}
+
+function changeLR(_num){
+	if(type == 1){
+		loseFocus();
+		btnPos = (btnPos + _num + 2) % 2;
+		onFocus();
+	}
+}
+
+function doSelect(){
+	if(btnPos == 0){
+		if(isStartRec == 0){//开始录制
+			ajaxStartRec();
+		}else if(isStartRec == 1){//结束录制
+			ajaxStopRec();
+		}
+	}else if(btnPos == 1){
+		if(type == 2){
+			window.location.href = backUrl;
+		}else{
+			if(type == 1 && isStartRec == 1){
+				ajaxStopRec();
+			}
+			ajaxStopMeeting();
+		}
+	}
+}
+
+function ajaxStartRec(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.startRec;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,channelId);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxStartRec url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxStartRec:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			isStartRec = 1;
+			$("btn0Text").innerText = "结束录制";
+			$("rec").style.visibility = "visible";
+			count = 0;
+			startCounter(count);
+		}else{
+			showTips("开始录流请求错误！错误码："+getData.result);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		showTips("开始录流请求失败！");
+	}
+	ajaxObj.requestData();
+}
+
+function startCounter(count){
+	clearTimeout(countTimer);
+	$("recTime").innerText = changeTimeStr(count);
+	count++;
+	countTimer = setTimeout("startCounter("+count+")",1000);
+}
+
+function changeTimeStr(count){
+	var h = Math.floor(count/3600);
+	var m = Math.floor(count/60) % 60;
+	var s = count % 60;
+	return addZero(h) + ":" + addZero(m) + ":" + addZero(s);
+}
+
+function ajaxStopRec(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.stopRec;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,channelId);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxStopRec url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxStopRec:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			isStartRec = 2;
+			$("btn0Text").innerText = "已结束录制";
+			onFocus();
+			$("rec").style.background = "url(images/dot01.png) no-repeat left center";
+			clearTimeout(countTimer);
+		}else{
+			showTips("结束录制请求错误！错误码："+getData.result);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		showTips("结束录制请求失败！");
+	}
+	ajaxObj.requestData();
+}
+
+function ajaxStopMeeting(){
+	if(isOver){return false;}
+	isOver = 1;
+
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.stopMeeting;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,channelId);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxStopMeeting url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxStopMeeting:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			window.location.href = backUrl;
+		}else{
+			isOver = 0;
+			showTips("结束会议请求错误！错误码："+getData.result);
+			setTimeout(function(){
+				window.location.href = backUrl;
+			},3000);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		isOver = 0;
+		showTips("结束会议请求失败！");
+		setTimeout(function(){
+			window.location.href = backUrl;
+		},3000);
+	}
+	ajaxObj.requestData();
+}
+
+function ajaxGetMeetingInfo(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.queryMeetings;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,meetType).replace(/\{2\}/,1).replace(/\{3\}/,0).replace(/\{4\}/,1).replace(/\{5\}/,5);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetMeetingInfo url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetMeetingInfo:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			if(getData.msg.meetings.length > 0){
+				meetingInfo = getData.msg.meetings[0];
+			}else{
+				meetingInfo = {};
+			}
+		}else{
+			meetingInfo = {};
+		}
+		initMeetingInfo();
+	}
+	ajaxObj.failureCallback = function(){
+		meetingInfo = {};
+		initMeetingInfo();
+	}
+	ajaxObj.requestData();
+}
+
+function ajaxGetSupMeeting(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.querySupMeeting;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,7).replace(/\{2\}/,"");
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetSupMeeting url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetSupMeeting:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			if(getData.msg.length > 0){
+				channelId = getData.msg[0].channelId;
+				playMonitor(sliceMonitorAddr());
+				meetingInfo.mainPlace = getData.msg[0].placeName;
+				meetingInfo.theme = getData.msg[0].theme;
+				meetingInfo.themeDesc = getData.msg[0].themeDesc;
+			}
+		}
+		initMeetingInfo();
+	}
+	ajaxObj.failureCallback = function(){
+		initMeetingInfo();
+	}
+	ajaxObj.requestData();
+}
+
+function initMeetingInfo(){
+	$("supPlaceName").innerText = meetingInfo.mainPlace || "暂无";
+	$("startTime").innerText = meetingInfo.startTime || "暂无";
+	$("title").innerText = meetingInfo.theme || "暂无";
+	$("content").innerText = meetingInfo.themeDesc || "暂无";
+}
+
+function showTips(str){
+	clearTimeout(showTipsTimer);
+	$("tips").style.visibility = "visible";
+	$("tipsCont").innerText = str;
+	showTipsTimer = setTimeout(hideTips,3000);
+}
+
+function hideTips(){
+	$("tips").style.visibility = "hidden";
+}
+
+function exit(){
+	MPlayer.stop(1);
+}
+</script>
+</body>
+</html>

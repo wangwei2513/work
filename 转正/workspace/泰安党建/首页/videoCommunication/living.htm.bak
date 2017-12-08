@@ -1,0 +1,483 @@
+<!doctype html>
+<html>
+    
+    <head>
+        <meta charset="utf-8">
+        <title>
+            视频交流2_1
+        </title>
+    </head>
+    <script type="text/javascript" src="js/ajax.js">
+    </script>
+    <script type="text/javascript" src="js/config.js">
+    </script>
+    <script type="text/javascript" src="js/common.js">
+    </script>
+    <script type="text/javascript" src="js/keyevent.js">
+    </script>
+    <script type="text/javascript" src="js/showList.js">
+    </script>
+    <script type="text/javascript" src="js/player.js">
+    </script>
+    <script>
+        var playUrl = "";
+        var switchPlaceArr = []; //创建的临时的播放地址
+        var iStartRecord = true; //是否正在录制视频
+        var countTimer = -1;
+        var showTipsTimeout = -1;
+        var $MP1 = "";
+        var $MP2 = "";
+        var mainFlag = false;
+        var isPlay = false;
+        function eventHandler(eventObj) {
+            var keycode = eventObj.code;
+            console.log(keycode);
+            divDebug(keycode);
+            iDebug("yanch ---- >>>>keycode="+keycode);
+            switch (keycode) {
+            case "KEY_UP":
+                //changeUD(-1);
+                return EVENT.STOP;
+                break;
+            case "KEY_DOWN":
+                // changeUD(1);
+                return EVENT.STOP;
+                break;
+            case "KEY_LEFT":
+                //changeLR( - 1);
+                return EVENT.STOP;
+                break;
+            case "KEY_RIGHT":
+                //changeLR(1);
+                return EVENT.STOP;
+                break;
+            case "KEY_SELECT":
+                doSelect();
+                return EVENT.STOP;
+                break;
+            case "KEY_PAGE_UP":
+
+                return EVENT.STOP;
+                break;
+            case "KEY_PAGE_DOWN":
+
+                return EVENT.STOP;
+                break;
+
+            case "KEY_BACK":
+                stopVoid();
+                stopMeeting();
+                return EVENT.STOP;
+                break;
+            case "MSG_MEDIA_URL_VALID":
+                iDebug("--detail.htm--fun eventHandler-----13001");
+                //httpInstance.stop(0);
+                //httpInstance.play();
+                MPlayer.play();
+                return EVENT.STOP;
+                break;    
+            case "KEY_HOMEPAGE":
+
+            default:
+                return EVENT.DOWN;
+                break;
+            }
+        }
+        var parmsObj = {
+            "meetingName": "",
+            "placeMaster": cardNo,
+            "type": 3,
+            //0:视频会议   1:培训视频  2:三会一课  4:视频交流
+            "identifyValue": "",
+        };
+        var playParms = {
+            "accesstoken": "",
+            //登录令牌
+            "programid": "",
+            //频道chnlid
+            "playtype": "live",
+            //类型
+            "protocol": "http",
+            //协议类型
+            "playtoken": "ABCDEFGHIGK",
+            //是否购买了视频，字符串:为空
+            "verifycode": "" //登录的deviceid
+        };
+        function init() {
+            getParm();
+            showcurrTime();
+            //showTime();
+            //newInstance();
+         
+        }
+        function getParm() {
+            var identifyCode = getGlobalParms("sphy_identifyCode");
+            if (identifyCode != "") {
+            	  mainFlag = true;
+                parmsObj.identifyValue = identifyCode;
+                startMeeting();
+                
+                //$("meetingCode").innerText = parmsObj.identifyValue;
+            }else{
+            	mainFlag = false;
+            	getLastMeeting();
+            	
+            	}
+           
+           //getLastMeeting();
+        }
+        
+        function startMeeting() {
+            var url = noRecordUrl;
+            if (!isGet) {
+                url = url.replace("{0}", parmsObj.meetingName).replace("{1}", parmsObj.placeMaster).replace("{2}", parmsObj.type).replace("{3}", parmsObj.identifyValue);
+            }
+            divDebug(">>>zhaoql:initiateMeeting--startMeeting--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    iDebug(">>>zhaoql:startMeeting--responseText="+responseText);
+                    var tempObj = eval('(' + responseText + ')');
+                    if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                    	  playParms.programid = tempObj.msg;
+                        getLastMeeting();		
+                    } else {
+                    	  isPlay = true;
+                        showTips("error:" + tempObj.msg);
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:startMeeting--request->error");
+                }
+            });
+        }
+         function getLastMeeting() {
+            var url = LatestMeetingUrl;
+            if (!isGet) {
+                url = url.replace("{0}", parmsObj.placeMaster).replace("{1}", parmsObj.type);
+            }
+            iDebug(">>>zhaoql:initiateMeeting--startMeeting--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    //iDebug(">>>zhaoql:startMeeting--responseText="+responseText);
+                    var tempObj = eval('(' + responseText + ')');
+                    if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                    	parmsObj.identifyValue = tempObj.msg.idCode;
+                    	if(mainFlag){
+                    		playUrl = tempObj.msg.secondRtsp;
+                    		}else{
+                    			playUrl = tempObj.msg.mainRtsp;
+                    			}
+                    	if (typeof playUrl == "undefined"){
+                    		 showTips("暂无可参加交流,1秒后自动退出");
+                    		 stopMeeting();
+                    		 return;
+                    		}		
+                    	getMeetingDetail();
+                    	divDebug(playUrl);
+                    	iDebug(playUrl);
+                      playVideo(playUrl);
+                      
+                    } else {
+                        showTips("error:" + tempObj.msg);
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:startMeeting--request->error");
+                }
+            });
+        }
+        function getMeetingDetail(){
+        	var url = MeetingDetailUrl;
+            if (!isGet) {
+                url = url.replace("{0}", parmsObj.placeMaster).replace("{1}", parmsObj.type).replace("{2}", parmsObj.identifyValue);
+            }
+            iDebug(">>>zhaoql:initiateMeeting--startMeeting--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    //iDebug(">>>zhaoql:startMeeting--responseText="+responseText);
+                    var tempObj = eval('(' + responseText + ')');
+                    if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                       
+                       var identifyCode = getGlobalParms("sphy_identifyCode");
+						            if (identifyCode != "") {
+						            	//console.log("------>>>>>>>>>areaName= "+tempObj.msg.secondPlace[0].areaName);
+						            	 $("commuMeeting").innerHTML=  tempObj.msg.secondPlace[secondPlace.length-1].areaName;
+						            }else{
+						            	 $("commuMeeting").innerHTML = tempObj.msg.mainPlace.placeName;  
+						            	}
+						           //$("commuMeeting").innerHTML = tempObj.msg.mainPlace.placeName; 	
+                       //$("meetingDay") =  tempObj.msg.startTime;
+                       $("MeetingTitle").innerHTML =  tempObj.msg.theme||"无议题";
+                       $("MeetingDesc").innerHTML =  tempObj.msg.content||"无议题";
+                       	
+                    } else {
+                        showTips("error:getMeetingDetail" + tempObj.msg +parmsObj.identifyValue);
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:startMeeting--request->error");
+                }
+            });
+        	}
+        /********************************************
+					结束会议
+********************************************/
+        function stopMeeting() {
+
+            var url = endRecordUrl;
+            if (!isGet) {
+                url = url.replace("{0}", playParms.programid).replace("{1}", parmsObj.placeMaster);
+            }
+            iDebug(">>>zhaoql:initiateMeeting--stopMeeting--url=" + url);
+            //$("loadIcon").style.visibility = "visible";
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    iDebug(">>>zhaoql:initiateMeeting--stopMeeting--responseText=" + responseText);
+                    var res = eval("(" + responseText + ")");
+                    if (typeof res != "undefined") { //&& res.result=="E0000"
+                        // $("loadIcon").style.visibility = "hidden";
+                        status = -1;
+                        removeAll();
+                        exit();
+                        clearTimeout(countTimer);
+                        setTimeout(function() {
+                            window.location.href = "index.htm";
+                        },
+                        2000);
+                        iDebug("zhaoqlinitiateMeeting--end meeting  success->" + res.msg);
+                    }
+                },
+                onError: function() {
+                    //$("loadIcon").style.visibility = "hidden";
+                    status = -1;
+                    removeAll();
+                    exit();
+                    clearTimeout(countTimer);
+                    setTimeout(function() {
+                        window.location.href = "../index.htm";
+                    },
+                    200);
+                    iDebug(">>>zhaoql:initiateMeeting----startRecordVideo failed");
+                }
+            });
+        }
+        function playVideo(_url) {
+            divDebug(">>>zhaoql:subMeetingSwitch--playVideo--url=" + _url);
+            var url = _url;
+            isPlay = true;
+            showTime();
+            if (navigatorFlag == "Inspur") {
+                iSTB.player.play(url);
+                iSTB.player.set_video_window(74,144,636,358);
+                
+            } else {
+                //newInstance();
+                MPlayer.init();
+                MPlayer.setMediaSource(url);
+                MPlayer.setPosition(74,144,636,358);
+                divDebug("-------------setMediaSource-----setPosition")
+                //httpInstance.setPosition(74,144,636,358);
+                //httpInstance.setSource(url);
+            }   
+        }
+        var httpInstance = null;
+        function newInstance() {
+            /*iDebug("------------fun newInstance==httpInstance:" + httpInstance);
+            if (httpInstance == null) {
+                httpInstance = new PlayObj();
+                httpInstance.init();
+                httpInstance.bindID();
+                httpInstance.setMode(1);
+                httpInstance.setPosition(74,144,636,358);
+            }*/
+            MPlayer.init();
+        }
+        function stopVoid() {
+           //divDebug("stopVoid   navigatorFlag:" + navigatorFlag);
+            if (navigatorFlag == "iPanel") {
+                if (httpInstance != null) {
+                    httpInstance.stop(0);
+                    httpInstance.close();
+                    httpInstance.unbindID();
+                    //divDebug("stopVoid   unbindID:");
+                    httpInstance = null;
+                }
+            }else if(navigatorFlag == "Inspur"){
+							iSTB.player.stop();
+						}
+        }
+        /**********************************************
+			       拼接视频地址
+***********************************************/
+        function sliceMonitorAddr(chnlid) {
+            playParms.accesstoken = getGlobalParms("sphy_loginToken");
+            playParms.verifycode = getGlobalParms("sphy_deviceId");
+            return playUrlSuffix + "?accesstoken=" + playParms.accesstoken + "&programid=" + chnlid + "&playtype=" + playParms.playtype + "&protocol=" + playParms.protocol + "&playtoken=" + playParms.playtoken + "&verifycode=" + playParms.verifycode + "&auth=no";
+        }
+        function showTime() { //返回时间需要记忆
+        	startTimer();
+        }
+        var start = 0;
+        function startTimer() {
+            var temp;
+            clearTimeout(countTimer);
+            start++;
+            temp = start;
+            timeChange(temp);
+            countTimer = setTimeout("startTimer()", 1000);
+        }
+
+        function stopTimer() {
+            clearTimeout(countTimer);
+        }
+
+        function timeChange(__date) { //把s数换算为时分秒
+            var timeArr = [];
+            timeArr[0] = Math.floor(__date / 36000);
+            timeArr[1] = Math.floor((__date % 36000) / 3600);
+            timeArr[2] = Math.floor((__date % 3600) / 600);
+            timeArr[3] = Math.floor((__date % 600) / 60);
+            timeArr[4] = Math.floor((__date % 60) / 10);
+            timeArr[5] = Math.floor((__date % 10));
+            $("recoderTime").innerText = timeArr[0] + timeArr[1] + ":" + timeArr[2] + timeArr[3] + ":" + timeArr[4] + timeArr[5];
+        }
+        function showTips(__str) {
+        	console.log($("tip_div"))
+            $("tip_div").style.visibility = "visible";
+            $("tip_cont").innerText = __str;
+            showTipFlag = false;
+            clearTimeout(showTipsTimeout);
+            showTipsTimeout = setTimeout(function() {
+                $("tip_div").style.visibility = "hidden";
+                showTipFlag = true;
+            },
+            2000);
+        }
+        function removeAll() {
+            removeGlobalParms(["sphy_loginToken", "sphy_deviceId", "sphy_chnlId", "sphy_identifyType", "sphy_isSelFlagArr", "sphy_position", "sphy_topicData", "sphy_allTopicStr", "sphy_identifyCode", "sphy_areaIds", "sphy_currTime", "sphy_iStartRecord", "sphy_newAddTopicData"]);
+        }
+        function exit() {
+
+        }
+        function doSelect() {
+        	if(!isPlay){
+        		//getParm();
+        		//$("btn").innerHTML ="结束会议";
+        		}else{
+        			stopVoid();
+              stopMeeting();
+        			}
+        }
+        var timer = null;
+        function showcurrTime(){
+        	clearTimeout(timer);
+        	var currDate = new Date();
+        	$("time").innerHTML = currDate.Format("hh:mm:ss");
+        	$("day").innerHTML = currDate.Format("yyyy/MM/dd");
+        	timer = setInterval(function(){showcurrTime();},1000)
+        	}
+    </script>
+    
+    <body bgcolor="transparent" background="bg4.png" leftmargin="0" topmargin="0" onload="init();">
+        <div style="position:absolute;left:73px;top:32px;">
+            <img src="logo.png" width="475" height="67">
+        </div>
+       <div style="position:absolute;left:1079px;top:56px; width:130px; line-height:px; font-size:18px; color:rgba(255,255,255,.6); letter-spacing:2px;line-height:18px;">
+            <span id="time" style="font-size:26px;line-height:22px;">
+                15:10:30
+            </span>
+            <br/>
+            <span id="day">2015/01/13</span>
+        </div>  
+        <!--底部-->
+        <div style="position:absolute;left:75px;top:662px;width:720px;height:24px;line-height:24px; font-size:24px; color:#faf9f6; background:url(notice.png) no-repeat left center; padding-left:36px;">
+            尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。
+        </div>
+        <div style="position:absolute;left:903px;top:652px;">
+            <img src="tips01.png" width="305" height="40">
+        </div>
+        <!--视频-->
+        <div style="position:absolute;left:74px;top:124px;font-size:26px; color:#000;line-height:26px;">
+            交流支部：<span id="commuMeeting"></span>
+        </div>
+        <!--录制提示-->
+        <div  style="position: absolute; left: 74px; top: 575px; width: 214px; line-height: 26px; background: url(dot00.png) no-repeat left center; font-size: 24px; color: #fff; padding-left: 32px;visibility:visible">
+            已进行 <span id="recoderTime">00:00:00</span>
+        </div>
+        <!--按钮-->
+        <div id="btn" style="position:absolute;left:562px;top:562px; width:148px; height:52px; background:url(btn1_ct2.png); line-height:52px; font-size:24px; color:#000; text-align:center;">
+            结束交流
+        </div>
+        <div id="btn0" style="position: absolute; left: 545px; top: 547px; width: 180px; height: 84px; background: url(btn1_f2.png); visibility: visible">
+        </div>
+        <!--文章-->
+        <div style="position:absolute;left:754px;top:144px; width:453px; height:179px;">
+            <div style="position:absolute;left:20px;top:30px;width:424px;line-height:28px;font-size:26px;color:#000;">
+                会议议题：<span id="MeetingTitle"></span>
+                <br/>
+                <br/>
+                内容简介：<span id="MeetingDesc"></span>
+            </div>
+        </div>
+        <!--焦点-->
+        <div style="position: absolute; left: 51px; top: 144px; width: 679px; height: 402px;visibility:hidden">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+                <tr>
+                    <td width="50" height="50" style="background:url(focus01.png);">
+                    </td>
+                    <td style="background:url(focus02.png);">
+                    </td>
+                    <td width="50" height="50" style="background:url(focus03.png);">
+                    </td>
+                </tr>
+                <tr>
+                    <td style="background:url(focus04.png);">
+                    </td>
+                    <td>
+                    </td>
+                    <td style="background:url(focus05.png);">
+                    </td>
+                </tr>
+                <tr>
+                    <td width="50" height="50" style="background:url(focus06.png);">
+                    </td>
+                    <td style="background:url(focus07.png);">
+                    </td>
+                    <td width="50" height="50" style="background:url(focus08.png);">
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--提示-->
+        <div id="tip_div" style="position:absolute; left:365px; top:153px; width:560px; height:360px; background:url(tck_bg.png) center no-repeat; visibility:hidden;">
+            <table align="center" width="500" height="340" border="0" cellspacing="0"
+            cellpadding="0" style="font-size:28px; color:#FFFFFF;">
+                <tr>
+                    <td height="60" align="center">
+                        温馨提示
+                    </td>
+                </tr>
+                <tr>
+                    <td height="150" align="center" style="font-size:25px;" id="tip_cont">
+                    </td>
+                </tr>
+            </table>
+        </div>
+         <div id="test" style="position:absolute; left:365px; top:153px; width:560px; height:360px;background:#ededed;word-break:break-all;display:none">
+        	1111
+        </div>  
+    </body>
+
+</html>

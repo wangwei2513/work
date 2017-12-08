@@ -1,0 +1,333 @@
+--------- beginning of main
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+--------- beginning of system
+V/broadcast( 1555): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.server.AlarmManagerService$ClockReceiver@2a3858ff
+V/broadcast( 1555): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.server.AlarmManagerService$ClockReceiver@2a3858ff
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.keyguard.KeyguardUpdateMonitor$3@3d54af6d
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.keyguard.KeyguardUpdateMonitor$3@3d54af6d
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.KeyguardIndicationController$2@27d114dd
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.KeyguardIndicationController$2@27d114dd
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.Clock$1@15caf547
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.Clock$1@15caf547
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@3a379ee3
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@3a379ee3
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@2aa00e0
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@2aa00e0
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@f3b463f
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@f3b463f
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@1f5e4b0c
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@1f5e4b0c
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@46166a
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@46166a
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@38a8075b
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@38a8075b
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.DateTimeView$ReceiverInfo$1@15e04646
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.DateTimeView$ReceiverInfo$1@15e04646
+I/com.chinanetcenter.iFlow( 2095): IptablesUtils > checkiSpeed iSpeed up, tcp        0      0 0.0.0.0:8123            0.0.0.0:*               LISTEN      2171/com.chinanetce
+I/com.chinanetcenter.iFlow( 2095): 
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 255.255.255.255
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 224.0.0.0/4
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 10.0.0.0/8
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 192.168.0.0/16
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 172.16.0.0/12
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 169.254.0.0/16
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 127.0.0.0/8
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:68
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:67
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:5353
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:53
+D/com.chinanetcenter.iSpeed( 2171): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/Workspace( 2147): 重新请求跑马灯文本广告
+V/netx    ( 2147): gointo 4  out true
+V/StatusBarService( 2147): true up0 true
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+V/netx    ( 2147): gointo 4  in true
+V/StatusBarService( 2147): true up0 true
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+V/netx    ( 2147): gointo 4  out true
+V/StatusBarService( 2147): true up0 true
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+V/netx    ( 2147): gointo 4  in true
+V/StatusBarService( 2147): true up0 true
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+V/broadcast( 1555): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.server.AlarmManagerService$ClockReceiver@2a3858ff
+V/broadcast( 1555): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.server.AlarmManagerService$ClockReceiver@2a3858ff
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.keyguard.KeyguardUpdateMonitor$3@3d54af6d
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.keyguard.KeyguardUpdateMonitor$3@3d54af6d
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.KeyguardIndicationController$2@27d114dd
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.KeyguardIndicationController$2@27d114dd
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.Clock$1@15caf547
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.Clock$1@15caf547
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@3a379ee3
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@3a379ee3
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@2aa00e0
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@2aa00e0
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@f3b463f
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@f3b463f
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@1f5e4b0c
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to com.android.systemui.statusbar.policy.DateView$1@1f5e4b0c
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@46166a
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@46166a
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@38a8075b
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.TextClock$2@38a8075b
+V/broadcast( 1730): Start process parallel broadcast: android.intent.action.TIME_TICK to android.widget.DateTimeView$ReceiverInfo$1@15e04646
+V/broadcast( 1730): End process parallel broadcast: android.intent.action.TIME_TICK to android.widget.DateTimeView$ReceiverInfo$1@15e04646
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/com.chinanetcenter.iSpeed( 2171): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/Workspace( 2147): 重新请求跑马灯文本广告
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+V/netx    ( 2147): gointo 4  out true
+V/StatusBarService( 2147): true up0 true
+V/netx    ( 2147): gointo 4  in true
+V/StatusBarService( 2147): true up0 true
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/launcher( 2147): [LoopRx]rxloop loop iner
+D/launcher( 2147): [AuthUtils]start device auth ; current thread：
+D/launcher( 2147): [HttpUtils]request url:http://aaa.interface.gzgd/gzgd/AAAAuth?nns_func=scaaa_device_auth&nns_user_id=01010116091201000216&nns_device_id=01010116091201000216&nns_mac_id=1C-66-6D-FC-8D-D7&nns_version=release@gui@15&nns_user_password=888&nns_output_type=json
+E/launcher( 2147): [Init]get device auth token invaild !
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/Surface ( 2147): Surface::setBuffersFormat format 1
+D/gralloc ( 1119): allocate memory from system heap
+D/gralloc ( 1119): allocate memory from system heap
+D/gralloc ( 1119): allocate memory from system heap
+D/hwcomposer( 1119): lastHWWindowInfo is dirty
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1011866, downTime=1011866, deviceId=3, source=0x301 }
+I/MiSysSrv( 1131): [37m[INFO] Change to Voltage: 1030 mV (0x24)[m
+I/com.chinanetcenter.iFlow( 2095): IptablesUtils > checkiSpeed iSpeed up, tcp        0      0 0.0.0.0:8123            0.0.0.0:*               LISTEN      2171/com.chinanetce
+I/com.chinanetcenter.iFlow( 2095): 
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+V/netx    ( 2147): gointo 4  out true
+V/StatusBarService( 2147): true up0 true
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 255.255.255.255
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 224.0.0.0/4
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 10.0.0.0/8
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 192.168.0.0/16
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 172.16.0.0/12
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 169.254.0.0/16
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackIpList already exist 127.0.0.0/8
+V/netx    ( 2147): gointo 4  in true
+V/StatusBarService( 2147): true up0 true
+D/com.chinanetcenter.iSpeed( 2171): AccessibilityServiceDaemonTask > accessibilityEnabled = 1
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:68
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:67
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:5353
+D/com.chinanetcenter.iFlow( 2095): IptablesUtils > setBlackPortList already exist dpt:53
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/Workspace( 2147): 重新请求跑马灯文本广告
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1012552, downTime=1012552, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+I/Surface ( 2147): Surface::setBuffersFormat format 0
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1012940, downTime=1012940, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1013268, downTime=1013268, deviceId=3, source=0x301 }
+D/hwcomposer( 1119): lastHWWindowInfo is dirty
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1014066, downTime=1014066, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1014676, downTime=1014676, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+V/netx    ( 2147): gointo 4  in true
+V/StatusBarService( 2147): true up0 true
+V/netx    ( 2147): gointo 4  out true
+V/StatusBarService( 2147): true up0 true
+I/wpa_supplicant( 2411): [CTRL_IFACE] wlan0: 'SIGNAL_POLL'
+D/WifiStateMachine( 1555): for gzgd,change score (60)-->(56)
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1015166, downTime=1015166, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=true repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+W/ContextImpl( 1555): Calling a method in the system process without a qualified user: android.app.ContextImpl.sendBroadcast:1327 com.android.internal.policy.impl.PhoneWindowManager.interceptKeyBeforeDispatching:2462 com.android.server.wm.InputMonitor.interceptKeyBeforeDispatching:388 com.android.server.input.InputManagerService.interceptKeyBeforeDispatching:1470 <bottom of call stack> 
+V/broadcast( 1555): Dispatching ordered broadcast: com.gzgd.KEYEVENT to ComponentInfo{com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/SogouIME( 1988): [onKeyDown] keycode = 23 model = SE818 build_id:Build_129509_20170427 false
+V/broadcast( 2422): Start process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+W/ContextImpl( 2422): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1692 android.content.ContextWrapper.startService:516 android.content.ContextWrapper.startService:516 com.gzgd.live.globalkey.GlobalKeyEventService.start:45 com.gzgd.live.globalkey.GlobalKeyReceiver.onReceive:21 
+V/broadcast( 2422): End process ordered broadcast: com.gzgd.KEYEVENT to {com.gzgd.live/com.gzgd.live.globalkey.GlobalKeyReceiver}
+D/live    ( 2422): [GlobalKeyEventService]event:KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_DPAD_CENTER, scanCode=28, metaState=0, flags=0x8, repeatCount=0, eventTime=1015486, downTime=1015486, deviceId=3, source=0x301 }
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:0] XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.
+I/chromium(10278): [INFO:CONSOLE(0)] "XMLHttpRequest cannot load http://aaa.interface.gzgd/nn_cms/api/std/z51_a.php?nns_func=apply_play&nns_user_id=01010216111604015375&nns_cp_id=wasu&nns_version=1.12.005.STB.GZGD.AUTO.OTT01.Release&nns_cp_video_id=GZGD1507252068061664&nns_video_type=0&nns_timestamp=20170516114432&nns_auth=NlmPJ71eTyrU0VZYew2LpHS2GA4F%25252F3aUx1PS1qashGJ4Nx85BZXt11uM1e6dXQDg%25252BN34u63J0sph8r89UR9Se4oYBK%25252B2HY0MoyTMKT2mMRph8p3ks8yA8dofSB6bQ%25252Bjc&nns_cp_index_id=WASU0020171007025800&nns_output_type=json. No 'Access-Control-Allow-Origin' header is present on the requested resource. Origin 'http://10.69.38.11' is therefore not allowed access.", source: http://10.69.38.11/cms/index.htm (0)
+D/DRM-WebView(10278): [console]: ERROR [http://10.69.38.11/cms/index.htm:1] Uncaught SyntaxError: Unexpected token )
+I/chromium(10278): [INFO:CONSOLE(1)] "Uncaught SyntaxError: Unexpected token )", source: http://10.69.38.11/cms/index.htm (1)
+I/launcher( 2147): [VideoCellLayout]checkoutLastChannel --- isDeviceVaild : false
+D/WindowManager( 1555): interceptKeyTi keyCode=23 down=false repeatCount=0 keyguardOn=false mHomePressed=false canceled=false
+D/SogouIME( 1988): [onKeyUp] keycode = 23 model = SE818 build_id:Build_129509_20170427
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+I/launcher( 2147): [statusbar]获取天气信息...
+D/launcher( 2147): [AuthDatabaseProvider]getDeviceInfo.
+D/launcher( 2147): [AuthDatabaseProvider]cursor is not available.
+I/com.chinanetcenter.iSpeed( 2171): IptablesWatchdogThread > checkThreads
+W/System.err( 2568): java.net.UnknownHostException: Unable to resolve host "null": No address associated with hostname
+W/System.err( 2568): 	at java.net.InetAddress.lookupHostByName(InetAddress.java:461)
+W/System.err( 2568): 	at java.net.InetAddress.getAllByNameImpl(InetAddress.java:252)
+W/System.err( 2568): 	at java.net.InetAddress.getAllByName(InetAddress.java:215)
+W/System.err( 2568): 	at com.android.okhttp.HostResolver$1.getAllByName(HostResolver.java:29)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.RouteSelector.resetNextInetSocketAddress(RouteSelector.java:232)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.RouteSelector.next(RouteSelector.java:124)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.HttpEngine.connect(HttpEngine.java:272)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.HttpEngine.sendRequest(HttpEngine.java:211)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.HttpURLConnectionImpl.execute(HttpURLConnectionImpl.java:382)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.HttpURLConnectionImpl.connect(HttpURLConnectionImpl.java:106)
+W/System.err( 2568): 	at com.android.okhttp.internal.http.HttpURLConnectionImpl.getOutputStream(HttpURLConnectionImpl.java:217)
+W/System.err( 2568): 	at com.starcor.xul.XulWorker._doDownload(XulWorker.java:1193)
+W/System.err( 2568): 	at com.starcor.xul.XulWorker.loadData(XulWorker.java:495)
+W/System.err( 2568): 	at com.starcor.xulapp.http.XulHttpClientFilter.doHttpRequest(XulHttpClientFilter.java:92)
+W/System.err( 2568): 	at com.starcor.xulapp.http.XulHttpClientFilter.access$000(XulHttpClientFilter.java:16)
+W/System.err( 2568): 	at com.starcor.xulapp.http.XulHttpClientFilter$1.run(XulHttpClientFilter.java:144)
+W/System.err( 2568): Caused by: android.system.GaiException: android_getaddrinfo failed: EAI_NODATA (No address associated with hostname)
+W/System.err( 2568): 	at libcore.io.Posix.android_getaddrinfo(Native Method)
+W/System.err( 2568): 	at libcore.io.ForwardingOs.android_getaddrinfo(ForwardingOs.java:55)
+W/System.err( 2568): 	at java.net.InetAddress.lookupHostByName(InetAddress.java:442)
+W/System.err( 2568): 	... 15 more
+D/XulHttpStatisticFilter( 2568): ----- n602_a_1 -----
+D/XulHttpStatisticFilter( 2568): REQU : 0.212 - OTT request compensator
+D/XulHttpStatisticFilter( 2568): REQU : 0.007 - OTT Api cache
+D/XulHttpStatisticFilter( 2568): REQU : 0.006 - OTT Fake Data
+D/XulHttpStatisticFilter( 2568): RESP : 40039.519 - http client
+D/XulHttpStatisticFilter( 2568): RESP : 0.003 - OTT Fake Data
+D/XulHttpStatisticFilter( 2568): RESP : 0.007 - OTT Api cache
+D/XulHttpStatisticFilter( 2568): RESP : 0.002 - OTT request compensator
+D/DataUploader( 2568): uploadData response XulHttpResponse{code=1900, data=Object, headers=Object, message=Unable to resolve host "null": No address associated with hostname, request=Object} 

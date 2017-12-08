@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<style>
+*{
+	padding:0px;
+	margin:0px;
+} 
+
+#content p{text-indent:40px !important;line-height:36px !important;font-size:20px !important;}
+#content span{text-indent:40px !important;line-height:36px !important;font-size:20px !important;}
+body{background:url(images/bg.jpg) no-repeat;}
+</style>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+<script type="text/javascript">
+var contentDataUrl = "content.js";
+var navTitleAjaxPath = "node.js";
+var ajaxObj = null;
+var contentData = [];	
+var haveBackUrl = false;
+var backUrl = "../index.htm";
+var focusPos = 0; // 0:上一页 ，1：下一页
+var contentPos = 0;
+var dataIndex = 0;
+var pageNum = 0;
+var bdObj = null;
+var backFlag = 0;
+var btnStyle = [{
+	focus:"images/focus_btn_forward.png",
+	blur :"images/btn_forward.png"
+},{
+	focus:"images/focus_btn_next.png",
+	blur :"images/btn_next.png"
+}];
+	var listType = "";
+	var navStr = mySessionStorage.getItem('navigator')?mySessionStorage.getItem('navigator'):"没有>数据";
+
+	 navStr = navStr.replace(/ > /g,">");
+	var navStrArr = navStr.split(">");
+	
+	function getInitData() {
+		var title = navStrArr[1]+"||"+ listType +"||" +navStr+"||"+ navStrArr[navStrArr.length-1]+"||"+"加载" ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStrArr[1]+"||"+ listType +"||" +navStr +"||"+ navStrArr[navStrArr.length-2] +"||"+"返回";
+				try{
+					DataCollection.collectData(["01",document.referrer,location.href,title,"",""])
+				}catch(e){};
+	}
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  	var e = key || event;
+  	var keycode = e.keyCode || e.which || e.charCode;
+  	switch (keycode) {
+    	case 87:   // up
+    	case 38:
+      		return false;
+      		break;
+    	case 83:   // down
+    	case 40:
+      		return false;
+      		break;
+    	case 65:   // left
+    	case 37:  
+    		changeLR(-1);
+      		return false;
+      		break;
+    	case 68:   // right
+    	case 39:
+    		changeLR(1);
+      		return false;
+      		break;
+    	case 13:
+    		doSelect();
+      		return false;
+      		break;
+    	case 8:
+      		goBack();
+      		event.returnValue = false;
+      		return false;
+      		break; 
+    	case 27:
+      		iSTB.browser.gotoSTB("tv");
+      		event.returnValue = false;
+      		return false;
+     	 	break;
+  	} 
+}
+
+function changeLR(_num) {
+	if(focusPos){
+		focusPos = 0;
+		$("perv").src = btnStyle[0].focus;
+		$("next").src = btnStyle[1].blur;
+	}else{
+		focusPos = 1;
+		$("perv").src = btnStyle[0].blur;
+		$("next").src = btnStyle[1].focus;
+	}
+}
+
+function goBack(){
+	// if(backFlag == 0) {
+		listType = "栏目";
+		// msg = navStr.split(">")[2];
+			getBackTitleData();
+		var navStrArr = navStr.split(">")
+			navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+			// this.navStr = this.navStr.substr(0,this.navStr.lastIndexOf(">"));
+			mySessionStorage.setItem("navigator",navStr);
+			// this.backFlag = 1;
+			
+			
+			
+	// }
+	window.location.href = "../index.htm";
+	//window.history.go(-1);
+}
+
+function doSelect() {
+	if(focusPos){
+		contentPos = (contentPos + 1 + pageNum) % pageNum;
+	}else{
+		contentPos = (contentPos - 1 + pageNum) % pageNum;
+	}
+	$("content").style.top = (0-288*contentPos) + "px";
+	$("pgIdx").innerText = (contentPos+1) || 1;
+	if(contentData[dataIndex].albumImages.length>0){
+		bdObj.src = contentData[dataIndex].albumImages[contentPos%contentData[dataIndex].albumImages.length].imageUrl ;
+	}	
+}
+
+function init(){
+	listType = "图文";
+// navStr = navStr.replace(/ > /g,">");
+	getInitData();
+	initNav();
+	var url = window.location.href;
+	//dataIndex = parseInt(url.split("=")[1]);
+	getContentData();
+	
+}
+ 
+function getContentData() {
+	sendAjax(contentDataUrl,null,function(data){
+		contentData = eval('('+data+')');
+	},'utf-8');
+	initContent();
+}
+
+function initContent(){
+	bdObj = document.getElementById("bgImg");
+	if(contentData.length != 0){
+		if(contentData[dataIndex].albumImages.length>0){
+			$("contentTitle").innerText = contentData[dataIndex].title;
+			$("author").innerText = contentData[dataIndex].author;
+			var content = contentData[dataIndex].content;
+			content = content.replace(/&nbsp;/g,"");
+			content = content.replace(/>\s+/g,">");
+			$("content").innerHTML = content;
+			pageNum = Math.ceil($("content").clientHeight / 288) || 1;
+			$("pgNum").innerText = pageNum;
+			bdObj.src =  contentData[dataIndex].albumImages[0].imageUrl ;
+		}
+		else {
+			bdObj.style.display = "none";
+			$("contentBox").style.left = "120px";
+			$("contentBox").style.width = "1040px";
+			$("contentTitle").style.width = "1040px";
+			$("contentDiv").style.width = "1040px";
+			$("contentTitle").innerText = contentData[dataIndex].title;
+			var content = contentData[dataIndex].content;
+			content = content.replace(/&nbsp;/g,"");
+			content = content.replace(/>\s+/g,">");
+			$("content").innerHTML = content;
+			pageNum = Math.ceil($("content").clientHeight / 288) || 1;	
+			$("pgNum").innerText = pageNum;
+		}	
+	}
+}
+
+function initNav(){
+	navStr = mySessionStorage.getItem('navigator');
+	$("navTitle").innerText = navStr.replace(/>/g," > ");;
+}
+</script>
+</head>
+<body onload="init()">
+<div id="navTitle" style="position:absolute;left:85px;top:30px;font-size:16px;color:#fff;"></div>
+<img src="images/line_02.png" style="position:absolute;left:0px;top:58px;"/>
+<!--标题信息-->
+<img src="" width="500" height="400" id="bgImg" style="z-index:-1;position:absolute;top:160px;left:85px;"/>
+<div id="contentBox" style="position:absolute;width:580px;height:450px;top:150px;left:620px;color:#fff;">
+	<div id="contentTitle" style="width:580px;height:30px;line-height:30px;text-align:center;font-size:24px;"></div>
+	<div id="author" style="width:580px;margin-top:10px;height:20px;line-height:20px;text-align:center;"></div>
+	<div id="contentDiv" style="font-size:16px;position:absolute;width:580px;height:288px;margin-top:10px;overflow:hidden;">
+		<div id="content" style="position:absolute;top:0px;"></div>
+	</div>
+</div>
+<div style="position:absolute;left: 1170px;top:510px;font-size:18px;height:30px;line-height:30px;color:#fff;">
+	<span id="pgIdx">1</span>/<span id="pgNum">1</span>
+</div>
+<div style="position: absolute;left: 930px;top:550px;color:#fff;font-size:24px;">
+	<img id="perv" src="images/focus_btn_forward.png">
+	<span style="position:absolute;left:20px;top:10px;"></span>
+	<img id="next" src="images/btn_next.png">
+	<span style="position:absolute;left:140px;top:10px;"></span>
+</div>
+<!-- <div id="test" style="position:absolute;left:20px;top:10px;width: 300px;height: 100px;background: red;"></div> -->
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>视频通话</title>
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script src="js/accoutMan.js"></script>
+<script src="js/mediaPlayer.js"></script>
+<script>
+	var isFullScreen = false;		// 是否全屏
+	var btnPos = 0;					// 0：全屏，1：挂断
+	var httpInstance1 = null;		// 大窗口播放器
+	var httpInstance2 = null;		// 小窗口播放器
+	var playUrl1 = "";				// 大窗口播放地址
+	var playUrl2 = "";				// 小窗口播放地址
+	var videoID1 = "100051353";				// 小窗口视频id
+	var videoID2 = "100000003";				// 小窗口视频id
+	var price = 0;					// 服务费单价（元）
+	var serviceTime = 0;			// 服务时长（秒）
+	var totalMoney = 0;				// 费用总价
+	var serviceTimer = -1;			// 服务时长计时器
+	var tipArea = -1;				// 第tipArea个弹出框
+	var fullBtnPos = 0;				// 全屏状态下按钮焦点0：挂断，1：退出全屏
+	var askBtnPos = 0;				// 挂断确定选择按钮焦点
+	var billBtnPos = 0;				// 账单明细按钮焦点
+	var payWayPos = 0;				// 支付方式焦点
+	var orderTipBtnPos = 0;			// 预约咨询可接通提示框按钮焦点
+	var orderTipFlag = false;		// 预约咨询可接通提示框
+	var countDownTimer = -1;		//倒计时计时器
+
+	function eventHandler(eventObj) {
+		iDebug("[videoCall.htm]__eventObj.code="+eventObj.code);
+		 $("text").innerHTML+="<br/>"+eventObj.code;
+		switch(eventObj.code){
+			case "KEY_UP"://up
+				changeUD(-1);
+				return false;
+				break;
+			case "KEY_DOWN"://down
+				changeUD(1);
+				return false;
+				break;
+			case "KEY_LEFT"://left
+				changeLR(-1);
+				return false;
+				break;
+			case "KEY_RIGHT"://right
+				changeLR(1);
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				goBack();
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+			case "MSG_MEDIA_URL_VALID"://媒体源路径有效
+				var mediaId = eventObj.args.modifiers;
+				iDebug("[videoCall] mediaId="+mediaId);
+				var ngbId = parseInt(mediaId/16777216);
+				iDebug("MSG_MEDIA_URL_VALID----ngbId="+ngbId);
+				 $("text").innerHTML+=mediaId+"   "+httpInstance1.mediaId;
+				if(mediaId == httpInstance1.mediaId){//通过p2来判断播放器
+					httpInstance1.play();
+				}else{
+					if(httpInstance2 == null) return;
+					iDebug("[videoCall]13001--httpInstance2.mediaId：："+httpInstance2.mediaId);
+					// $("text").innerHTML+="<br/>httpInstance2.mediaId="+httpInstance2.mediaId;
+					//httpInstance2.play();
+				}
+				return false;
+				break;
+            case "MSG_MEDIA_PLAY_SUCCESS"://开始播放成功
+				var ngbId = parseInt(eventObj.args.modifiers/16777216);
+				iDebug("MSG_MEDIA_PLAY_SUCCESS----currMediaId="+ngbId);
+				 $("text").innerHTML+="</br>currMediaId="+httpInstance1.mediaId+"  ngbId="+ngbId;
+				return false;
+                break;
+            case "MSG_MEDIA_PLAY_FAILED"://开始播放失败
+            	if(httpInstance1!=null)$("connImg").src = "images/icon02.png";
+				return false;
+                break;
+            case "MSG_BACKGROUND_VIDEO_PLAY_SUCCESS"://播放背景视频成功
+				var ngbId = parseInt(eventObj.args.modifiers/16777216);
+            	$("text").innerHTML+="</br>currMediaId="+ngbId;
+            	iDebug("MSG_BACKGROUND_VIDEO_PLAY_SUCCESS----ngbId="+ngbId);
+            	//if(httpInstance2==null){
+            		//newInstance2();
+	            	clearTimeout(serviceTimer);
+	            	countServiceTime();
+            		$("connDiv").style.visibility = "hidden";
+            	//}
+				return false;
+                break;
+		}
+	}
+
+	function goBack() {
+		if(!isFullScreen&&tipArea==-1){
+			window.location.href = "exportList.htm";
+		}else{
+			switch(tipArea){
+				case 0://挂断确定选择框
+					httpInstance1.resume();
+					hidePrompt();
+					loseFocus();
+					tipArea --;
+					onFocus();
+					countServiceTime();
+					break;
+				case 1: // 账单明细
+					httpInstance1.resume();
+					hidePrompt();
+					loseFocus();
+					tipArea = -1;
+					onFocus();
+					countServiceTime();
+					break;
+				case 2: // 支付选择
+					httpInstance1.resume();
+					hidePrompt();
+					loseFocus();
+					tipArea = -1;
+					onFocus();
+					countServiceTime();
+					break;
+				case 3: // 二维码
+					hidePrompt();
+					loseFocus();
+					tipArea = 2;
+					showPrompt();
+					break;
+				case 4: // 支付结果
+					break;
+			}
+		}
+	}
+
+	function changeUD(_num) {
+		if(!isFullScreen&&tipArea==-1){
+			loseFocus();
+			btnPos = (btnPos+_num+2)%2;
+			onFocus();
+		}
+		if(tipArea == 2){
+			payWayPos = (payWayPos+_num+3)%3;
+			onFocus();
+		}
+	}
+
+	function changeLR(_num) {
+		if(orderTipFlag){
+			lose();
+			orderTipBtnPos = (orderTipBtnPos+_num+2)%2;
+			onFocus();
+			return;
+		}
+		if(!isFullScreen&&tipArea==-1)return;
+		switch(tipArea){
+			case -1:
+				loseFocus();
+				fullBtnPos = (fullBtnPos+_num+2)%2;
+				onFocus();
+				break;
+			case 0://挂断确定
+				loseFocus();
+				askBtnPos = (askBtnPos+_num+2)%2;
+				onFocus();
+				break;
+			case 1: // 账单明细
+				loseFocus();
+				billBtnPos = (billBtnPos+_num+2)%2;
+				onFocus();
+				break;
+			case 2: // 支付选择
+				break;
+			case 3: // 二维码
+				break;
+			case 4: // 支付结果
+				break;
+		}
+	}
+
+	function onFocus() {
+		if(orderTipFlag){//预约可接通提示框
+			$("orderTipBtn" + orderTipBtnPos).style.backgroundImage = "url()";
+			$("tipBtnFocus").style.left = 5 + 197*orderTipBtnPos + "px";
+			return;
+		}
+		if(!isFullScreen&&tipArea==-1){
+			$("btn" + btnPos).style.backgroundImage = "url(images/tck.png)";
+			$("focus").style.top = 420 + btnPos*93 + "px";
+			$("focus").style.visibility = "visible";
+			return;
+		}
+		switch(tipArea){
+			case -1:
+				$("fullBtn" + fullBtnPos).style.backgroundImage = "url(images/btn01.png)";
+				break;
+			case 0://挂断确定
+				$("askBtn" + askBtnPos).style.backgroundImage = "url()";
+				$("askFocus").style.left = 35+askBtnPos*230 + "px";
+				break;
+			case 1: // 账单明细
+				$("billBtn" + billBtnPos).style.backgroundImage = "url()";
+				$("billFocus").style.left = 35+billBtnPos*230 + "px";
+				break;
+			case 2: // 支付选择
+				$("payWayFocus").style.top = 32 + payWayPos*88 + "px";
+				break;
+			case 3: // 二维码
+				break;
+			case 4: // 支付结果
+				break;
+		}
+	}
+
+	function loseFocus() {
+		if(orderTipFlag){
+			$("orderTipBtn" + orderTipBtnPos).style.backgroundImage = "url(images/btn1.png)";
+			return;
+		}
+		if(!isFullScreen&&tipArea==-1){
+			$("btn" + btnPos).style.backgroundImage = "url(images/btn2_bg.png)";
+			$("focus").style.visibility = "hidden";
+			return;
+		}
+		switch(tipArea){
+			case -1:
+				$("fullBtn" + fullBtnPos).style.backgroundImage = "url(images/btn00.png)";
+				break;
+			case 0://挂断确定
+				$("askBtn" + askBtnPos).style.backgroundImage = "url(images/btn1.png)";
+				break;
+			case 1: // 账单明细
+				$("billBtn" + billBtnPos).style.backgroundImage = "url(images/btn1.png)";
+				break;
+			case 2: // 支付选择
+				break;
+			case 3: // 二维码
+				break;
+			case 4: // 支付结果
+				break;
+		}
+	}
+
+	function doSelect() {
+		if(!isFullScreen&&btnPos == 0){//全屏
+			httpInstance2.pause(1);
+			loseFocus();
+			isFullScreen = true;
+			onFocus();
+			$("notFullDiv").style.visibility = "hidden";
+			$("fullDiv").style.visibility = "visible";
+			setPosition();
+			return;
+		}
+		switch(tipArea){
+			case -1:
+				if(fullBtnPos == 0||(!isFullScreen&&btnPos==1)){//挂断
+					$("focus").style.visibility = "hidden";
+					loseFocus();
+					tipArea++;
+					askBtnPos = 0;
+					onFocus();
+					showPrompt();
+					clearTimeout(serviceTimer);	//停掉计时
+				}else{//退出全屏
+					httpInstance2.resume();
+					loseFocus();
+					fullBtnPos = 0;
+					isFullScreen = false;
+					onFocus();
+					$("notFullDiv").style.visibility = "visible";
+					$("fullDiv").style.visibility = "hidden";
+					setPosition(0);
+				}
+				break;
+			case 0://挂断确定选择
+				if(askBtnPos==0){
+					hidePrompt();
+					tipArea++;
+					billBtnPos = 0;
+					onFocus();
+					showPrompt();
+				}else{
+					httpInstance1.resume();
+					hidePrompt();
+					loseFocus();
+					tipArea --;
+					onFocus();
+					countServiceTime();
+				}
+				break;
+			case 1: // 账单明细
+				if(billBtnPos == 0){
+					hidePrompt();
+					tipArea++;
+					payWayPos = 0;
+					onFocus();
+					showPrompt();
+				}else{
+					httpInstance1.resume();
+					hidePrompt();
+					loseFocus();
+					tipArea = -1;
+					onFocus();
+					countServiceTime();
+				}
+				break;
+			case 2: // 支付选择
+				hidePrompt();
+				tipArea++;
+				showPrompt();
+				break;
+			case 3: // 二维码
+				break;
+			case 4: // 支付结果
+				break;
+		}
+	}
+
+	// 计时服务时长
+	function countServiceTime() {
+		serviceTime ++;
+		$("serviceDuration").innerHTML = "服务时长："+countTime(serviceTime);
+		$("fullDivTime").innerHTML = "通话时长："+countTime(serviceTime);
+		$("totalMoney").innerHTML = "&yen;"+Math.ceil(serviceTime/60)*price;
+		serviceTimer = setTimeout(countServiceTime,1000);
+	}
+
+	function init() {
+		closeVideo();
+		newInstance1();
+		if(window.location.href.indexOf("?")!=-1){
+			videoID1 = getParam("videoID",window.location.href);
+			price = parseInt(getParam("price",window.location.href),10);
+			
+		}
+		// countServiceTime();
+		iDebug("[videoCall.htm] init videoID1="+videoID1+"|  price="+price);
+		
+		// checkAccoutLogin("getLiveDetail2");
+	}
+
+	// 获取大窗口视频详情
+	function getLiveDetail1() {
+		var url = ajaxUrls.liveDetail;
+		// if(DEBUG == 0){
+			url = url.replace("{1}",accessToken).replace("{2}",videoID1);
+		// }
+		var ajaxObj1 = new ajaxClass(url,function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data.ret == 0){
+				if(data.demand_url)playUrl1 = getPlayUrlByType(data.demand_url ,"http://");
+				if(playUrl1) playUrl1 += "?protocol=http";
+				iDebug("[videoCall.htm]---getLiveDetail1()---playUrl1="+playUrl1);	
+				if(playUrl1){//支持http和rtsp直播
+					var play_token = data.play_token;
+					iDebug("[videoCall.htm]---getLiveDetail1()---play_token="+play_token);
+					play_token = play_token?play_token:"ABCDEFGHIGK";
+					if(playUrl1.indexOf("?")>=0){//兼容url中已存在参数时的处理
+						playUrl1 += "&playtype=live&accesstoken="+accessToken+"&programid="+videoID1+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}else{
+						playUrl1 += "?playtype=live&accesstoken="+accessToken+"&programid="+videoID1+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}
+					iDebug("[videoCall.htm]---getLiveDetail1()---playUrl1(1)="+playUrl1);					
+					setPosition(0);
+					httpInstance1.setSource(playUrl1);
+				}
+			}else{
+				iDebug("[videoCall.htm] getLiveDetail1--ret="+data.ret+";msg:"+data.ret_msg);
+			}
+		},function(_xmlHttp){
+			iDebug("[videoCall.htm] getLiveDetail1 fail !");
+		});
+		ajaxObj1.requestData();
+	}
+
+	// 获取小窗口视频详情
+	function getLiveDetail2() {
+		var url = ajaxUrls.liveDetail;
+		// if(DEBUG == 0){
+			url = url.replace("{1}",accessToken).replace("{2}",videoID2);
+		// }
+		var ajaxObj2 = new ajaxClass(url,function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data.ret == 0){
+				if(data.demand_url)playUrl2 = getPlayUrlByType(data.demand_url ,"http://");
+				if(playUrl2) playUrl2 += "?protocol=http";
+				iDebug("[videoCall.htm]---getLiveDetail2()---playUrl2="+playUrl2);	
+				if(playUrl2){//支持http和rtsp直播
+					var play_token = data.play_token;
+					iDebug("[videoCall.htm]---getLiveDetail2()---play_token="+play_token);
+					play_token = play_token?play_token:"ABCDEFGHIGK";
+					if(playUrl2.indexOf("?")>=0){//兼容url中已存在参数时的处理
+						playUrl2 += "&playtype=live&accesstoken="+accessToken+"&programid="+videoID2+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}else{
+						playUrl2 += "?playtype=live&accesstoken="+accessToken+"&programid="+videoID2+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}
+					iDebug("[videoCall.htm]---getLiveDetail2()---playUrl2(1)="+playUrl2);
+					$("text").innerHTML += playUrl2+"</br>";
+					setPosition(0);
+					httpInstance1.setSource(playUrl2);
+				}
+			}else{
+				iDebug("[videoCall.htm] getLiveDetail2--ret="+data.ret+";msg:"+data.ret_msg);
+			}
+		},function(_xmlHttp){
+			iDebug("[videoCall.htm] getLiveDetail2 fail !");
+		});
+		ajaxObj2.requestData();
+	}
+
+	// 显示弹出框
+	function showPrompt() {
+		$("cover").style.visibility = "visible";
+		$("prompt" + tipArea).style.visibility = "visible";
+		switch(tipArea){
+			case 0://挂断确定选择框
+				httpInstance1.pause(1);
+				httpInstance2.pause(1);
+				$("askInfo0").innerHTML = countTime(serviceTime);
+				$("askInfo1").innerHTML = "&yen;"+Math.ceil(serviceTime/60)*price;
+				break;
+			case 1: // 账单明细
+				$("bill0").innerHTML = countTime(serviceTime);
+				$("bill1").innerHTML = "&yen;"+price;
+				$("bill2").innerHTML = "&yen;"+Math.ceil(serviceTime/60)*price;
+				break;
+			case 2: // 支付选择
+				break;
+			case 3: // 二维码
+				setTimeout(function(){
+					hidePrompt();
+					tipArea++;
+					showPrompt();
+				},5000);
+				break;
+			case 4: // 支付结果
+				countDown(5);
+				break;
+		}
+	}
+
+	function hidePrompt() {
+		$("cover").style.visibility = "hidden";
+		$("prompt" + tipArea).style.visibility = "hidden";
+	}
+
+	// 倒计时退出
+	function countDown(num) {
+		$("countDownBack").innerHTML = num+"秒后自动关闭";
+		num--;
+		if(num < 0){
+			window.location.href = "exportList.htm";
+		}else{
+			countDownTimer = setTimeout("countDown("+num+")",1000);
+		}
+	}
+	function setPosition(num) {
+		if(isFullScreen){
+			httpInstance1.setMode(1);//全屏播放
+			// httpInstance1.setPosition(0,0,1280,720);
+		}else if(num==0){
+			httpInstance1.setMode(0);
+			httpInstance1.setPosition(75,150,822,463);
+		}else{
+			httpInstance2.setMode(0);
+			httpInstance2.setPosition(918,150,284,160);
+			 $("text").innerHTML+="</br>"+httpInstance2.mediaId;
+		}
+	}
+
+	function newInstance1(){
+		httpInstance1 = new PlayObj();
+		httpInstance1.init();
+		var flag1 = httpInstance1.bindID();
+		if(flag1 == 0){
+			checkAccoutLogin("getLiveDetail2");
+		}
+		 $("text").innerHTML+= "  flag1="+flag1;
+		
+	}
+
+	function newInstance2() {
+		httpInstance2 = new PlayObj();
+		httpInstance2.init();
+		var flag2 = httpInstance2.bindID();
+		if(flag2 == 0){
+			getLiveDetail2();
+		}
+		 $("text").innerHTML+= "  flag2="+flag2;
+	}
+
+	function closeVideo(){
+		if(httpInstance1!=null){
+			httpInstance1.stop(1);
+			httpInstance1.close();
+			httpInstance1.unbindID();
+			httpInstance1 = null;
+		}
+		if(httpInstance2!=null){
+			httpInstance2.stop(1);
+			httpInstance2.close();
+			httpInstance2.unbindID();
+			httpInstance2 = null;
+		}
+	}
+
+	// 秒转换为时:分:秒
+	function countTime(Time) {
+        time = parseInt(Time,10);
+        var h = Math.floor(time / 3600);
+        if (h < 10) {
+            h = '0' + h;
+        }
+        var m = Math.floor((time - h * 3600) / 60)
+        if (m < 10) {
+            m = '0' + m;
+        }
+        var s = time - h * 3600 - m * 60;
+        if (s < 10) {
+            s = '0' + s;
+        }
+        var str = h + ':' + m + ':' + s
+        return str;
+    }
+</script>
+</head>
+<body bgcolor="transparent" leftmargin="0" topmargin="0" onLoad="init()"onunload="closeVideo()">
+	<div id="notFullDiv" style="position: absolute;left: 0;top: 0;width: 1280px;height: 720px;background: url(images/bg4.png)">
+		<div style="position:absolute;left:76px;top:52px; width:200px; height:37px; background:url(images/logo1.png) no-repeat left center; line-height:37px; font-size:30px; color:#a0a5ba; padding-left:220px;z-index: 2;">专家咨询</div>
+		<div id="connDiv" style="position:absolute;left:62px;top:140px; width:848px; height:489px; background:url(images/tab_bg1.png);">
+			<!-- <img src="images/icon_shipin.png" width="126" height="74" style="position:absolute;left:368px;top:168px;"> -->
+			<img id="connImg" src="images/icon01.png" width="276" height="198" style="position:absolute;left:286px;top:145px;">
+			<!-- <div id="linkState" style="position:absolute;left:0px;top:305px; width:848px; text-align:center; font-size:25px; color:#88a0c7;">
+				连接中...
+			</div> -->
+		</div>
+		<div style="position:absolute;left:759px;top:62px; width:445px; text-align:center; font-size:20px; color:#8b99be;">该服务按每分钟计算，不足1分钟按1分钟计算</div>
+		<div style="position:absolute;left:918px;top:150px; width:282px; height:158px; box-shadow:3px 3px 20px #000; border:1px solid rgba(255,255,255,.3);">
+			<!-- <img src="" width="284" height="160"> -->
+		</div>
+		<div style="position:absolute;left:919px;top:322px; width:282px; height:103px; line-height:52px; font-size:26px; color:#d2dbf4;">
+			<span id="serviceDuration">服务时长: 00:00:00</span>
+			<br/>
+			预计费用:
+			<span id="totalMoney" style=" color:#ff9908;">￥0</span>
+		</div>
+		<!--按钮-->
+		<div id="btn0" style="position:absolute;left:919px;top:442px; width:285px; height:74px; line-height:74px;font-size:32px; color:#fff; text-align:center; background:url(images/tck.png);">
+			<span style="display:inline-block; width:76px; height:74px; background:url(images/icon_qp.png) no-repeat left center;">
+				&nbsp;
+			</span>
+			全屏
+		</div>
+		<div id="btn1" style="position:absolute;left:919px;top:535px; width:285px; height:74px; line-height:74px;font-size:32px; color:#fff; text-align:center; background:url(images/btn2_bg.png);">
+			<span style="display:inline-block; width:90px; height:74px; background:url(images/icon_tel.png) no-repeat left center;">
+				&nbsp;
+			</span>
+			挂断
+		</div>
+		<!--焦点-->
+		<div id="focus" style="position: absolute; left: 897px; top: 420px; width: 328px; height: 123px;">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+				<tr>
+	            	<td width="36" height="36" background="images/focus_01.png"></td>
+	                <td width="256" background="images/focus_02.png"></td>
+	                <td width="36" height="36" background="images/focus_03.png"></td>
+	            </tr>
+	            <tr>
+	            	<td height="51" background="images/focus_04.png"></td>
+	                <td ></td>
+	                <td background="images/focus_05.png"></td>
+	            </tr>
+	            <tr>
+	            	<td width="36" height="36" background="images/focus_06.png"></td>
+	                <td background="images/focus_07.png"></td>
+	                <td background="images/focus_08.png"></td>
+	            </tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="fullDiv" style="position:absolute; top:0px; left:0px; width:1280px; height:720px;visibility: hidden;">
+		<div id="fullDivTime" style="position:absolute; top:43px; left:34px; width:270px; height:32px; font-size:24px; color:#c5c5c5">通话时长: 00:02:10</div>
+  		<div id="fullBtn0" style="position:absolute; top:570px; left:380px; width:294px; height:159px; background-image: url(images/btn01.png);">
+    		<div style="position:absolute; top:63px; left:60px; width:50px; height:22px;">
+    			<img src="images/icon_tel.png" width="50" height="22" />
+    		</div>
+    		<div style="position:absolute; top:44px; left:120px; width:126px; height:60px; font-size:28px; color:#ffffff; line-height:60px; text-align:center;">挂断</div>
+  		</div>
+  		<div id="fullBtn1" style="position:absolute; top:570px; left:686px; width:294px; height:159px; background-image: url(images/btn00.png);">
+    		<div style="position:absolute; top:57px; left:65px; width:36px; height:37px;">
+    			<img src="images/icon_que.png" width="36" height="37" />
+    		</div>
+    		<div style="position:absolute; top:44px; left:106px; width:136px; height:60px; font-size:28px; color:#ffffff; line-height:60px; text-align:center;">退出全屏</div>
+  		</div>
+	</div>
+
+	<!-- 弹出层 -->
+	<div id="cover" style="position: absolute;left: 0;top: 0;width: 1280px;height: 720px;background: url(images/cover.png);visibility: hidden;">
+		<div id="prompt0" style="position:absolute; top:201px; left:378px; width:507px; height:318px; background-image: url(images/tck_bg2.png); ">
+			<div style="position:absolute; top:13px; left:26px; width:451px; height:41px; font-size:26px; color:#ffffff; line-height:36px; text-align:center;">是否结束当前服务？</div>
+			<div style="position:absolute; top:74px; left:45px; width:431px; height:100px; font-size:20px; line-height:50px; color:#ffffff;">
+				您本次咨询的服务长:
+				<span id="askInfo0" style="color:#01deff;">00:02:35</span>
+				<br />
+				预计费用：
+				<span id="askInfo1" style="color:#fe9808;">￥63</span>
+			</div>
+			<div id="askBtn0" style="position:absolute; top:242px; left:58px; width:164px; height:54px; font-size:26px; color:#ffffff; line-height:54px; text-align:center;">挂断</div>
+			<div id="askBtn1" style="position:absolute; top:242px; left:288px; width:164px; height:54px; background-image: url(images/btn1.png); font-size:26px; color:#ffffff; line-height:54px; text-align:center;">取消</div>
+			<div id="askFocus" style="position:absolute; top:219px; left:35px; width:212px; height:105px;">
+				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="36" height="36" background="images/focus_01.png"></td>
+						<td background="images/focus_02.png"></td>
+						<td width="36" background="images/focus_03.png"></td>
+					</tr>
+					<tr>
+						<td background="images/focus_04.png"></td>
+						<td></td>
+						<td background="images/focus_05.png"></td>
+					</tr>
+					<tr>
+						<td height="36" background="images/focus_06.png"></td>
+						<td background="images/focus_07.png"></td>
+						<td background="images/focus_08.png"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<!-- 账单明细 -->
+		<div id="prompt1" style="position:absolute; top:201px; left:378px; width:507px; height:318px; background-image: url(images/tck_bg2.png); visibility: hidden;">
+			<div style="position:absolute; top:13px; left:26px; width:451px; height:41px; font-size:26px; color:#ffffff; line-height:36px; text-align:center;">账单明细</div>		
+			<div style="position:absolute; top:74px; left:45px; width:431px; height:100px; font-size:24px; line-height:50px; color:#ffffff;">
+				服务时长 :
+				<span id="bill0" style="color:#01deff;">00:02:35</span>
+				<br />
+				服务单价：
+				<span id="bill1" style="color:#fe9808;">￥30</span>/分钟
+				<br />
+				预计费用：
+				<span id="bill2" style="color:#fe9808;">￥63</span>
+			</div>
+			<div id="billBtn0" style="position:absolute; top:242px; left:58px; width:164px; height:54px; font-size:26px; color:#ffffff; line-height:54px; text-align:center;">立即支付</div>
+			<div id="billBtn1" style="position:absolute; top:242px; left:288px; width:164px; height:54px; background-image: url(images/btn1.png); font-size:26px; color:#ffffff; line-height:54px; text-align:center;">取消</div>
+			<div id="billFocus" style="position:absolute; top:219px; left:35px; width:212px; height:105px;">
+				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="36" height="36" background="images/focus_01.png"></td>
+						<td background="images/focus_02.png"></td>
+						<td width="36" background="images/focus_03.png"></td>
+					</tr>
+					<tr>
+						<td background="images/focus_04.png"></td>
+						<td></td>
+						<td background="images/focus_05.png"></td>
+					</tr>
+					<tr>
+						<td height="36" background="images/focus_06.png"></td>
+						<td background="images/focus_07.png"></td>
+						<td background="images/focus_08.png"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- 支付方式选择 -->
+		<div id="prompt2" style="position:absolute; top:201px; left:378px; width:507px; height:318px; background-image: url(images/tck_bg2.png);visibility: hidden;">
+			<div style="position:absolute; top:13px; left:26px; width:451px; height:41px; font-size:26px; color:#ffffff; line-height:36px; text-align:center;">请选择支付方式</div>
+			<div style="position:absolute; top:52px; left:16px; width:481px; height:230px; font-size:18px; color:#ffffff;">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0" style="line-height:85px;">
+					<tr>
+						<td>
+							<img src="images/pay2.png" width="81" height="77" />
+						</td>
+						<td>
+							<span style="font-size:22px;">
+								银联支付
+							</span>
+							打开银联钱包，扫描二维码付
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="images/pay0.png" width="81" height="77" />
+						</td>
+						<td>
+							<span style="font-size:22px;">
+								支付宝
+							</span>
+							打开支付宝客户端，扫描二维码支付
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<img src="images/pay1.png" width="81" height="77" />
+						</td>
+						<td>
+							<span style="font-size:22px;">
+								微信支付
+							</span>
+							打开微信，点击右上角扫一扫支付
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="payWayFocus" style="position:absolute; top:32px; left:-12px; width:533px; height:126px;">
+				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="36" height="36" background="images/focus_01.png"></td>
+						<td background="images/focus_02.png"></td>
+						<td width="36" background="images/focus_03.png"></td>
+					</tr>
+					<tr>
+						<td background="images/focus_04.png"></td>
+						<td></td>
+						<td background="images/focus_05.png"></td>
+					</tr>
+					<tr>
+						<td height="36" background="images/focus_06.png"></td>
+						<td background="images/focus_07.png"></td>
+						<td background="images/focus_08.png"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+
+		<!-- 二维码 -->
+		<div id="prompt3" style="position:absolute; top:67px; left:351px; width:579px; height:590px;visibility: hidden;">
+			<img src="images/er1.jpg" width="579" height="590" />
+		</div>
+
+		<!-- 支付结果提示 -->
+		<div id="prompt4" style="position:absolute; top:246px; left:400px; width:480px; height:227px; background-image: url(images/tck_bg3.png);visibility: hidden;">
+	  		<div style="position:absolute; top:59px; left:55px; width:52px; height:52px;">
+	  			<img src="images/ok.png" width="52" height="52" />
+	  		</div>
+	  		<div style="position:absolute; top:37px; left:151px; width:304px; height:159px; line-height:50px; font-size:30px; color:#ffffff;">支付成功！<br />
+	  		<span style="font-size:24px;">在我的订单查询相关信息</span><br />
+	  		<span id="countDownBack" style="font-size:20px; color:#ffad38;">5秒后自动关闭</span></div>
+		</div>
+	</div>
+
+	<!-- 预约提示 -->
+	<div id="orderTip" style="position:absolute; top:447px; left:817px; width:416px; height:240px; background-image: url(images/tck_bg1.png); visibility: hidden;">
+		<div style="position:absolute; top:23px; left:26px; width:366px; height:130px; font-size:26px; color:#ffffff; line-height:36px;">
+			您预约的法律咨询可接通
+			<br />
+			是否前往？
+			<br />
+			<span id="countDown" style="font-size:20px; color:#ffad38;">
+				10秒后自动关闭
+			</span>
+		</div>
+		<div id="orderTipBtn0" style="position:absolute; top:165px; left:28px; width:164px; height:54px; font-size:26px; color:#ffffff; line-height:54px; text-align:center;">立即前往</div>
+		<div id="orderTipBtn1" style="position:absolute; top:165px; left:225px; width:164px; height:54px; background-image: url(images/btn1.png); font-size:26px; color:#ffffff; line-height:54px; text-align:center;">取消</div>
+		<div id="tipBtnFocus" style="position:absolute; top:142px; left:5px; width:212px; height:105px;">
+			<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="36" height="36" background="images/focus_01.png"></td>
+					<td background="images/focus_02.png"></td>
+					<td width="36" background="images/focus_03.png"></td>
+				</tr>
+				<tr>
+					<td background="images/focus_04.png"></td>
+					<td></td>
+					<td background="images/focus_05.png"></td>
+				</tr>
+				<tr>
+					<td height="36" background="images/focus_06.png"></td>
+					<td background="images/focus_07.png"></td>
+					<td background="images/focus_08.png"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+
+	<div id="text" style="position: absolute;left: 100px;top: 100px;background: rgba(255,255,255,0.7);color: #000;font-size: 30px;text-align: center;width: 1000px;height: 500px;"></div>
+</body>
+</html>

@@ -1,0 +1,1339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<title>出行保险</title>
+<link rel="stylesheet" type="text/css" href="css/childGreen_color.css"/>
+<style>
+iframe{
+	position: absolute;
+	width: 1280px;
+	height: 720px;
+	border: 0; 
+}
+</style>
+<script type="text/javascript" src="data.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/md5.min.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+
+<script type="text/javascript"> 
+var focusArea = 6; //0,键盘区域，1，文本选择区域，2，确定按钮, 3文本箭头，4，展开文本,5，文本框区域
+var provincePos = 0;
+var year = "2000";
+var month = "01";
+var day = "01";
+var ajaxObj = null;
+var ifrKeyboardFlag = false;
+var ifrKeyboardFlag1 = false;
+var keyBoardTimes = 1;
+var tempLetter = "";
+var ifrKeyboardFlag = false;	//iframe 键盘调出标识
+var inputObj = {			//键盘参数 此处是用的公司的封装 iframe打开键盘
+	"type":0,	//0 字符串模式 1 密码模式
+	"isEng":1,	//0 英文 1 中文
+	"isWebkit":0,	//0 无2D效果 1 有2D效果
+	"strLength":24,	//字符串长度
+	"reqIp":"http://access.homed.tv/olime",	//输入法请求路径
+	"outzIndex":999,	//层级
+	"dict":"",	//词库
+	"intr":"",	//初始默认字符串框
+	"callback":getInputStr,	//回调函数 获取键盘输入的值
+	"backmethod":function(){	//返回 隐藏键盘
+		ifrKeyboardFlag = false;
+		$("ifr0").src = "";
+	}
+};
+
+var numDefaults = {
+	"oriValue" : '',
+	"callback" : inputValue,
+	"backmethod" : exitKeyBoard
+};
+function inputValue(value){
+	ifrKeyboardFlag1 = false;
+	$("ifr1").src = "";
+	if(value != ""){
+		if (pos == 10) {
+			mobile = value;
+			$("phoneNum").innerHTML = value;
+			hideKeyBoard();
+			focusArea = 6;
+		}else if (pos == 12) {
+			$("verification").innerHTML = value;
+			//$("name").innerHTML = inputValue;
+			verification = value;
+			hideKeyBoard();
+			focusArea = 10;
+		}
+		
+	}
+}
+
+function exitKeyBoard(){
+	ifrKeyboardFlag1 = false;
+	$("ifr1").src = "";
+}
+function getInputStr(value){
+	ifrKeyboardFlag = false;
+	$("ifr0").src = "";
+	
+	if(value != ""){
+		$("name").innerText = value;
+		realname = value;
+	}
+}
+// $("ifr0").src = "input/index.php";
+				//ifrKeyboardFlag = true;
+function init() {
+	ajaxList();
+	//$("debug").innerHTML = 1;
+	focusMove();
+//debug").innerHTML = 2;
+	initNumInput();
+	//$("debug").innerHTML = 3;
+
+}
+var inputValue = '', // 输入框的值
+			keyFocusPos = 5, // 焦点位置
+			keyValue = [ // 焦点对应的值
+				{"keyFocusPos":0,"value":1},
+				{"keyFocusPos":1,"value":2},
+				{"keyFocusPos":2,"value":3},
+				{"keyFocusPos":3,"value":0},
+				{"keyFocusPos":4,"value":4},
+				{"keyFocusPos":5,"value":5},
+				{"keyFocusPos":6,"value":6},
+				{"keyFocusPos":7,"value":"X"},
+				
+				{"keyFocusPos":8,"value":7},
+				{"keyFocusPos":9,"value":8},
+				{"keyFocusPos":10,"value":9},
+				{"keyFocusPos":12,"value":'清空'},
+				{"keyFocusPos":11,"value":'确认'} 
+			];
+		var defaults = {
+				oriValue:'',
+				callback:function(){
+					if (pos == 9) {
+						idcard = inputValue;
+						$("idNum").innerHTML = inputValue;
+						hideKeyBoard();
+						focusArea = 6;
+					} 
+				},
+				backmethod:function(){
+					$('numInput').style.display = 'none';
+					focusArea = 6;
+				}
+			};
+		function initNumInput() {
+			showFocus();
+			
+			loadData();
+			
+			initInput();
+			
+			initParam();
+			
+		}
+		function extend(destination,source){
+			for(var property in source){
+				destination[property] = source[property];
+			}
+			return destination;
+		}
+		function initParam(o){
+			if(parent.defaults){
+				defaults = extend(parent.defaults,o || {});
+			}
+			else{
+				defaults = extend(defaults,o || {});
+			}
+			inputValue = defaults.oriValue;
+			initInput();
+		}
+		function loadData() { // 动态写入值
+			for(var keyFocusPos = 0; keyFocusPos < 13; keyFocusPos++) {
+				$('key_'+keyFocusPos).innerText = keyValue[keyFocusPos].value;
+			}
+		}
+		function initInput() {
+			// iPanel.eventFrame.numKeyBoardValue = inputValue; // 用户输入值
+			$('inputValue').innerText = inputValue; // 用户输入值
+		}
+		// document.onkeydown = eventHandler;
+
+		function changeUD(_num) {
+			loseFocus();
+			keyFocusPos += _num;
+			if(keyFocusPos < 0) {
+				keyFocusPos = 12;
+			}else if(keyFocusPos ==16  && _num > 0) {
+				keyFocusPos = 3;
+			} else if(keyFocusPos > 12) {
+				keyFocusPos = 12;
+			}
+			showFocus();
+		}
+		function changeLR(_num) {
+			loseFocus();
+			keyFocusPos += _num;
+			if(keyFocusPos < 0) {
+				keyFocusPos = 12;
+			} else if(keyFocusPos == 12 && _num > 0) {
+				keyFocusPos = 7;
+			} else if(keyFocusPos > 12) {
+				keyFocusPos = 12;
+			}
+			showFocus();
+		}
+		function numInputDoSelect() {
+
+			if(keyFocusPos == 12) { // 确定 关键盘
+				initInput();
+
+				// iPanel.debug('gogogo---wuqx--numInput.htm--doSelect()--iPanel.eventFrame.numKeyBoardValue='+iPanel.eventFrame.numKeyBoardValue);
+				if(typeof defaults.callback) {
+					defaults.callback(inputValue);
+				}
+				$('inputValue').innerText = '';
+				 inputValue = '';
+				//iPanel.pageWidgets.getByName("inputWidgets1.2").minimize();
+				//$('numInput').style.visibility = 'hidden';
+			} else if(keyFocusPos == 11) { // 清空
+				$('inputValue').innerText = '';
+				inputValue = '';
+			} else if(keyFocusPos != 11 || keyFocusPos != 12) {
+				//控制下长度
+				if(inputValue.length <= 19){
+					inputValue += keyValue[keyFocusPos].value; // 输入值拼接
+					initInput();
+					//console.log(inputValue)
+				}
+			}
+		}
+		function deleteOrBack() {
+			//console.log(inputValue.length)
+			if(inputValue.length == 0) { // 关键盘
+				initInput();
+				if(typeof defaults.backmethod) {
+					defaults.backmethod();
+				}
+				//iPanel.pageWidgets.getByName("inputWidgets1.2").minimize();
+				
+			} else {
+				inputValue = inputValue.substring(0,inputValue.length-1);
+				//console.log(inputValue)
+				initInput();
+			}
+		}
+		function loseFocus() {
+			$('key_'+keyFocusPos).style.backgroundColor = '#7C931D';
+			$('key_'+keyFocusPos).style.color = '#fff';
+		}
+		function showFocus() {
+			$('key_'+keyFocusPos).style.backgroundColor = '#ffb400';
+			$('key_'+keyFocusPos).style.color = '#333';
+		}
+function hideKeyBoard() {
+	$("numInput").style.display = "none";
+}
+
+function showKeyBoard() {
+	$("numInput").style.display = "block";
+}
+//确定
+
+function doSelect(){
+	if (focusArea == 0) {
+		numInputDoSelect();
+		
+	}else if (focusArea == 1) {
+		focusArea = 6;
+		dateHide();
+	} else if (focusArea == 2) {
+		focusArea = 6;
+        dateHide();
+	}else if (focusArea == 3) {
+		focusArea = 6;
+        dateHide();
+	}else if (focusArea == 6) {
+		if (pos == 0) {
+			focusArea = 7;
+			provinceFocus();
+		}else if (pos == 1) {
+			//renderCity();
+			focusArea = 8;
+			cityFocus();
+		}else if (pos == 2) {
+			 $("ifr0").src = "input/index.php";
+				ifrKeyboardFlag = true;
+				keyBoardTimes = 2;
+		}else if (pos == 3 || pos == 4) {
+			sexChoose();
+		}else if (pos == 9) {	
+			$("numInput").style.display = "block";
+			loseFocus();
+			keyFocusPos = 5;
+			focusArea = 0;
+			showFocus();
+		}else if(pos == 10 || pos == 12){
+			$("ifr1").src = "numInput.htm";
+				ifrKeyboardFlag1 = true;
+				//$("debug").innerHTML ="284" +pos;
+		}else if (pos == 5) {
+			
+				focusArea = 1;
+            dateMoveFocus();
+			
+		}else if (pos == 6) {
+			focusArea = 2;
+			dateMoveFocus();
+		}else if (pos == 7) {
+			focusArea = 3;
+			dateMoveFocus();
+		} else if (pos == 8) {	
+			focusArea = 9;
+			kindTableShow();
+		}else if (pos == 11) {
+			submite();
+			verification = "";
+			$("verification").innerHTML = "";
+		}
+	}else if (focusArea == 7) {
+		$("province").innerHTML = provinceData[provincePos];
+		$("provinceList").style.display = "none";
+		focusArea = 6;
+		renderCityData();
+		//console.log(cityData[provincePos])
+	}else if (focusArea == 8) {
+		$("city").innerHTML = cityData[provincePos][cityPos];
+		city = cityData[provincePos][cityPos];
+		$("cityList").style.display = "none";
+		focusArea = 6;
+	}else if (focusArea == 9) {
+
+		$("kind").innerHTML = $("kind"+kindPos).innerHTML;
+		if (kindPos == 0) {
+			product = "JSWY";
+		}else if (kindPos == 1) {
+			product = "WYCX";
+		}else if (kindPos == 2) {
+			product = "SEWYCX";
+		}
+		kindTableHide();
+		focusArea = 6;
+	}else if (focusArea == 10) {
+		if (pos == 12) {
+			$("verificationNotice").style.display = "none";
+			$("ifr1").src = "numInput.htm";
+				ifrKeyboardFlag1 = true;
+		}else if (pos == 13) {
+			getPolicyNum();
+		}
+		
+	}else if (focusArea == 11) {
+		top.hidePop();
+	}
+
+
+
+}
+
+function dateShow() {
+    $("dateUp").style.display = "block";
+    $("dateDown").style.display = "block";
+}
+
+function dateHide() {
+    $("dateUp").style.display = "none";
+    $("dateDown").style.display = "none";
+}
+
+function dateMoveFocus() {
+    if(pos == 5){
+        $("dateUp").style.top = "224px";
+        $("dateUp").style.left = "214px";
+        $("dateDown").style.top = "260px";
+        $("dateDown").style.left = "214px";
+    }else if (pos == 6){
+        $("dateUp").style.top = "224px";
+        $("dateUp").style.left = "338px";
+        $("dateDown").style.top = "260px";
+        $("dateDown").style.left = "338px";
+    }else if (pos == 7){
+        $("dateUp").style.top = "224px";
+        $("dateUp").style.left = "447px";
+        $("dateDown").style.top = "260px";
+        $("dateDown").style.left = "447px";
+    }
+    dateShow();
+}
+
+var gbPos = 0;
+var policyUrl = "http://japi.juhe.cn/carInsuranceGift/gift";
+var verification = "",
+	key = "da11f7b2178848ad7bcc2ce19ae0a15c";
+	//http://japi.juhe.cn/carInsuranceGift/gift?mobile=1516152****&key=您申请的appKey&verification=729408
+function getPolicyNum() {
+	var ajaxObj = new ajaxClass();
+			ajaxObj.url = "getData.php";
+			ajaxObj.successCallback = function(_xmlHttp){
+				var str = _xmlHttp.responseText;
+				var policyData = str.split(",");
+				//console.log(str)
+				var error_code = policyData[0].split(":")[1];
+				var reason = policyData[0].split(":")[1];
+					if (error_code == "0") {
+						focusArea = 11;
+						pos++;
+						$("idCode").style.display = "none";
+						$("success").style.display = "block";
+						$("policyCode").innerHTML = policyData[2].split(":")[3].split("}")[0];
+						$("confirm").style.background = "#fff";
+						$("confirm").style.color = "#b1b0b0";
+						$("verification").style.border = "1px solid #ffa400";
+						$("verification").style.color = "#000";
+					}else if (error_code == "217906") {
+						$("verificationNotice").style.display = "block";
+						$("verificationNotice").innerHTML = "验证码错误，请重新输入";
+						$("verificationNotice").style.color = "red";
+						pos = 12;
+						$("confirm").style.background = "#fff";
+						$("confirm").style.color = "#b1b0b0";
+						$("verification").style.border = "2px solid #ffa400";
+						$("verification").style.color = "#000";
+					}else {
+						focusArea = 6;
+						$("idCode").style.display = "none";
+						$("mainWindow").style.display = "block";
+						pos = 10;
+						focusMove();
+						$("notice").innerHTML = reason;
+						$("notice").style.color = "red";
+						
+						$("confirm").style.background = "#fff";
+						$("confirm").style.color = "#b1b0b0";
+						$("verification").style.border = "1px solid #ffa400";
+						$("verification").style.color = "#000";
+					}
+				}
+			
+			ajaxObj.failureCallback = function(_xmlHttp){
+			
+			};
+			ajaxObj.urlParameters = "url=http://japi.juhe.cn/carInsuranceGift/gift&mobile="+ mobile +"&key="+ key +"&verification="+ verification;
+			ajaxObj.requestData("POST");
+}
+
+//返回
+function goBack(){
+		if (focusArea == 0) {
+			deleteOrBack();
+			
+			
+		}else if(focusArea == 1 || focusArea == 2 || focusArea == 3){
+			focusArea = 6;
+		}else if(focusArea == 6){
+			top.hidePop();
+		}else if (focusArea == 7) {
+			$("provinceList").style.display = "none";
+			focusArea = 6;
+		}else if (focusArea == 8) {
+			$("cityList").style.display = "none";
+			focusArea = 6;
+		}else if (focusArea == 9) {
+			$("kindTable").style.display = "none";
+			focusArea = 6;
+		}else if (focusArea == 10) {
+			
+			$("idCode").style.display = "none";
+			$("mainWindow").style.display = "block";
+			focusArea = 6;
+			pos = 11;
+			$("confirm").style.background = "#fff";
+			$("confirm").style.color = "#b1b0b0";
+			$("verification").style.border = "1px solid #ffa400";
+			$("verification").style.color = "#000";
+		}else if (focusArea == 11) {
+			focusArea = 6;
+			pos = 11;
+			$("success").style.display = "none";
+			$("mainWindow").style.display = "block";//输入窗口显示
+		}
+	
+	//}
+}
+
+var pos = 0,
+	provinceData = [],
+	cityData = [];
+
+function focusMove() {
+	empty();
+	if (pos == 0) {
+		
+		$("province").style.color = "#000"
+		$("province").style.border = "1px solid #ffa400";
+	}else if (pos == 1) {
+		$("city").style.color = "#000"
+		$("city").style.border = "1px solid #ffa400";
+	}else if (pos == 2) {
+		$("name").style.color = "#000"
+		$("name").style.border = "1px solid #ffa400";
+	}else if (pos == 3) {
+		$("man").style.color = "#000"
+		$("man").style.border = "1px solid #ffa400";
+	}else if (pos == 4) {
+		$("woman").style.color = "#000"
+		$("woman").style.border = "1px solid #ffa400";
+	}else if (pos == 5) {
+		$("year").style.color = "#000"
+		$("year").style.border = "1px solid #ffa400";
+	}else if (pos == 6) {
+		$("month").style.color = "#000"
+		$("month").style.border = "1px solid #ffa400";
+	}else if (pos == 7) {
+		$("day").style.color = "#000"
+		$("day").style.border = "1px solid #ffa400";
+	}else if (pos == 8) {
+		$("kind").style.color = "#000"
+		$("kind").style.border = "1px solid #ffa400";
+	}else if (pos == 9) {
+		$("idNum").style.color = "#000"
+		$("idNum").style.border = "1px solid #ffa400";
+	}else if (pos == 10) {
+		$("phoneNum").style.color = "#000"
+		$("phoneNum").style.border = "1px solid #ffa400";
+	}else if (pos == 11) {
+		$("clickBtn").style.color = "#000";
+		$("clickBtn").style.background = "#ffa400";
+	}
+}
+
+function empty() {
+	$("province").style.border = "1px solid #ccc";
+	$("province").style.color = "#b1b0b0"
+	$("city").style.border = "1px solid #ccc";
+	$("city").style.color = "#b1b0b0"
+	$("name").style.border = "1px solid #ccc";
+	$("name").style.color = "#b1b0b0"
+
+		$("man").style.border = "1px solid #ccc";
+	if (gender == "M"){
+        $("man").style.color = "#000"
+    }else {
+        $("man").style.color = "#b1b0b0"
+    }
+    if (gender == "F"){
+        $("woman").style.color = "#000"
+    }else {
+        $("woman").style.color = "#b1b0b0"
+    }
+	
+		$("woman").style.border = "1px solid #ccc";
+
+
+	
+	
+	$("year").style.border = "1px solid #ccc";
+	$("year").style.color = "#b1b0b0"
+	$("month").style.border = "1px solid #ccc";
+	$("month").style.color = "#b1b0b0"
+	$("day").style.border = "1px solid #ccc";
+	$("day").style.color = "#b1b0b0"
+	$("kind").style.border = "1px solid #ccc";
+	$("kind").style.color = "#b1b0b0"
+	$("idNum").style.border = "1px solid #ccc";
+	$("idNum").style.color = "#b1b0b0"
+	$("phoneNum").style.border = "1px solid #ccc";
+	$("phoneNum").style.color = "#b1b0b0"
+	$("clickBtn").style.background = "#fff";
+	$("clickBtn").style.color = "#b1b0b0";
+}
+
+function keyUp() {
+	if (focusArea == 0) {
+		changeUD(-4)
+	}else if (focusArea == 1) {
+		year++;
+		$("year").innerHTML = year;
+	}else if (focusArea == 2) {
+		if (month < 12) {
+			month++;
+		}else if (month == 12){
+			month = 1;
+		}
+		if (month < 10 && month > 1) {
+		month = "0" + month;
+		}else if (month == 1) {
+			month = "01";
+		}
+	
+		$("month").innerHTML = month;
+	}else if (focusArea == 3) {
+		if (month == 2 && year%4 == 0) {
+			if (day < 29) {
+				day++;
+			}else if (day == 29) {
+				day = 1;
+			}
+		}else if (month == 2 && year%4 != 0) {
+			if (day < 28) {
+				day++;
+			}else if (day == 28) {
+				day = 1;
+			}
+		}else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+			if (day < 31) {
+				day++;
+			}else if (day == 31) {
+				day = 1;
+			}
+		}else if (month == 4 || month == 6 || month == 9 || month == 11) {
+			if (day < 30) {
+				day++;
+			}else if (day == 30) {
+				day = 1;
+			}
+		}
+		if (day  <  10 && day > 1) {
+		day = "0" + day;
+		//console.log(day)
+		}else if (day == 1) {
+			day = "01";
+		}
+		$("day").innerHTML = day;
+	}else if (focusArea  == 6) {
+		if (pos == 2 || pos == 3 || pos == 4) {
+			pos = 0;
+			focusMove();
+		}else if (pos == 5 || pos == 6 || pos == 7) {
+			
+				pos = 2;
+			focusMove();
+			
+			
+		}else if (pos == 8) {
+			pos = 5;
+			focusMove();
+		}else if (pos == 9) {
+			pos = 8;
+			focusMove();
+		}else if (pos == 10) {
+			pos = 9;
+			focusMove();
+		}else if (pos == 11) {
+			pos = 10;
+			focusMove();
+		}
+	}else if (focusArea == 7) {
+		if (provincePos != 0) {
+            provinceListMove(1);
+
+			$("province").innerHTML = provinceData[provincePos];
+
+			renderCityData();
+		}
+	}else if (focusArea == 8) {
+		if (cityPos != 0) {
+			cityPos -- ;
+			$("city").innerHTML = cityData[provincePos][cityPos];
+			city = cityData[provincePos][cityPos];
+			cityListMove(1);
+		}
+	}else if (focusArea == 9) {
+		if (kindPos != 0) {
+			kindPos--;
+			kindTableMove();
+			
+		}else if (kindPos == 0) {
+			kindPos = 2;
+			kindTableMove();
+		}
+		$("kind").innerHTML = $("kind"+kindPos).innerHTML;
+			if (kindPos == 0) {
+				product = "JSWY";
+			}else if (kindPos == 1) {
+				product = "WYCX";
+			}else if (kindPos == 2) {
+				product = "SEWYCX";
+			}
+	}else if (focusArea == 10) {
+		if (pos == 13) {
+			pos--;
+			$("confirm").style.background = "#fff";
+			$("confirm").style.color = "#b1b0b0";
+			$("verification").style.border = "1px solid #ffa400";
+			$("verification").style.color = "#000";
+		}
+	}
+}
+var kindPos = 0;
+function kindTableMove() {
+	for(var i=0;i<3;i++){
+		$("kind"+ i).style.background = "#ddd";
+		$("kind"+ i).style.color = "#b1b0b0";
+	}
+	$("kind"+ kindPos).style.background = "#feb500";
+	$("kind"+ kindPos).style.color = "#000";
+}
+var provincePos = 0;
+var cityPos = 0;
+var pMoveItem = 0;
+var pMovePage = 0;
+var cMoveItem = 0;
+var cMovePage = 0;
+function provinceListMove(num) {
+    var totleDistence = $("provinceMoveBar").parentNode.offsetHeight - $("provinceMoveBar").offsetHeight;
+
+    var eryStep = Math.round(totleDistence/provinceData.length);
+    var totlePage = Math.round(provinceData.length/3);
+    if(num < 0) {
+
+        if (pMoveItem < 2 && provincePos < provinceData.length){
+            pMoveItem++;
+            //console.log(moveItem)
+        }else if(pMoveItem == 2 && pMovePage!= totlePage && provincePos < provinceData.length){
+            pMoveItem = 0;
+            pMovePage++;
+            $("allProvince").style.top = $("allProvince").offsetTop - 46*3 + "px";
+        }
+    }else {
+        if (pMoveItem > 0){
+            pMoveItem--;
+        }else if(pMoveItem == 0 && pMovePage!= 0){
+            pMoveItem = 2;
+            pMovePage--;
+            $("allProvince").style.top = $("allProvince").offsetTop + 46*3 + "px";
+        }
+    }
+
+    provincePos= pMovePage*3 + pMoveItem;
+    $("provinceMoveBar").style.top = provincePos * eryStep + "px";
+    $("provinceList" + provincePos).style.color = "#000";
+	$("provinceList" + provincePos).style.background = "#feb500";
+	var prePos = provincePos - 1;
+	var nextPos = provincePos + 1;
+	if ($("provinceList" + prePos)) {
+		$("provinceList" + prePos).style.color = "#b1b0b0";
+		$("provinceList" + prePos).style.background = "#ddd";
+	}
+	if ($("provinceList" + nextPos)) {
+		$("provinceList" + nextPos).style.color = "#b1b0b0";
+		$("provinceList" + nextPos).style.background = "#ddd";
+	}
+	
+}
+
+function cityListMove(num) {
+    var totleDistence = $("cityMoveBar").parentNode.offsetHeight - $("cityMoveBar").offsetHeight;
+
+    var eryStep = Math.round(totleDistence/cityData[provincePos].length);
+
+    var totlePage = Math.round(cityData[provincePos].length/3);
+    if(num < 0) {
+        if (cMoveItem < 2 && cityPos < provinceData.length){
+            cMoveItem++;
+            //console.log(moveItem)
+        }else if(cMoveItem == 2 && cMovePage!= totlePage && cityPos < cityData[provincePos].length){
+            cMoveItem = 0;
+            cMovePage++;
+            $("allCity").style.top = $("allCity").offsetTop - 46*3 + "px";
+        }
+    }else {
+        if (cMoveItem > 0){
+            cMoveItem--;
+        }else if(cMoveItem == 0 && cMovePage!= 0){
+            cMoveItem = 2;
+            cMovePage--;
+            $("allCity").style.top = $("allCity").offsetTop + 46*3 + "px";
+        }
+    }
+
+    cityPos= cMovePage*3 + cMoveItem;
+    $("cityMoveBar").style.top = cityPos * eryStep + "px";
+	$("cityList" + cityPos).style.color = "#000";
+	$("cityList" + cityPos).style.background = "#feb500";
+	var prePos = cityPos - 1;
+	var nextPos = cityPos + 1;
+	if ($("cityList" + prePos)) {
+		$("cityList" + prePos).style.color = "#b1b0b0";
+		$("cityList" + prePos).style.background = "#ddd";
+	}
+	if ($("cityList" + nextPos)) {
+		$("cityList" + nextPos).style.color = "#b1b0b0";
+		$("cityList" + nextPos).style.background = "#ddd";
+	}
+}
+
+function keyDown() {
+	if (focusArea == 0) {
+		changeUD(4)
+	}else if (focusArea == 1) {
+		year--;
+		$("year").innerHTML = year;
+	}else if (focusArea == 2) {
+		if (month != 1) {	
+				month--;
+		}else if (month == 1) {
+			month = 12;
+		}
+		if (month < 10 && month > 1) {
+		month = "0" + month;
+		}else if (month == 1) {
+			month = "01";
+		}
+		$("month").innerHTML = month;
+	}else if (focusArea == 3) {
+		if (day != 1) {	
+				day--;
+		}else if (day == 1) {
+			if (month == 2 && year%4 == 0) {
+				day = 29;
+			}else if (month == 2 && year%4 != 0) {
+				day = 28;
+			}else if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+				day = 31;
+			}else if (month == 4 || month == 6 || month == 9 || month == 11) {
+				day = 30;
+			}
+		}
+		if (day < 10 && day > 1) {
+		day = "0" + day;
+		}else if (day == 1) {
+			day = "01";
+		}
+		$("day").innerHTML = day;
+	}else if (focusArea  == 6) {
+		if (pos == 0 || pos == 1) {
+			pos = 2;
+			focusMove();
+		}else if (pos == 2 || pos == 3 || pos == 4) {
+			pos = 5;
+			focusMove();
+		}else if ( pos == 5 || pos == 6 || pos == 7) {
+			
+				pos = 8;
+			focusMove();
+			
+		}else if (pos == 8) {
+			pos = 9;
+			focusMove();
+		}else if (pos == 9) {
+			pos = 10;
+			focusMove();
+		}else if (pos == 10) {
+			pos = 11;
+			focusMove();
+		}
+	}else if (focusArea == 7) {
+		if (provincePos != provinceData.length-1) {
+            provinceListMove(-1);
+
+			$("province").innerHTML = provinceData[provincePos];
+
+			renderCityData()
+		}
+	}else if (focusArea == 8) {
+		if (cityPos != cityData[provincePos].length-1) {
+			cityPos ++ ;
+			$("city").innerHTML = cityData[provincePos][cityPos];
+			city = cityData[provincePos][cityPos];
+			cityListMove(-1);
+		}
+	}else if (focusArea == 9) {
+		if (kindPos != 2) {
+			kindPos++;
+			kindTableMove();
+		}else if (kindPos == 2) {
+			kindPos = 0;
+			kindTableMove();
+		}
+		$("kind").innerHTML = $("kind"+kindPos).innerHTML;
+		if (kindPos == 0) {
+			product = "JSWY";
+		}else if (kindPos == 1) {
+			product = "WYCX";
+		}else if (kindPos == 2) {
+			product = "SEWYCX";
+		}
+	}else if (focusArea == 10) {
+		if (pos == 12) {
+			pos++;
+			$("verification").style.border = "1px solid #ccc";
+			$("verification").style.color = "#b1b0b0";
+			$("confirm").style.background = "#ffa400";
+			$("confirm").style.color = "#000";
+		}
+	}
+	//console.log(pos)
+}
+
+function keyLeft() {
+	if (focusArea == 0) {
+		changeLR(-1)
+	}else if (focusArea  == 6) {
+		if (pos == 1) {
+			pos = 0;
+			focusMove();
+		}else if (pos == 4) {
+			pos = 3;
+			focusMove();
+		}else if (pos == 3) {
+			pos = 2;
+			focusMove();
+		}else if (pos == 6) {
+			pos = 5;
+			focusMove();
+		}else if (pos == 7) {
+			pos = 6;
+			focusMove();
+		}
+	}
+	//console.log(pos)
+}
+
+function keyRight() {
+	if (focusArea == 0) {
+		changeUD(1)
+	}else if (focusArea  == 6) {
+		if (pos == 0) {
+			pos = 1;
+			focusMove();
+		}else if (pos == 3) {
+			pos = 4;
+			focusMove();
+		}else if (pos == 2) {
+			pos = 3;
+			focusMove();
+		}else if (pos == 5) {
+			pos = 6;
+			focusMove();
+		}else if (pos == 6) {
+			pos = 7;
+			focusMove();
+		}
+	}
+	//console.log(pos)
+}
+
+
+
+var dataUrl = "http://japi.juhe.cn/carInsuranceGift/check";
+var realname = "",
+	mobile = "",
+	gender = "",
+	birth = "",
+	product = "JSWY",
+	idcard = "",
+	city = "",
+	key = "da11f7b2178848ad7bcc2ce19ae0a15c";
+
+//http://japi.juhe.cn/carInsuranceGift/check?company=聚合数据&realname=魏**&mobile=1516152****&gender=M&birth=1989-01-02&product=WYCX&idcard=3203811989********&key=您申请的appKey
+
+
+function submite(){
+	
+	if (month.length == 1) {
+		month = "0" + month;
+	}
+	if (day.length == 1) {
+		day = "0" + day;
+	}
+	birth = year+ "-" + month+ "-" + day ; 
+	var ajaxObj = new ajaxClass();
+			ajaxObj.url = "getData.php";
+			ajaxObj.successCallback = function(_xmlHttp){
+				var str = _xmlHttp.responseText;
+				var data = str.split(",");
+				var error_code = data[0].split(":")[1];
+				var reason = str.split(":").pop();
+		//console.log(data)
+					if (error_code == "0") {
+						pos++;
+						//$("debug").innerHTML = "931"+pos;
+						$("mainWindow").style.display = "none";//输入窗口隐藏
+						$("idCode").style.display = "block";//验证码窗口显示
+						focusArea = 10;
+					}else if (data[0].split(":")[0] == "217904") {
+						focusArea = 6;
+						pos = 10;
+						focusMove();
+						$("notice").innerHTML = reason;
+						$("notice").style.color = "red";
+						$("confirm").style.background = "#fff";
+						$("confirm").style.color = "#b1b0b0";
+						$("verification").style.border = "1px solid #ffa400";
+						$("verification").style.color = "#000";
+					}else {
+						focusArea = 6;
+						pos = 0;
+						focusMove();
+						$("notice").innerHTML = reason;
+						$("notice").style.color = "red"
+						$("confirm").style.background = "#fff";
+						$("confirm").style.color = "#b1b0b0";
+						$("verification").style.border = "1px solid #ffa400";
+						$("verification").style.color = "#000";
+					}
+				}
+			
+			ajaxObj.failureCallback = function(_xmlHttp){
+			
+			};
+			
+			
+			ajaxObj.urlParameters = "url=http://japi.juhe.cn/carInsuranceGift/check&company=出行保险&realname="+ realname +"&mobile="+ mobile +"&gender="+ gender +"&birth="+ birth +"&product="+ product +"&idcard="+ idcard +"&key="+ key +"&city="+ city
+
+			
+			ajaxObj.requestData("POST");
+}
+
+function sexChoose() {
+	if (pos == 3) {
+		$("woman").style.background = "#fff";
+		$("woman").style.color = "#b1b0b0";
+		$("man").style.background = "#ffa400";
+		$("man").style.color = "#000";
+		gender = "M";
+	}else if (pos == 4) {
+		$("man").style.background = "#fff";
+		$("man").style.color = "#b1b0b0";
+		$("woman").style.background = "#ffa400";
+		$("woman").style.color = "#000";
+		gender = "F";
+	}
+}
+
+function ajaxList(){
+	if(ajaxObj == null){
+		ajaxObj = new ajaxClass();
+		ajaxObj.charset = "utf-8";
+		ajaxObj.frame = window;
+	}
+	else{
+		ajaxObj.requestAbort();
+	}
+
+	
+	ajaxObj.url = "cityData.js";
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		var getData = eval("("+_xmlHttp.responseText+")");
+		//console.log(12312)
+		var allData = getData;
+			for(var i=0;i<allData.length;i++){
+				provinceData.push(allData[i].province)
+			}
+			for(var i=0;i<allData.length;i++){
+				cityData.push(allData[i].city)
+			}
+			renderProvince();
+			$("province").innerHTML = provinceData[provincePos];
+			$("city").innerHTML = cityData[provincePos][cityPos];
+			city = cityData[provincePos][cityPos];
+			renderCity();
+			renderCityData();
+			provinceListMove();
+			cityListMove();
+	}
+
+	ajaxObj.failureCallback = function(){
+		
+	}
+
+	ajaxObj.requestData();
+}
+
+function renderProvince() {
+	for(var i=0;i<provinceData.length;i++){
+		$("allProvince").innerHTML += "<tr height=\"46\">"+ "<td id=\"provinceList"+ i +"\" style=\"  padding-left:20px; color:#b1b0b0;\">"+ provinceData[i] +"</td></tr>"
+	}
+}
+function renderCity() {
+	for(var i=0;i<cityData[8].length;i++){
+		$("allCity").innerHTML += "<tr height=\"46\">"+ "<td id=\"cityList"+ i +"\" style=\"padding-left:20px; color:#b1b0b0;\">"+ cityData[provincePos][i] +"</td></tr>"
+	}
+	
+
+}
+
+function renderCityData() {
+	for(var i=0;i<provinceData.length;i++){
+		$("cityList"+i).innerHTML = "";
+	}
+	for(var i=0;i<cityData[provincePos].length;i++){
+		$("cityList"+i).innerHTML = cityData[provincePos][i];
+	}
+	$("city").innerHTML = cityData[provincePos][cityPos];
+	city = cityData[provincePos][cityPos];
+}
+/*显示隐藏的省列表*/
+function provinceFocus() {
+	$("provinceList").style.display = "block";
+	$("provinceList"+provincePos).style.background = "#ffa400";
+}
+
+function provinceBlur() {
+	$("provinceList").style.display = "none";
+}
+
+/*显示隐藏的市列表*/
+function cityFocus() {
+	$("cityList").style.display = "block";
+	$("cityList"+cityPos).style.background = "#ffa400";
+}
+
+function cityBlur() {
+	$("cityList").style.display = "none";
+}
+/*保险列表显示与隐藏*/
+function kindTableShow() {
+	$("kindTable").style.display = "block";
+	kindTableMove();
+}
+
+function kindTableHide() {
+	$("kindTable").style.display = "none";
+}
+
+
+
+//document.onkeydown = eventHandler;
+function eventHandler(eventObj){
+	// var e = e || event;
+	// $("debug").innerHTML = 5;
+	// var keycode = e.keyCode || e.which || e.charCode;
+	// $("debug").innerHTML = 6;
+	//var keyReturnFlag = navigator.appName.indexOf("iPanel") != -1?1:true;		//根据返回值来判断要不要留至下一级
+	// var p2 = event.modifiers;
+	//var eventObj = Event.mapping(keycode);	
+	if(ifrKeyboardFlag){
+		return ifr0.eventHandler(eventObj);
+	}else if(ifrKeyboardFlag1){
+		return ifr1.eventHandler(eventObj);
+	}else{
+		switch(eventObj.code){
+		case "KEY_UP":       			//up
+
+			keyUp()
+			return false;
+			//keyReturnFlag = 0;
+			break;
+		case "KEY_DOWN":					//down
+			keyDown();
+			return false;
+			//keyReturnFlag = 0;
+			break;
+		case "KEY_LEFT":				//left
+			keyLeft();
+			return false;
+			//keyReturnFlag = 0;
+			break;
+		case "KEY_RIGHT":				//right
+			keyRight();
+			return false;
+			//keyReturnFlag = 0;
+			break;
+		case "KEY_SELECT":
+			doSelect();
+			return false;
+			//keyReturnFlag = 0;
+			break;
+		case "KEY_BACK":
+			goBack();
+			return false;
+			
+			break;
+		case 513:	//menu
+			exitWidget();
+			break;
+		case 512: 	//homepage
+			goBack();
+			return false;
+			break;			
+		default:
+			break;
+	}
+	}
+
+};
+
+
+window.onload = init;
+
+</script>
+
+</head>
+
+<style type="text/css">
+</style>
+<body bgcolor="transparent" leftmargin="0" topmargin="0">
+<div id="keyinputFrame" style="position:absolute; top:0px; left:0px; width:1280px; height:720px;background: rgba(0,0,0,0.4);">
+
+
+<div id="mainWindow" style="position:absolute;left:345px;top:82px; width:589px; height:582px; background:url(tab_bg1.jpg);">
+      <div style="position:absolute;display:block;left:0px;top:0px; width:589px; line-height:50px; text-align:center; font-size:24px; color:#fff;">出行保险</div>
+            <div style="position:absolute;left:65px;top:76px; width:450px;height:120px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="450" height="100%" style="font-size:22px; color:#666;">
+                  <tr height="46">
+                      <td>用户地址</td>
+                      <td id="province" style="border:1px solid #ccc; background:url(arrow_down.png) no-repeat 133px center; padding-left:20px; color:#b1b0b0;">北京市</td>
+                      <td></td>
+                      <td id="city" colspan="3" style="border:1px solid #ccc; background:url(arrow_down.png) no-repeat 133px center; padding-left:20px; color:#b1b0b0;">朝阳区</td>
+                  </tr>
+                  <tr height="28">
+                      <td colspan="6"></td>
+                  </tr>
+                  <tr height="46">
+                      <td width="118">客户姓名</td>
+                      <td id="name" width="141" style="border:1px solid #ccc;padding-left:20px; color:#b1b0b0;"></td>
+                      <td width="7"></td>
+                      <td id="man" width="74" style="border:1px solid #ccc;color:#b1b0b0;text-align:center;">男</td>
+                      <td width="14"></td>
+                      <td id="woman" width="74" style="border:1px solid #ccc;color:#b1b0b0;text-align:center;">女</td>
+                  </tr>
+              </table>
+          </div>
+
+            <div id="provinceList" style="color:#fff;border: 1px solid #ccc;  position: absolute;left: 181px;z-index: 3;top :121px;height: 138px;width: 159px;overflow: hidden;display: none;background: #fff;font-size: 22px;">
+                <table id="allProvince" style="height: 1564px;border:0;border-collapse: collapse;background: #ddd;position: absolute;top:0;width: 144px;z-index: 3;font: 18px;">
+                  
+                </table>
+                <div style="background: #d0d0d0;position: absolute;top: 0;right: 0;width: 15px;height: 138px;">
+                    <div id="provinceMoveBar" style="background: #bcbcbc;position: absolute;top: 10;right: 0;width: 15px;height: 26px;"></div>
+                </div>
+            </div>
+            <div id="cityList" style="color:#b1b0b0;border: 1px solid #ccc; background: #fff;position: absolute;left: 349px;z-index: 3;top :121px;height: 138px;width: 164px;overflow: hidden;display: none;font-size: 22px;">
+                <table id="allCity" style="border:1px solid #ccc;border:0;border-collapse: collapse;color:#b1b0b0;position: absolute;left: 0;z-index: 3;top :0;height: 138px;width: 149px;overflow: hidden;background: #ddd">
+                  
+                </table>
+                <div style="background: #d0d0d0;position: absolute;top: 0;right: 0;width: 15px;height: 138px;">
+                    <div id="cityMoveBar" style="background: #bcbcbc;position: absolute;top: 10;right: 0;width: 15px;height: 26px;"></div>
+                </div>
+            </div>
+
+          <div style="position:absolute;left:65px;top:222px; width:450px;height:46px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="450" height="100%" style="font-size:22px; color:#666;">
+                 <tr height="46" style="text-align:center;">
+                    <td width="119" style="text-align:left;">出生日期</td>
+                    <td id="year" width="71" style="border:1px solid #ccc; color:#b1b0b0;">2000</td>
+                    <td width="62">年</td>
+                    <td id="month" width="52" style="border:1px solid #ccc;color:#b1b0b0;">01</td>
+                    <td width="55">月</td>
+                    <td id="day" width="52" style="border:1px solid #ccc;color:#b1b0b0;">01</td>
+                    <td width="37">日</td>
+                </tr>
+              </table>
+          </div>
+          <div id="dateUp" style="width: 8px;height: 6px;background-size: 100% 100%;position: absolute;top: 224px;left: 450px;display: none;background-image: url(arrow1_up.png)"></div>
+          <div id="dateDown" style="width: 9px;height: 6px;position: absolute;top: 260px;left: 450px;display: none;background-image: url(arrow1_down.png);background-position: center;background-size: 100% 100%"></div>
+          <div style="position:absolute;left:65px;top:290px; width:450px;height:189px;">
+              <table border="0" cellpadding="0" cellspacing="0" width="450" height="100%" style="font-size:22px; color:#666;">
+              		<tr height="46">
+                        <td width="118">保险产品</td>
+                        <td id="kind" width="313" style="border:1px solid #ccc;padding-left:20px; color:#b1b0b0;background:url(arrow_down.png) no-repeat 302px center;">公共交通意外险</td>
+                    </tr>
+                    <tr height="28">
+                      <td colspan="2"></td>
+                    </tr>
+                    <tr height="46">
+                        <td>身份证号</td>
+                        <td id="idNum" style="border:1px solid #ccc;padding-left:20px; color:#b1b0b0;"></td>
+                    </tr>
+                     <tr height="28">
+                      <td colspan="2"></td>
+                    </tr>
+                    <tr height="46">
+                        <td>手机号码</td>
+                        <td id="phoneNum" style="border:1px solid #ccc;padding-left:20px; color:#b1b0b0;"></td>
+
+                    </tr>
+                    <tr height="28">
+                      
+                    </tr>
+              </table>
+          </div>
+          <div id="kindTable" style="position:absolute;left:182px;top:336px;border: 1px solid #ccc; width:331px;height:138px;background: #fff;font-size:22px; color:#666;display: none;">
+			<table  border="0" cellpadding="0" cellspacing="0" >
+			              <tr height="46">  
+			                    <td id="kind0" width="315" style="padding-left:20px; color:#b1b0b0;">公共交通意外险</td>
+			              </tr> 
+			              <tr height="46">  
+			                    <td id="kind1" width="315" style="padding-left:20px; color:#b1b0b0;">驾驶员意外险</td>
+			              </tr>
+			              <tr height="46">  
+			                    <td id="kind2" width="315" style="padding-left:20px; color:#b1b0b0;">少儿公共交通意外险</td>
+			              </tr>
+			            
+			          </table>
+          </div>
+          
+         <div id="notice" style="position:absolute;left:200px;top:481px; width:300px; line-height:54px; font-size:18px;color:#bcbbbb;">用于获取验证码和保单号码</div>
+         <div id="clickBtn" style="position:absolute;left:0px;top:534px; width:589px; line-height:49px; font-size:22px;color:#000; text-align:center;">免费获取</div>
+    </div>
+    
+
+        <!--弹出验证码输入框-->
+
+    
+    <div id="idCode" style="position:absolute;display: none;left:387px;top:142px; width:620px; height:351px; background:url(tab_bg2.jpg);">
+      <div style="position:absolute;left:0px;top:0px; width:620px; line-height:55px; text-align:center; font-size:24px; color:#fff;">温馨提示</div>
+        <div style="position:absolute;left:0px;top:116px; width:620px;text-align:center; font-size:22px; color:#666;"><span style="color:#11950b;">审核通过</span>，验证码已经发送到你的手机请注意查收！</div>
+        
+        <div style="position:absolute;left:166px;top:187px; width:260px;height:46px;">
+          <table border="0" cellpadding="0" cellspacing="0" width="260" height="100%" style="font-size:22px; color:#999;">
+              <tr>
+                  <td width="94">验证码</td>
+                    <td id="verification" width="149" style="border:1px solid #ffb400; padding-left:17px;"></td>
+                </tr>
+                 
+            </table>
+            <table id="verificationNotice" border="0" cellpadding="0" cellspacing="0" width="260" height="100%" style="font-size:22px;display: none; color:#999;">
+              <tr>
+                    <td width="243" style=" padding-left:17px;text-align: center;"></td>
+                </tr>
+                 
+            </table><!-- <tr>
+                    <td id="" width="243" style=" padding-left:17px;background: red;text-align: center;">12121</td>
+                </tr> -->
+        </div>
+        <div id="confirm" style="position:absolute;left:0px;top:294px; width:620px; line-height:57px; font-size:26px;color:#000; text-align:center;">确定</div>
+    </div>
+
+    <!--弹出保单-->
+
+    
+    <div id="success" style="position:absolute;display: none;left:387px;top:142px; width:620px; height:351px; background:url(tab_bg2.jpg);">
+      <div style="position:absolute;left:0px;top:0px; width:620px; line-height:55px; text-align:center; font-size:24px; color:#fff;">温馨提示</div>
+        <div style="position:absolute;left:0px;top:105px; width:620px; text-align:center; font-size:22px; color:#11950b;">您的平安免费出行保险领取成功！</div>
+        <div id="policyCode" style="position:absolute;left:0px;top:175px; width:620px; text-align:center; font-size:28px; color:#333;">保单号：10588001900174160536</div>
+        <div style="position:absolute;left:394px;top:239px; width:220px;font-size:20px; color:#b0afaf;">详询平安官网或95511</div>
+        <div style="position:absolute;left:0px;top:294px; width:620px; line-height:57px; font-size:26px;color:#000; text-align:center; background:#ffb400;">确定退出</div>
+    </div>
+<!-- 键盘 -->
+<div id='numInput' style="width:1280px;height:240px;background-color:#7C931D;position:absolute;top:480px;left:0px;display: none;">
+		<div id='inputValue' style="position:absolute;width:1125px;height:60px;border-bottom:1px solid #5F740C;line-height:60px;color:#fff;font-size:28px;text-indent:50px;background-color:#6F8512;"></div>
+		<div id='key_12' style="position:absolute;width:154px;height:60px;border-bottom:1px solid #5F740C;line-height:60px;color:#fff;font-size:26px;text-indent:30px;left:1125px;border-left:1px solid #5F740C;">确定</div>
+		<div id='key_0' style="position:absolute;width:334px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;text-indent:30px;top:61px;text-align:center;">1</div>
+		<div id='key_1' style="position:absolute;width:304px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;top:61px;text-align:center;border-left:1px solid #5F740C;left:334px;">2</div>
+		<div id='key_2' style="position:absolute;width:304px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;top:61px;text-align:center;border-left:1px solid #5F740C;left:638px;">3</div>
+		<div id='key_3' style="position:absolute;width:334px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;text-indent:-20px;top:61px;text-align:center;border-left:1px solid #5F740C;right:2px;">0</div>
+		<div id='key_4' style="position:absolute;width:334px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;top:120px;text-align:center;text-indent:30px;">4</div>
+		<div id='key_5' style="position:absolute;width:304px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;top:120px;text-align:center;border-left:1px solid #5F740C;left:334px;">5</div>
+		<div id='key_6' style="position:absolute;width:304px;height:58px;border-bottom:1px solid #5F740C;line-height:58px;color:#fff;font-size:28px;top:120px;text-align:center;border-left:1px solid #5F740C;left:638px;">6</div>
+		<div id='key_7' style="position:absolute;width:334px;height:58px;line-height:58px;color:#fff;font-size:24px;text-indent:-20px;top:120px;text-align:center;border-bottom:1px solid #5F740C;border-left:1px solid #5F740C;right:2px;">X</div>
+		
+		<div id='key_8' style="position:absolute;width:334px;height:59px;line-height:59px;color:#fff;font-size:28px;top:180px;text-align:center;text-indent:30px;">7</div>
+		<div id='key_9' style="position:absolute;width:304px;height:59px;line-height:59px;color:#fff;font-size:28px;top:180px;text-align:center;border-left:1px solid #5F740C;left:334px;">8</div>
+		<div id='key_10' style="position:absolute;width:304px;height:59px;line-height:59px;color:#fff;font-size:28px;top:180px;text-align:center;border-left:1px solid #5F740C;left:638px;">9</div>
+		<div id='key_11' style="position:absolute;width:334px;height:58px;line-height:58px;color:#fff;font-size:24px;text-indent:-20px;top:180px;text-align:center;border-left:1px solid #5F740C;right:2px;">清空</div>
+</div>
+
+<!-- <div id="debug" style="position: absolute;top: 300px;left: 300px;width: 300px;height: 300px;background: red;"></div>
+ -->
+ <iframe id="ifr0" name="ifr0" src=""></iframe>
+<iframe id="ifr1" name="ifr1" src=""></iframe>
+</html>

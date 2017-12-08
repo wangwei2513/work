@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        // iterator和for...of循环
+        // 遍历器对象的return和throw
+        // 遍历器对象一定会部署next方法、return和throw是可选的方法
+        // return 常用的场合、for...of提前退出（通常是报错）、如果一个对象在遍历结束前需要清理或释放资源、
+        function readLinesSync(file) {
+            return {
+                next() {
+                    return {
+                        down: false
+                    }
+                },
+                return () { //return   方法
+                    file.close();
+                    return {
+                        down: true
+                    }
+                }
+            }
+        }
+        // // 情况一
+        // for (let line of readLinesSync('./test.html')) {
+        //     console.log(line);
+        //     break;
+        // }
+        // // 
+        // // 情况二
+        // for (let line of readLinesSync('./test.html')) {
+        //     console.log(line);
+        //     continue;
+        // }
+
+        // // 情况三
+        // for (let line of readLinesSync('./test.html')) {
+        //     console.log(line);
+        //     throw new Error();
+        // }
+        let arr0 = [1, 2, 3, 4, 5, 6, 7];
+        for (let v in arr0) { //for...in读取键名
+            console.log(v)
+        }
+        for (let v of arr0) { //for...of读取键值、只返回具有数字索引的值
+            console.log(v)
+        }
+        // set和map结构遍历
+        let newSet = new Set(['a', 'b', 'c', 'd', 'd'])
+        for (var i of newSet) { //set遍历返回的是一个值
+            console.log(i)
+        }
+        // 修饰器
+        // 用来修改类的行为
+        class bar {
+            dostuff() {
+                console.log('aaa')
+            }
+        }
+        let b = new bar();
+        b.dostuff();
+        // map
+        let es6 = new Map();
+        es6.set("a", "a");
+        es6.set("b", "b");
+        es6.set("c", "c");
+        for (let i of es6) { //map遍历返回的是一个数组
+            console.log(i)
+        }
+        // class表达式
+        const myclass = class Me {
+            getClassName() {
+                console.log(Me.name)
+                return Me.name;
+            }
+        }
+        let inia = new myclass()
+        inia.getClassName()
+        inia.
+    </script>
+</body>
+
+</html>

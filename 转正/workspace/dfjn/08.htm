@@ -1,0 +1,344 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>08</title>
+    <style>
+        .zhifu_line td {
+            border-bottom: 1px solid #ebebeb;
+        }
+    </style>
+</head>
+
+<body leftmargin="0" topmargin="0">
+    <!--弹出层-->
+    <div style="position:absolute;left:0px;top:0px;width:1280px; height:720px; background:url(images/cover.png);"></div>
+
+    <div style="position:absolute;left:223px;top:80px;width:300px; height:560px; background:#fff;">
+        <div style="position:absolute;left:0px;top:0px;width:280px;height:50px; line-height:50px;font-size:28px;color:#333; background:#ebebeb;padding-left:20px;">订单信息：</div>
+
+        <div style="position:absolute;left:19px;top:58px;width:280px;">
+            <div style="position:absolute;left:0px;top:0px;width:265px; line-height:40px;font-size:24px;color:#333;">党费缴纳<br/>金额：<span style="color:#dc0000;">120.00</span>元</div>
+        </div>
+        <div style="position:absolute;left:0px;top:150px;width:280px;height:50px; line-height:50px;font-size:24px;color:#333; background:#ebebeb;padding-left:20px;">请选择支付方式</div>
+
+        <div style="position: absolute; left: 0px; top: 200px; width: 300px; height: 89px; background: #ffd100;"></div>
+        <div style="position:absolute;left:0px;top:200px;width:300px;height:356px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:24px; color:#333;">
+                <tr id="rechargeType0" height="89" class="zhifu_line">
+                    <td width="73" style="padding-left:19px;"><img src="images/zhifu02.png" width="60" height="60" style="display:inline-table;"></td>
+                    <td width="193">微信支付</td>
+                    <td id="arrow_0" width="21"><img src="images/arrow_right.png" width="10" height="14" style="display:inline-table;"></td>
+                </tr>
+                <tr id="rechargeType1" height="89" class="zhifu_line">
+                    <td style="padding-left:19px;"><img src="images/zhifu01.png" width="60" height="60" style="display:inline-table;"></td>
+                    <td>支付宝支付</td>
+                    <td id="arrow_1" width="21"><img src="images/arrow_right.png" width="10" height="14" style="display:inline-table;visibility:hidden;"></td>
+                </tr>
+                <tr id="rechargeType2" height="89" class="zhifu_line">
+                    <td style="padding-left:19px;"><img src="images/zhifu03.png" width="60" height="60" style="display:inline-table;"></td>
+                    <td>手机银联支付<br/><span style="font-size:18px;color:#999;">已开通无卡支付的银联</span></td>
+                    <td id="arrow_2" width="21"><img src="images/arrow_right.png" width="10" height="14" style="display:inline-table;visibility:hidden;"></td>
+                </tr>
+                <tr id="rechargeType3" height="89" class="zhifu_line">
+                    <td style="padding-left:19px;"><img src="images/zhifu04.png" width="60" height="60" style="display:inline-table;"></td>
+                    <td>余额支付<br/><span style="font-size:18px;color:#999;">剩余金额：￥369</span></td>
+                    <td id="arrow_3" width="21"><img src="images/arrow_right.png" width="10" height="14" style="display:inline-table;visibility:hidden;"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!--右边二维码-->
+    <div id="div1" style="position:absolute;left:533px;top:80px;width:520px; height:560px; background:#fff;">
+        <div style="position:absolute;left:10px;top:10px;"><img id="erweima" src="images/erm1.jpg" width="500" height="500"></div>
+        <div id="erweimaText" style="position:absolute;left:0px;top:510px; width:520px; line-height:50px; font-size:27px;color:#666;text-align:center;">使用<span style="display:inline-table; width:28px; background:url(images/icon_wechat.png) no-repeat center; height:50px;">&nbsp;</span>微信扫描二维码进行支付</div>
+    </div>
+    <!--余额-->
+    <div id="div2" style="position: absolute; left: 310px; top: 0px; width: 520px; height: 560px; background: #ccc; text-align: center; visibility:hidden;">
+        <div style="position: absolute; left: 68px; top: 222px; width:388px; height:161px;">
+            <img id="payTips" src="img/pay.png" width="78" height="87">
+            <div style="position:absolute; left:0px; top:88px; width:388px; height:72px; text-align:center"><span id="payText">您正在使用余额支付，<br/>确定继续支付请按"确定"键</span></div>
+        </div>
+    </div>
+
+    <script src="js/homedconfig.js"></script>
+    <script src="js/ajax.js"></script>
+    <script src="js/keyevent.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        var payPos = 0; //支付方式 
+        var prCodesContent = ""; //二维码content
+        var prCodesBgColor = "#f4f1f1"; //二维码的背景色
+        var prCodesColor = "black"; //二维码的前景色
+        var codeUrl = ""; //二维码地址
+        var flag = ""; //0微信支付 1支付宝支付
+        var orderId = "0";
+        var type = "";
+        var focusArea = 0;
+        var preUrl = "http://192.168.36.154:8078";
+        var orderId = 0; //订单号
+        var codeUrlArr = {
+            "4": "",
+            "5": ""
+        };
+        var payTipsFlag = false;
+        var navigatorFlag = (navigator.appName.indexOf("iPanel") != -1) ? "iPanel" : "other";
+        var access_token = navigator.appName.indexOf("iPanel") != -1 ? iPanel.eventFrame.access_token : testAccessToken;
+        document.onkeydown = eventHandler;
+
+        function eventHandler(event) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            // /var eventObj = Event.mapping(keycode);
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    changePayTypeFocus(-1);
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    changePayTypeFocus(1);
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+
+                    return false;
+                    break;
+                case 13:
+                    doSelect();
+                    return false;
+                    break;
+                case 8:
+
+                    return false;
+                    break;
+                case "EIS_SOCKET_BOUGHT_MESSAGE":
+                    var p2 = eventObj.args.modifiers;
+                    if (p2 == 1) {
+                        setTimeout(function() {
+                            showConfig();
+                        }, 500);
+                    }
+                    return false;
+                    break;
+                case 513: //menu
+
+                    break;
+                case 512: //homepage
+
+                    return false;
+                    break;
+                default:
+                    break;
+            }
+
+
+        };
+
+        function doSelect() {
+            if (payTipsFlag) {
+                hiddenConfig();
+            }
+        }
+        // 创建订单
+        //创建微信订单
+        var weixinOrderTimer = null;
+        var queryOrder = preUrl + "/ZH_PayGatewaySystem/dTL/queryOrder";
+
+        function create() {
+            var productId = "011111";
+            var ajaxUrl = "http://113.98.233.214:8078/ZH_PayGatewaySystem/dTL/unifiedOrder";
+            var ajaxObj = new ajaxClass(ajaxUrl, function(_xhr) {
+                eval("payData=" + _xhr.responseText);
+                if (payData.code == "0" || payData.code == 0) {
+                    codeUrl = payData.payCode;
+                    createEwm(codeUrl); //根据返回的二维码CODE去显示二维码图片
+                    clearInterval(weixinOrderTimer);
+                    weixinOrderTimer = setInterval(function() {
+
+                        queryWeixinOrder(); //微信下单成功之后进行轮询查询订单的支付情况
+
+                    }, 4000);
+
+                }
+            });
+            ajaxObj.charset = "utf-8";
+            ajaxObj.urlParameters = "merAppId=ZYY" + "&transAmt=0.01" + "&tradeType=NATIVE" + "&channelCode=WX" + "&productId=1234" + "&bizUserId=12345" + "&bizPayType=QW&orderDesc=党费缴纳";
+            ajaxObj.requestData("POST");
+        }
+
+        function queryWeixinOrder() {
+
+            var ajaxUrl = queryOrder;
+            var merOrderId = payData.merOrderId;
+            var ajaxObj = new ajaxClass(ajaxUrl, function(_xhr) {
+                eval("var orderDetail=" + _xhr.responseText);
+                if (orderDetail.transState == 1 || orderDetail.transState == "1") { //充值成功
+                    clearInterval(weixinOrderTimer); //不再轮训查询微信支付状态
+                    showConfig();
+                    // $("QRcode").style.visibility = "hidden";
+                    // focusArea = 4;
+                    // $("payTips").style.visibility = "visible";
+                    // $("payPic").style.backgroundImage = "url(images/icon_dui.png)";
+                    // $("payPic").innerText = "支付成功！";
+                    // $("payMessage").innerHTML = '小趣好护士正在帮您创建订单，请耐心等待';
+                    // $("phone").innerText = phoneStr;
+                    // ajaxCreat(); //微信付款成功，则去创建陪诊订单
+                } else if (orderDetail.transState == 2 || orderDetail.transState == "2") { //充值失败
+                    // $("QRcode").style.visibility = "hidden";
+                    // focusArea = 4;
+                    // $("payTips").style.visibility = "visible";
+                    clearInterval(weixinOrderTimer); //不再轮训查询微信支付状态
+                    // $("payPic").style.backgroundImage = "url(images/icon_error.png)";
+                    // $("payPic").innerText = "支付失败！";
+                    // $("payMessage").innerHTML = "请重新进行支付操作。";
+                }
+            });
+            ajaxObj.charset = "utf-8";
+            ajaxObj.urlParameters = "merOrderId=" + merOrderId;
+            ajaxObj.requestData("POST");
+        }
+
+        function showConfig() {
+            $("div2").style.visibility = "visible";
+            $("payTips").src = "images/check.png";
+            $("payText").innerHTML = "支付成功";
+            payTipsFlag = true;
+        }
+
+        function hiddenConfig() {
+            $("div2").style.visibility = "hidden";
+            payTipsFlag = false;
+        }
+        var ajaxReqObj = {
+            payAjaxObj: {
+                requestAbort: function() {}
+            }
+        };
+        var payUrl = [slaveAddr + "/feemanager/ordermanager/pay", "test/pay_" + payPos + ".js"][0];
+
+        // function payMoney(_orderId, _paymentType) {
+        //     ajaxReqObj.payAjaxObj.requestAbort();
+        //     ajaxReqObj.payAjaxObj = new AJAX_OBJ(payUrl, function(_xmlResponse, _res) {
+        //         var res = eval("(" + _xmlResponse.responseText + ")");
+        //         var data = res;
+        //         if (data.ret == 0) {
+        //             if (_paymentType == 1) { //余额支付
+        //                 $("payTips").src = "img/paysuc.png";
+        //                 $("payText").innerHTML = "恭喜您，支付成功";
+        //                 setTimeout(function() {
+        //                     if (navigatorFlag == "iPanel") {
+        //                         iPanel.mainFrame.showOrderPop(1);
+        //                     } else {
+        //                         top.showOrderPop(1);
+        //                     }
+        //                     keyFlag = true;
+        //                 }, 500);
+        //             } else {
+        //                 $("erweima").style.visibility = "visible";
+        //                 $("div2").style.visibility = "hidden";
+        //                 codeUrl = data.code_url;
+        //                 codeUrlArr[_paymentType + ""] = codeUrl;
+
+        //                 initErweima(_paymentType);
+        //             }
+
+
+        //         } else {
+        //             if (_paymentType == 1) { //余额支付
+        //                 $("payTips").src = "img/payfail.png";
+        //                 $("payText").innerHTML = "对不起，支付失败";
+        //             } else {
+        //                 $("erweima").style.visibility = "hidden";
+        //                 $("div2").style.visibility = "visible";
+        //                 $("payTips").src = "images/global_tm.gif";
+        //                 $("payText").innerHTML = "此渠道暂不支持支付";
+        //             }
+        //         }
+        //     }, function(_xmlResponse) {
+        //         if (_paymentType == 1) { //余额支付
+        //             $("payTips").src = "img/payfail.png";
+        //             $("payText").innerHTML = "对不起，支付失败";
+        //         }
+
+        //     });
+        //     ajaxReqObj.payAjaxObj.urlParameters = '{"accesstoken":"' + access_token + '","orderid":' + _orderId + ',"paymentmode":' + _paymentType + ',"paymentinfo":{"sign":"","tradetype":"NATIVE","spbillcreateipstring":""}}';
+        //     // ajaxReqObj.payAjaxObj.urlParameters = '?accesstoken=' + access_token + '&orderid=' + _orderId + '&paymentmode=' + _paymentType + '&paymentinfo={sign=&tradetype=NATIVE&spbillcreateipstring=}';
+
+        //     ajaxReqObj.payAjaxObj.requestData("POST");
+        // }
+        //通过二维码code生成图片
+
+        var createUrl = preUrl + "/ZH_PayGatewaySystem/qrcode/create";
+
+        function createEwm(_payCode) {
+            var ajaxUrl = createUrl;
+            var ajaxObj = new ajaxClass(ajaxUrl, function(_xhr) {
+                $("erweima").src = createUrl + "?qrcode=" + _payCode + "&charset=utf-8&width=396&height=394"; //直接链接图片
+            });
+            ajaxObj.charset = "utf-8";
+            ajaxObj.urlParameters = "qrcode=" + _payCode + "&charset=utf-8&width=396&height=394";
+            ajaxObj.requestData("POST");
+            // if (_paymentType == 4) {
+            //     $("erweimaText").innerHTML = '使用<span style="display:inline-table; width:28px; background:url(images/icon_wechat.png) no-repeat center; height:50px;">&nbsp;</span>微信扫描二维码进行支付';
+            // } else if (_paymentType == 5) {
+            //     $("erweimaText").innerHTML = '使用<span style="display:inline-table; width:28px; background:url(images/icon_zhifubao.png) no-repeat center; height:50px;">&nbsp;</span>支付宝扫描二维码进行支付';
+            // } else if (_paymentType == 3) {
+            //     $("erweimaText").innerHTML = '使用<span style="display:inline-table; width:28px; background:url(images/icon_zhifu.png) no-repeat center; height:50px;">&nbsp;</span>银联app扫描二维码进行支付';
+            // }
+        }
+
+
+
+        function changePayTypeFocus(_num) {
+            $("rechargeType" + payPos).style.backgroundColor = "#ffffff";
+            $("arrow_" + payPos).style.visibility = "hidden";
+            payPos = (payPos + _num + 4) % 4;
+            $("rechargeType" + payPos).style.backgroundColor = "#ffb400";
+            $("arrow_" + payPos).style.visibility = "visible";
+            //支付方式，取值1：boss账户（CA卡）【默认】，2：银行卡，3：银联，4：微信，5：支付宝。
+            if (payPos == 0) payType = 4;
+            else if (payPos == 1) payType = 5;
+            else if (payPos == 2) payType = 3;
+            else if (payPos == 3) payType = 1;
+            if (payType == 3) { //银联购买只需下单，应用封装pay需要的信息生成二维码，手机端去处理pay
+                $("erweima").style.visibility = "visible";
+                $("div2").style.visibility = "hidden";
+                codeUrl = '{"function":"pay","accesstoken":"' + access_token + '","orderid":' + orderId + ',"paymentmode":' + payType + ',"paymentinfo":{"sign":"","tradetype":"NATIVE","spbillcreateipstring":""}}';
+                initErweima(payType);
+            } else if (payType == 1) { //余额支付
+                ajaxReqObj.payAjaxObj.requestAbort();
+                $("erweima").style.visibility = "hidden";
+                $("div2").style.visibility = "visible";
+                $("payTips").src = "img/pay.png";
+                $("payText").innerHTML = '您正在使用余额支付，<br/>确定继续支付请按"确定"键';
+            } else {
+                $("erweima").style.visibility = "visible";
+                $("div2").style.visibility = "hidden";
+
+                if (codeUrlArr[payType + ""] != "") {
+                    codeUrl = codeUrlArr[payType + ""];
+                    initErweima(payType);
+                } else {
+                    payMoney(orderId, payType);
+                }
+            }
+        }
+
+        function init() {
+            create();
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

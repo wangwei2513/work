@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+<style>
+
+* {
+	margin:0px;
+	padding:0px;
+}
+
+body {
+
+	background:url(images/bg.png);
+	background: transparent;
+}
+
+#navTitle {
+	position:absolute;
+	left:85px;
+	top:30px;
+	color:#d2dce6;
+	font-size:16px;
+}
+
+#menuFocus {
+	position:absolute;
+	top:0px;
+	display:none;
+	z-index:-1;
+}
+#title {
+	position: absolute; 
+	left:85px; 
+	top: 130px; 
+	color: #ffffff; 
+	font-size: 30px; 
+	width: 303px;
+}
+
+#menuDiv {
+	width:1160px;
+	height:50px;
+	position:absolute;
+	top:95px;
+	left:55px;
+	color:#fff;
+	font-size:24px;
+	text-align:center;
+}
+
+#videoDiv {
+	position:absolute;
+	width:383px;
+	height:480px;
+	top:151px;
+	left:83px;
+	font-size:22px;
+	color:#fff;
+}
+
+#videoDesc {
+	position:absolute;
+	padding:10px 10px 10px 15px;
+	background-color:#3B4A75;
+	width:350px;
+	height:248px;
+	top:230px;
+	font-size:18px;
+	color:#fff;
+	overflow:hidden;
+	word-wrap: break-word
+}
+
+#videoDesc span {
+	line-height: 27px;
+}
+#posterDiv {
+	position: absolute;
+	width:850px;
+	height:550px;
+	top:151px;
+	left:502px;
+}
+
+#posterDiv > div {
+	display:inline-block;
+}
+
+#posterDiv span {
+	background-color:rgba(0,0,0,0.3);
+	position:absolute;
+	bottom:0px;
+	left:0px;
+	width:171px;
+	height:25px;
+	color:#fff;
+	text-align:center;
+	line-height:25px;
+	font-size:18px;
+}
+
+#posterFocus {
+	position: absolute;
+	left:75px;
+	top:147px;
+	width:382px;
+	height:262px;
+	border:2px solid #f39800;
+	display:none;
+	border-radius:7px;
+	box-shadow:1px 1px 30px #7b5719;
+}
+
+</style>
+<script src="js/tvui.model.js"></script>
+<script src="js/common.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+</head>
+<body id="body" style="display: block;">
+	<!--标题信息-->
+	<div id="navTitle"></div>
+	<img src="images/line_03.png" style="position:absolute;left:0px;top:58px;"/>
+	<!--左侧信息-->
+	<div id="title"></div>
+	<!-- 导航栏 -->
+	<div id="menuDiv">
+		<table width="1140" cellspacing="0" cellpadding="0">
+			<tr height="31">
+				<td id="label0" width="190"></td>
+				<td id="label1" width="190"></td>
+				<td id="label2" width="190"></td>
+				<td id="label3" width="190"></td>
+				<td id="label4" width="190"></td>
+				<td id="label5" width="190"></td>
+			</tr>
+		</table>
+		<img id="menuFocus" src="images/cover.png">
+	</div>
+	<div id="videoDiv">
+		<!-- <div id="test_1" src="" style="background: red;height: 300px;width: 290px;"></div> -->
+		<!-- <img src="images/play_bar.png" style="position:absolute;left:159px;top:79px;"/> -->
+		<div id="videoDesc"></div>
+	</div>
+	<div id="posterDiv">
+		<div style="position:absolute;left:0px;height:262px;">
+			<img id="pt0" src="" width="171" height="262">
+			<span id="name0"></span>
+		</div>
+		<div style="position:absolute;left:180px;height:262px;">
+			<img id="pt1" src="" width="171" height="262">
+			<span id="name1"></span>
+		</div>
+		<div style="position:absolute;left:361px;height:262px;"> 
+			<img id="pt2" src="" width="171" height="262">
+			<span id="name2"></span>
+		</div>
+		<div style="position:absolute;left:542px;height:262px;">
+			<img id="pt3" src="" width="171" height="262">
+			<span id="name3"></span>
+		</div>
+		<div style="position:absolute;left:0px;top:279px;">
+			<img id="adver0" src="" width="352" height="220">
+		</div>
+		<div style="position:absolute;left:361px;top:279px;">
+			<img id="adver1" src="" width="352" height="220">
+		</div>
+	</div>
+	<div id="posterFocus"></div>
+	<!-- 音量条 -->
+	<div id="volumeDiv" style="position:absolute;top:590px;left:200px;width:800px;height:30px;color:#969EAE;font-size:20px;visibility:hidden;">
+		<img style="position:absolute;" src="images/volunm.png">
+		<img style="position:absolute;left:40px;" src="images/volunm_bar.png">
+		<div style="position:absolute;width:700px;height:5px;top:13px;left:60px;">
+			<div id="volumeBar" style="position:absolute;background-color:#fff;width:40%;height:5px;">
+				<img src="images/volum_stop.png" style="position:absolute;right:0px;top:-6px;">
+			</div>
+			<span id="volumeVal" style="position:absolute;left:40%;top:-12px;height:30px;line-height:30px;">40%</span>
+		</div>	
+	</div>
+
+	<!-- 静音标识 -->
+	<img id="mute" src="images/mute.png" style="position:absolute;left:870px;top:400px;visibility:hidden;">
+	<!-- <div id="test_1" style="position:absolute;width:1280px;height:220px;color:#fff;bottom:0px;background-color:#000;text-align:center;visibility:hidden;"></div> -->
+	</div>
+	<script>
+	var msg = "";
+	var listType = "";
+	var navStr = mySessionStorage.getItem('navigator');
+	var navStr = navStr.replace(/ > /g,">");
+	var clickLink = "";
+	var backUrlDead = "http://172.23.252.132/zhenqu2/index.htm"
+	var clickLinkHead = location.href.split("/").slice(0,4).join("/")
+	function getTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr +"||"+ msg +"||"+"点击";
+				try{
+					DataCollection.collectData(["01",clickLink,location.href,title,"",""])
+				}catch(e){};
+	}
+	function getInitData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr+"||"+ navStr.split(">")[2]+"||"+"加载" ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr +"||"+ navStr.split(">")[1] +"||"+"返回";
+				try{
+					DataCollection.collectData(["01",backUrlDead,location.href,title,"",""])
+				}catch(e){};
+	}
+	document.onkeydown = eventHandler;
+	function eventHandler(eve){
+		var e = eve || window.event;
+		var keycode = e.keyCode || e.which || e.charCode;
+		switch(keycode){
+			case 1:   // up
+		    case 38:
+		    case 87:
+				if(page.focusArea === 1) {
+					if(page.posterIndex < 5) {
+						page.areaChange(0);
+					} else {
+						page.ptFocusMove(-2);
+					}					
+				}
+				return false;
+			break;
+			case 2:   // down
+		    case 40:
+		    case 83:
+				if(page.focusArea === 0) {
+					page.areaChange(1);
+				} else if(page.focusArea === 1) {
+					page.ptFocusMove(2);
+				}
+				return false;	
+			break;
+			case 3:   // left
+		    case 37:
+		    case 65:
+				if(page.focusArea === 0) {
+					page.menuFocusMove(-1);
+				} else if(page.focusArea === 1) {
+					page.ptFocusMove(-1);
+				}
+				return false;
+			break;
+			case 4:   // right
+		    case 39:
+		    case 68:
+				if(page.focusArea === 0) {
+					page.menuFocusMove(1);
+				} else if(page.focusArea === 1) {
+					page.ptFocusMove(1);
+				}
+				return false;
+			break;
+			case 13:  //KEY_SELECT
+				page.doSelect();
+			return false;
+			break;
+			case 8:  //KEY_BACK
+				page.goBack();
+				return false;
+			break;
+		}
+	}
+
+	var page = {
+		focusArea : parseInt(mySessionStorage.getItem("zq_focusArea")) || 0,
+		MAX_MENU_NUM : 6,
+		menuIndex : 0,
+		menuMaxIndex : 5,
+		menuFocusWidth : 190,
+		MAX_PT_NUM : 7,
+	 	fullScreenFlag : false,
+		posterIndex : 0,
+		posterMaxIndex : 3,
+		ptPos :  [[79,147],[498,147],[678,147],[859,147],[1040,147],[498,426],[859,426]],
+		ptSize : [[384,225],[175,266],[175,266],[175,266],[175,266],[356,224],[356,224]],
+		menuData : [],
+		posterData : [],
+		videoData : null,
+		adData : [],
+		 assetId : "",
+	    folderAssetId :"",
+		dataPath : "menu.js",
+		navStr : "",
+		backPath :mySessionStorage.getItem("backPath"),
+		backFlag : 0,
+		ajaxVideo:function(){
+			page.token(page.assetId,"","",page.folderAssetId);
+		},
+		ajaxData : function() {
+			sendAjax(this.dataPath,null,function(data){
+				var getData = eval("(" + data + ")");
+				if(getData && getData.length > 0) {
+					for(var i=0;i<getData.length;++i) {
+						if(getData[i].focusImageUrl == "") {
+							var obj = {
+								name : getData[i].name,
+								enName : getData[i].enName,
+								linkUrl : getData[i].linkUrl,
+								entryWord : getData[i].entryWord
+							}
+							page.menuData.push(obj);
+						} else if(getData[i].entryWord == ""){
+							if(getData[i].name.indexOf("广告") === -1) {
+								var obj = {
+									name : getData[i].name,
+									imageUrl : getData[i].focusImageUrl,
+									enName : getData[i].enName,
+									linkUrl : getData[i].linkUrl,
+									isManaged : getData[i].isManaged
+								}
+								page.posterData.push(obj);
+							} else {
+								var obj = {
+									name : getData[i].name,
+									imageUrl : getData[i].focusImageUrl,
+									linkUrl : getData[i].linkUrl,
+									enName : getData[i].enName,
+									isManaged : getData[i].isManaged
+								}
+								page.adData.push(obj);
+							}							
+						} else {
+							page.videoData = {
+								imageUrl : getData[i].focusImageUrl,
+								linkUrl : getData[i].linkUrl,
+								desc : getData[i].entryWord
+							}
+							///$("test_1").innerText += "\n获取id,serviceId="+page.videoData.linkUrl;
+							page.splitData(page.videoData)
+						} 
+					}
+					page.initAd();
+					page.ajaxVideo();
+					page.initTopMenu(page.menuMaxIndex-5);
+					page.initPoster(0);
+				}
+			},"utf-8");
+		},
+		initNav : function() {
+			this.navStr = mySessionStorage.getItem('navigator');
+			$('navTitle').innerText = this.navStr.replace(/>/g," > ");
+			var navArr = this.navStr.split(">");
+		},
+		initTopMenu : function(pos) {
+			if(this.menuData.length > 0) {
+				var content = "";
+				for(var i=0;i<this.MAX_MENU_NUM;++i) {
+					if(pos+i < this.menuData.length) {
+						$("label"+i).innerText = this.menuData[pos+i].name ;
+					}		
+				}
+				if(this.focusArea === 0) {
+					$("menuFocus").style.display = "block";
+				}
+				index = 5 - (this.menuMaxIndex - this.menuIndex);
+				$("menuFocus").style.left = (3+this.menuFocusWidth*index) + "px";
+				$("label"+index).style.fontSize = "32px";
+			}
+		},
+		initPoster : function(pos) {
+			if(this.posterData.length > 0) {
+				for(var i=pos;i<this.posterData.length;++i) {
+					$("pt"+i).src = this.posterData[i+pos].imageUrl;
+					$("name"+i).innerText = this.posterData[i+pos].name.substr(0,7) + "...";
+				}
+			}
+			if(this.focusArea === 1) {
+				$("posterFocus").style.display = "block";
+			}
+			this.ptFocusMove(0); 
+		},
+		initAd : function() {
+			for(var i=0;i<this.adData.length && i<2;++i) {
+				if(this.adData[i]) {
+					$("adver" + i).src = this.adData[i].imageUrl;
+				}
+			}
+		},
+		initVideo : function() {
+			if(this.videoData) {
+				// $("videoImg").src = this.videoData.imageUrl;
+				if(this.videoData.desc.length >= 200) {
+					var textData = this.videoData.desc.substr(0,200).split("</br>");
+					for(var i=0;i<textData.length-1;i++){
+						$("videoDesc").innerHTML += "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +textData[i] +"</p>"
+					}
+					$("videoDesc").innerHTML += "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +textData[textData.length-1]+ "...</p>" ;
+				} else {
+					var textData = this.videoData.desc.split("</br>");
+					for(var i=0;i<textData.length;i++){
+						$("videoDesc").innerHTML += "<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +textData[i] +"</p>"
+					}
+				}			
+			}
+		},
+		initPlayer : function() {		
+			this.player = new TVUI.Player({
+	            fullScreen: false,
+	            page:this.pg,
+	            autoDestroy:false
+	        });
+	        this.player.setPosition(0,83,151,380,220);
+	        this.player.on('error', function () {
+	        });
+	        this.player.on('play', function () {
+	        });
+	        this.player.on('volume', function (val) {
+	        	var isMute = page.player.isMute();
+	        	if (isMute) {
+	            	page.player.player.audioUnmute();
+	                $('mute').style.visibility = 'hidden';
+	            }
+	            page.showVolume(val);
+	        });
+	        this.player.on('mute', function (isMute) {
+	        	if(page.__volumeTimer) {
+	        		clearTimeout(page.__volumeTimer);
+	        		$("volumeDiv").style.visibility = "hidden";
+	        	}
+	            var mute = $('mute');
+	            isMute ? mute.style.visibility = 'visible' : mute.style.visibility = 'hidden';
+	        });
+	        if (this.player.isMute()) {
+	            $('mute').style.visibility = 'visible';
+	        }
+	        this.player.on('rtspEnd', function(){//播放完毕后，当页循环播放
+	            page.token(page.assetId,"","",page.folderAssetId);
+	        });
+		},
+		
+	    token:function(assetId,providerId,serviceId,groupId){
+	    	// $("test_1").innerText += "\n调用token,assetId="+assetId;
+	        getItemData(assetId,providerId,function (data) {//获取商品ID
+	            var serviceId = data.serviceInfo[0].serviceId || "";
+	             // $("test_1").innerText += "\n获取id,serviceId="+serviceId;
+	            selectionStart(assetId,providerId,serviceId,groupId,function(data){
+	            	// $("test_1").innerText += "\n获取令牌,purchaseToken="+data.purchaseToken;
+	                 if(data.purchaseToken){
+	                     page.player.stop();
+	                     page.setPlayer(data.purchaseToken);
+	                 }
+	            });
+	        });
+	    },
+	    setPlayer: function (token) {
+	        var config = ue.config;
+	        this.player.VODSrc({
+	            path: config.boServer.ip,
+	            port: config.boServer.port,
+	            token: token,
+	            serverId: config.vodServerID
+	        });
+	        this.player.play();
+	    },
+	    showVolume: function (val) {
+	        clearTimeout(this.__volumeTimer);
+	        var volume = $('volumeDiv');
+	        var progress = $('volumeBar')
+	            value = $('volumeVal'),
+	            percent = parseFloat(val * 100 / 32);
+	        progress.style.width = (percent + '%');
+	        value.innerHTML = val;
+	        value.style.left = ((percent+1) + '%');
+	        volume.style.visibility = "visible";
+	        this.__volumeTimer = setTimeout(function () {
+	           volume.style.visibility = "hidden";
+	        }, 3000);
+	    },
+		menuFocusMove : function(dis) {
+			var index = 5 - (this.menuMaxIndex - this.menuIndex);
+			$("label"+index).style.fontSize = "24px";
+			if(dis === -1) {	
+				if(this.menuIndex > this.menuMaxIndex-5) {
+					this.menuIndex - 1 >= 0 ? this.menuIndex-- : 0;
+				} else if(this.menuIndex === this.menuMaxIndex-5) {
+					if(this.menuMaxIndex > 5) {
+						this.menuIndex--;
+						this.menuMaxIndex--;
+						this.initTopMenu(this.menuIndex);			
+					}
+					$("label0").style.fontSize = "32px";
+					return;	
+				} 
+			} else if(dis === 1) {
+				if(this.menuIndex < this.menuMaxIndex) {
+					this.menuIndex + 1 < this.menuData.length ? this.menuIndex++ : this.menuIndex;
+				} else if(this.menuIndex === this.menuMaxIndex) {
+					if(this.menuIndex < this.menuData.length-1) {
+						this.menuIndex++;
+						this.menuMaxIndex++;
+						this.initTopMenu(this.menuIndex-5);
+					}	
+					$("label5").style.fontSize = "32px";	
+					return ;
+				}
+			}
+			index = 5 - (this.menuMaxIndex - this.menuIndex);
+			$("menuFocus").style.left = (3+this.menuFocusWidth*index) + "px";
+			$("label"+index).style.fontSize = "32px";
+		},
+		splitData:function(__orginArr){
+			//$("test_1").innerText += "11111111"+__orginArr.linkUrl;
+			if(!__orginArr)return [];
+			else{
+				var tempObj = [];
+				var i = 0;
+				 
+					if(__orginArr.linkUrl != "" ){//视频
+
+						var idArr = __orginArr.linkUrl.split("&");
+						page.folderAssetId = idArr[0];
+						page.assetId = 	idArr[1];
+						//$("test_1").innerText += "11111111"+page.folderAssetId;
+						//__orginArr.splice(i,1);	
+					}
+					else if(__orginArr[i].focusImageUrl == "" ){//文字类型
+						tempObj.push(__orginArr[i]);
+						__orginArr.splice(i,1);		
+					} 
+					else{
+						i++;
+					}
+				
+				return [tempObj,__orginArr];
+			}
+		},
+		ptFocusMove : function(dis) {
+			if(this.posterIndex === 0) {
+				// $("videoImg").style.borderRadius = "";
+			} else if(this.posterIndex < 5) {
+				$("pt"+(this.posterIndex-1)).style.borderRadius = "";
+			} else {
+				$("adver"+(this.posterIndex-5)).style.borderRadius = "";
+			}
+			if(this.posterIndex<5 && this.posterIndex>0){
+                     $("name"+(this.posterIndex-1)).innerHTML = this.posterData[this.posterIndex-1].name.substr(0,7) + "...";
+				}
+			if(dis === -2) {
+				if(this.posterIndex === 5) {
+					this.posterIndex = 1;
+				} else if(this.posterIndex === 6){
+					this.posterIndex = 3;
+				}
+			} else if(dis === -1) {
+				this.posterIndex - 1 >= 0 ? this.posterIndex-- : 0;
+			} else if(dis === 1) {
+				this.posterIndex + 1 < this.MAX_PT_NUM ? this.posterIndex++ : 0;
+			} else if(dis === 2) {
+				if(this.posterIndex < 3) {
+					this.posterIndex = 5;
+				} else if(this.posterIndex < 5){
+					this.posterIndex = 6;
+				}		
+			}
+			if(this.posterIndex<5 && this.posterIndex>0){
+				      $("name"+(this.posterIndex-1)).innerHTML = "<marquee width=170>"+this.posterData[this.posterIndex-1].name+ "</marquee>";
+				 }
+			if(this.posterIndex === 0) {
+				// $("videoImg").style.borderRadius = "3px";
+			} else if(this.posterIndex < 5) {
+				$("pt"+(this.posterIndex-1)).style.borderRadius = "3px";
+			} else {
+				$("adver"+(this.posterIndex-5)).style.borderRadius = "3px";
+			}
+			$("posterFocus").style.left = this.ptPos[this.posterIndex][0] + "px";
+			$("posterFocus").style.top = this.ptPos[this.posterIndex][1]  + "px";
+			$("posterFocus").style.width = this.ptSize[this.posterIndex][0] + "px";
+			$("posterFocus").style.height = this.ptSize[this.posterIndex][1] + "px";
+		},
+		areaChange : function(area) {
+			this.focusArea = area;
+			if(this.focusArea === 0){
+				$("menuFocus").style.display = "block";
+				$("posterFocus").style.display = "none";
+			} else {
+				$("menuFocus").style.display = "none";
+				$("posterFocus").style.display = "block";
+			}
+		},
+
+		doSelect : function() {
+			
+			mySessionStorage.setItem("zq_focusArea",this.focusArea);
+			if(this.focusArea == 0 && this.menuIndex != 0) {
+				mySessionStorage.setItem("zq_focusIndex",this.menuIndex);
+				mySessionStorage.setItem("navigator",$("navTitle").innerText + ">" + this.menuData[this.menuIndex].name);
+				
+				msg = this.menuData[this.menuIndex].name;
+				listType = "栏目";
+				clickLink =clickLinkHead+"/"+ this.menuData[this.menuIndex].enName+ "/index.htm";
+				getTitleData();
+				page.player.stop();
+				window.location.href =  this.menuData[this.menuIndex].enName + "/index.htm?assetId=" + this.menuData[this.menuIndex].entryWord;
+			} else if(this.focusArea === 1) {
+				mySessionStorage.setItem("zq_focusIndex",this.posterIndex);			
+				if(this.posterIndex === 0) {	
+					// $("body").style.display = "none";
+					// $("body").style.background="";
+					// $("body").style.background="transparent" ;
+					page.player.stop();
+					window.location.href = ue.config.server + "/NewFrameWork/UE/html/vodplayer.html?nodeType=1&assetId=" + this.assetId + "&groupId=" + this.folderAssetId + "&resumePoint=" + this.player.point();
+
+				} else if(this.posterIndex > 4) {	
+					if(this.adData[this.posterIndex-5].linkUrl != "" ) {
+						TVUI.API.SysSetting.env("vod_back_url",window.location.href);
+						msg = this.adData[this.posterIndex-5].name;
+					
+						listType = "视频";
+						clickLink =clickLinkHead+"/"+ this.adData[this.posterIndex-5].linkUrl;
+						getTitleData();
+						page.player.stop();
+						window.location.href = this.adData[this.posterIndex-5].linkUrl;
+					} else if(this.adData[this.posterIndex-5].isManaged == "managed"){
+						mySessionStorage.setItem("navigator",this.navStr + ">" + this.adData[this.posterIndex-5].name);
+						msg = this.adData[this.posterIndex-5].name;
+					
+						listType = "图文";
+						clickLink =clickLinkHead+"/"+ this.adData[this.posterIndex-5].enName  + "/index.htm";
+						getTitleData();
+						page.player.stop();
+						window.location.href = this.adData[this.posterIndex-5].enName + "/index.htm";
+					}				
+				} else {
+					if(this.posterData[this.posterIndex-1].linkUrl != "") {
+						TVUI.API.SysSetting.env("vod_back_url",window.location.href);
+						msg = this.adData[this.posterIndex-1].name;
+					
+						listType = "视频";
+						clickLink =clickLinkHead+"/"+ this.adData[this.posterIndex-1].linkUrl;
+						getTitleData();
+						page.player.stop();
+						window.location.href = this.posterData[this.posterIndex-1].linkUrl;
+					} else if(this.posterData[this.posterIndex-1].isManaged == "managed"){
+						mySessionStorage.setItem("navigator",this.navStr + ">" + this.posterData[this.posterIndex-1].name);
+						msg = this.posterData[this.posterIndex-1].name;
+						listType = "图文";
+						clickLink =clickLinkHead+"/"+ this.posterData[this.posterIndex-1].enName  + "/index.htm";
+						getTitleData();
+						page.player.stop();
+						window.location.href = this.posterData[this.posterIndex-1].enName + "/index.htm";
+					}		
+				}
+			}
+		},
+		goBack : function() {
+			// var navStrArr = navStr.split(">");
+			// 	mySessionStorage.setItem("navigator",navStrArr.slice(0,navStrArr.length-1).join(">"));
+				mySessionStorage.setItem("zq_focusArea","");
+				mySessionStorage.setItem("zq_focusIndex","");
+				if(this.backFlag == 0) {
+					listType = "栏目";
+					//msg = navStr.split(">")[1];
+					getBackTitleData();
+				var navStrArr = navStr.split(">")
+				navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+					// this.navStr = this.navStr.substr(0,this.navStr.lastIndexOf(">"));
+					mySessionStorage.setItem("navigator",navStr);
+					this.backFlag = 1;
+					
+				}		
+				page.player.stop();
+				window.location.href = this.backPath;
+				//window.history.go(-1);
+			
+			
+		},
+		initPage : function() {
+			this.pg = new TVUI.Page({
+            name:'news'+TVUI.Util.getParam('assetId'),
+            preventDefault: false
+       		 });
+			TVUI.Page.clearHistory();
+			TVUI.API.SysSetting.env('backUrl',window.location.href);
+			if(this.focusArea === 0) {
+				this.menuIndex = parseInt(mySessionStorage.getItem("zq_focusIndex"))||0;
+				this.menuMaxIndex = this.menuIndex > this.menuMaxIndex ? this.menuIndex : 5;
+			} else {
+				this.posterIndex = parseInt(mySessionStorage.getItem("zq_focusIndex"))||0;
+			}
+			this.initNav();
+			this.ajaxData();
+			this.initVideo();
+			this.initPlayer();	
+			
+						listType = "栏目";
+						getInitData();	
+			//getTitleData();
+		}
+	};
+
+	window.onload = page.initPage();
+	</script>
+</body>
+</html>

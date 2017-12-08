@@ -1,0 +1,366 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>portal</title>
+  <script type="text/javascript" src="js/global.js"></script>
+  <script type="text/javascript" src="js/config.js"></script>
+  <script language="javascript">
+    var ajaxObj = null;
+    var menuBox = null;
+    var menuList = [];
+    var menuTextPic = ["images/text01.png", "images/text02.png", "images/text03.png", "images/text04.png",
+      "images/text05.png"
+    ];
+    var menuTyPic = ["images/pic10_01.png", "images/pic10_02.png", "images/pic10_03.png", "images/pic10_04.png",
+      "images/pic10_05.png"
+    ];
+    var menuNumMax = 5;
+    var listShowNum = 2;
+    var menuPos = parseInt(getGlobalVar("menuPos")) || 0; //0表示第一个menu，依次类推
+    var btnPos = parseInt(getGlobalVar("btnPos")) || 0;
+    var stbNoExist = location.search.indexOf('?') > -1 ? location.search.split('?')[1].split("=")[1] : getGlobalVar(
+      "stbNoExist") ? getGlobalVar("stbNoExist") : "";
+      console.log(stbNoExist)
+    setGlobalVar("stbNoExist", stbNoExist);
+
+    function eventHandler(eventObj, type) {
+      var keyCode = eventObj.code;
+      iDebug("keyCode = " + keyCode);
+      switch (keyCode) {
+        case "KEY_UP":
+          changeUD(-1);
+          return false;
+          break;
+        case "KEY_DOWN":
+          changeUD(1);
+          return false;
+          break;
+        case "KEY_LEFT":
+          changeLR(-1);
+          return false;
+          break;
+        case "KEY_RIGHT":
+          changeLR(1);
+          return false;
+          break;
+        case "KEY_SELECT":
+          doSelect();
+          return false;
+          break;
+        case "KEY_EXIT":
+        case "KEY_HOMEPAGE":
+          return false;
+          break;
+        case "KEY_BACK":
+          doBack();
+          return false;
+          break;
+        default:
+          return true;
+          break;
+      }
+    }
+
+    function changeUD(_num) {
+      if (menuBox.position == 0) {
+        changeBtn(_num);
+      }
+    }
+
+    function changeBtn(_num) {
+      for (var i = 0; i < listShowNum; i++) {
+        $("btn" + i).style.background = "url()";
+        $("btn" + i).style.color = "#c4a17f";
+      }
+      btnPos = (btnPos + _num + listShowNum) % listShowNum;
+      for (var i = 0; i < listShowNum; i++) {
+        if (i == btnPos) {
+          $("btn" + i).style.background = "url(images/portal_f2.png)";
+          $("btn" + i).style.color = "#2d200a";
+          break;
+        }
+      }
+
+    }
+
+    function changeLR(_num) {
+      menuBox.changeList(_num);
+      $("focusPic").src = menuList[menuBox.position].Icon;
+      $("focusTextPic").src = menuTextPic[menuBox.position];
+      if (menuBox.position == 0) {
+        $("btn").style.visibility = "visible";
+        $("bg_zhezhaoPic").style.visibility = "visible";
+      } else {
+        $("btn").style.visibility = "hidden";
+        $("bg_zhezhaoPic").style.visibility = "hidden";
+      }
+
+    }
+
+    function doSelect() {
+      setGlobalVar("menuPos", menuBox.position);
+      setGlobalVar("btnPos", btnPos);
+      switch (menuBox.position) {
+        case 0: //电视直播
+          if (btnPos == 0) { //直播
+            iPanel.misc.startOtherApp("com.ccdt.app.tv.launcher"); //参数格式：包名/类名
+          } else if (btnPos == 1) { //点播
+            iPanel.misc.startOtherApp("com.voole.webepg"); //参数格式：包名/类名
+          }
+          // else if(btnPos == 2){//常规酒店
+          // 	var ipanelPacketUrl = "../minihotel/index.html?backUrl="+window.location.href;
+          // 	window.location.href = ipanelPacketUrl;
+          // }else if(btnPos == 3){//智慧城市
+          // 	var zhihuiPacketUrl = "http://125.223.98.233:10012/index.html";
+          // 	window.location.href = zhihuiPacketUrl;
+          // }
+          break;
+        case 1: //酒店服务
+          window.location.href = "hotelService.htm?id=" + menuList[menuBox.position].ID + "&hotelid=" + menuList[
+            menuBox.position].Hotel;
+          break;
+        case 2: //酒店特色
+          window.location.href = "hotelfeatures.htm?id=" + menuList[menuBox.position].ID + "&hotelid=" + menuList[
+            menuBox.position].Hotel;
+          break;
+        case 3: //旅游指南
+          window.location.href = "aroundGuide.htm?id=" + menuList[menuBox.position].ID + "&hotelid=" + menuList[
+            menuBox.position].Hotel;
+          break;
+        case 4: //旅游服务
+          window.location.href = "travelService.htm?id=" + menuList[menuBox.position].ID + "&hotelid=" + menuList[
+            menuBox.position].Hotel;
+          break;
+      }
+    }
+
+    function doBack() {
+      delGlobalVar("stbNoExist");
+      setGlobalVar("menuPos", menuBox.position);
+      window.location.href = "welcome.htm";
+    }
+
+    function init() {
+      timeShow();
+      requestPubMenu();
+      changeBtn(0);
+    }
+
+    function timeShow() {
+      var date = new Date();
+      $("time").innerText = date.pattern("hh:mm");
+      $("date").innerText = date.pattern("yyyy/MM/dd");
+      setTimeout(function () {
+        timeShow();
+      }, 60000);
+    }
+
+    function requestPubMenu() {
+      if (ajaxObj != null) {
+        ajaxObj.requestAbort();
+      } else {
+        ajaxObj = new ajaxClass();
+      }
+      ajaxObj.frame = window;
+      //ajaxObj.charset = "gbk";
+      ajaxObj.successCallback = function (_xmlHttp, _params) {
+        iDebug("requestMenu responseText=" + _xmlHttp.responseText);
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+        if (typeof (jsonData) != "undefined" && jsonData != null) {
+          iDebug("requestMenu get in");
+          menuList = jsonData.data;
+          //menuList = QuickSort(menuList);
+          if (stbNoExist == 'false') {
+            requestPirMenu();
+          } else {
+            initMenu();
+          }
+        } else {
+          iDebug("request menu ajax failure! 1");
+        }
+      };
+      ajaxObj.failureCallback = function (_xmlHttp, _params) {
+        iDebug("request menu ajax failure! 2");
+      };
+      ajaxObj.url = ajaxUrls.publicMenuUrl[debug] + '?type=0';
+      ajaxObj.requestData();
+    }
+
+    function requestPirMenu() {
+      if (ajaxObj != null) {
+        ajaxObj.requestAbort();
+      } else {
+        ajaxObj = new ajaxClass();
+      }
+      ajaxObj.frame = window;
+      //ajaxObj.charset = "gbk";
+      ajaxObj.successCallback = function (_xmlHttp, _params) {
+        iDebug("requestMenu responseText=" + _xmlHttp.responseText);
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+        if (typeof (jsonData) != "undefined" && jsonData != null) {
+          iDebug("requestMenu get in");
+          var data = jsonData.data;
+          for (var i = 0; i < data.length; i++) {
+            menuList.push(data[i])
+          }
+          //menuList = QuickSort(menuList);
+          initMenu();
+        } else {
+          iDebug("request menu ajax failure! 1");
+        }
+      };
+      ajaxObj.failureCallback = function (_xmlHttp, _params) {
+        iDebug("request menu ajax failure! 2");
+      };
+      if (!debug) {
+        var url = ajaxUrls.publicMenuUrl[debug] + '?type=1';
+      } else {
+        var url = ajaxUrls.publicMenuUrl[debug];
+        url = url.split(".")[0]+"0."+url.split(".")[1];
+      }
+      ajaxObj.url = url;
+      ajaxObj.requestData();
+    }
+
+    function initMenu() {
+      for (var i = 0; i < 5; i++) {
+        $("menuPic" + i).parentNode.style.visibility = 'hidden';
+        $("menuTyPic" + i).style.visibility = 'hidden';
+      }
+      iDebug("requestMenu menuList.length=" + menuList.length);
+      if (menuList.length == 0) return;
+      menuNumMax = menuList.length;
+      menuBox = new showList(menuNumMax, menuList.length, menuPos, 0, window);
+      menuBox.fixedPos = 0;
+      menuBox.focusFixed = true;
+      menuBox.showLoop = true;
+      menuBox.focusLoop = true;
+      menuBox.haveData = function (_list) {
+        iDebug("requestMenu icon=" + menuList[_list.dataPos].Icon);
+        console.log("list.dataPos" + _list.dataPos)
+        $("menuPic" + _list.idPos).parentNode.style.visibility = 'visible';
+        console.log($("menuPic" + _list.idPos).parentNode)
+        $("menuTyPic" + _list.idPos).style.visibility = 'visible';
+        $("menuPic" + _list.idPos).src = menuList[_list.dataPos].Icon;
+        $("menuTextPic" + _list.idPos).src = menuTextPic[_list.dataPos];
+        $("menuTyPic" + _list.idPos).src = menuTyPic[_list.dataPos];
+      };
+      menuBox.notData = function (_list) {
+        $("menuPic" + _list.idPos).src = "";
+        $("menuTextPic" + _list.idPos).src = "";
+        $("menuTyPic" + _list.idPos).src = "";
+      };
+      menuBox.startShow();
+      $("menuTextBg").style.visibility = "visible";
+      changeLR(0);
+    }
+
+    function QuickSort(array) {
+      var temp = 0;
+      for (var i = 0; i < array.length; i++) {
+        for (var j = 0; j < array.length - i - 1; j++) {
+          if (array[j].Orders > array[j + 1].Orders) {
+            temp = array[j + 1];
+            array[j + 1] = array[j];
+            array[j] = temp;
+          }
+        }
+      }
+      iDebug(JSON.stringify(array));
+      return array;
+    }
+  </script>
+</head>
+
+<body background="images/bg1.jpg" leftmargin="0" topmargin="0" style="font-family:微软雅黑;" onLoad="init()">
+  <div style="position:absolute;left:1056px;top:38px; width:109px; height:82px; font-size:21px; color:#9d8761;"><span id="time" style="font-size:40px;">&nbsp;</span><br/><span id="date">&nbsp;</span></div>
+  <!--wifi-->
+  <div style="position:absolute;left:121px;top:636px; width:630px; height:30px; background:url(images/wifi.png) no-repeat left center; padding-left:47px;font-size:21px; color:#cbae7c;">wifi账号：xianggelila &nbsp;&nbsp;&nbsp;&nbsp; wifi密码：8886666</div>
+
+  <!--底部操作提示-->
+  <div style="position:absolute;left:963px;top:632px; width:210px; height:40px;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:21px; color:#9d8761; ">
+      <tr>
+        <td width="48"><img src="images/icon00.png" width="40" height="40" style="display:block;"></td>
+        <td width="64">选择</td>
+        <td width="48"><img src="images/icon01.png" width="40" height="40" style="display:block;"></td>
+        <td width="64">进入</td>
+      </tr>
+    </table>
+  </div>
+
+  <!--主题-->
+  <div style="position:absolute;left:117px;top:182px; width:232px; height:377px;visibility:hidden;">
+    <img id="menuPic0" src="" width="232" height="279">
+    <div style="position:absolute;top:279px; left:0px; width:232px; height:97px; background:url(images/text_bg.png);"><img id="menuTextPic0" src="" width="232" height="97"></div>
+  </div>
+  </div>
+
+  <div style="position:absolute;left:388px;top:182px; width:232px; height:377px;visibility:hidden;">
+    <img id="menuPic1" src="" width="232" height="279">
+    <div style="position:absolute;left:0px;top:0px; width:232px; height:279px; background:url(images/zhezhao.png) no-repeat center;"></div>
+    <div style="position:absolute;top:279px; left:0px; width:232px; height:97px; background:url(images/text_bg.png);"><img id="menuTextPic1" src="" width="232" height="97"></div>
+  </div>
+  </div>
+
+  <div style="position:absolute;left:659px;top:182px; width:232px; height:377px;visibility:hidden;">
+    <img id="menuPic2" src="" width="232" height="279">
+    <div style="position:absolute;left:0px;top:0px; width:232px; height:279px; background:url(images/zhezhao.png) no-repeat center;"></div>
+    <div style="position:absolute;top:279px; left:0px; width:232px; height:97px; background:url(images/text_bg.png);"><img id="menuTextPic2" src="" width="232" height="97"></div>
+  </div>
+  </div>
+
+
+  <div style="position:absolute;left:931px;top:182px; width:232px; height:377px;visibility:hidden;">
+    <img id="menuPic3" src="" width="232" height="279">
+    <div style="position:absolute;left:0px;top:0px; width:232px; height:279px; background:url(images/zhezhao.png) no-repeat center;"></div>
+    <div style="position:absolute;top:279px; left:0px; width:232px; height:97px; background:url(images/text_bg.png);"><img id="menuTextPic3" src="" width="232" height="97"></div>
+  </div>
+  </div>
+
+  <div style="position:absolute;left:1203px;top:182px; width:77px; height:377px;overflow:hidden;visibility:hidden;">
+    <img id="menuPic4" src="" width="232" height="279">
+    <div style="position:absolute;left:0px;top:0px; width:232px; height:279px; background:url(images/zhezhao.png) no-repeat center;"></div>
+    <div style="position:absolute;top:279px; left:0px; width:232px; height:97px; background:url(images/text_bg.png);"><img id="menuTextPic4" src="" width="232" height="97"></div>
+  </div>
+  </div>
+
+
+  <!--投影-->
+  <div style="position:absolute;left:117px;top:572px; width:1167px; height:148px;overflow:hidden;">
+    <img id="menuTyPic0" src="" width="232" height="148" style="position:absolute;left:0px;top:0px;visibility:hidden;">
+    <img id="menuTyPic1" src="" width="232" height="148" style="position:absolute;left:271px;top:0px;visibility:hidden;">
+    <img id="menuTyPic2" src="" width="232" height="148" style="position:absolute;left:542px;top:0px;visibility:hidden;">
+    <img id="menuTyPic3" src="" width="232" height="148" style="position:absolute;left:814px;top:0px;visibility:hidden;">
+    <img id="menuTyPic4" src="" width="232" height="148" style="position:absolute;left:1084px;top:0px;visibility:hidden;">
+  </div>
+
+
+  <!--焦点-->
+  <div style="position:absolute;left:72px;top:136px; width:324px; height:470px;">
+    <img id="focusPic" src="images/pic0_focus.png" width="245" height="294" style="position:absolute;left:39px;top:27px;">
+    <img id="bg_zhezhaoPic" src="images/zhezhao.png" style="position:absolute;left:39px;top:27px; width:245px; height:294px; visibility:hidden">
+    <img id="focusTextPic" src="images/text05.png" width="245" height="104" style="position:absolute;top:320px; left:39px; width:245px;">
+
+    <div id="menuTextBg" style="position:absolute;left:0px;top:0px; width:324px; height:470px; background:url(images/pic0_f1.png);">
+      <table id="btn" border="0" cellpadding="0" cellspacing="0" width="251" height="292" style="position:absolute;left:36px;top:26px;font-size:30.5px; color:#c4a17f; text-align:center;">
+        <tr id="btn0" height="73" style=" background:url(images/portal_f2.png);color:#2d200a;">
+          <td>直播</td>
+        </tr>
+        <tr id="btn1" height="73">
+          <td>点播</td>
+        </tr>
+        <tr id="btn2" height="73">
+          <td></td>
+        </tr>
+        <tr id="btn3" height="73">
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>

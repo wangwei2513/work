@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>学党课</title>
+<script language="javascript" src="js/common.js"></script>
+<script language="javascript" src="js/config.js"></script>
+<script type="text/javascript">
+var totalPage = 0;      //总页数
+var currPage = 0;     //当前第几页
+var subPos = 0;       //焦点在页面上边的位置
+var itemPos = 0;      //上一页传过来的条目位置
+var pageNum = 8;      //每页显示的个数
+var menuData = [];
+var isShowSroll = false;//false:不显示滑动条 ; true:显示滑动条
+var backUrl = "";
+var appEnName = "bsgwt";//应用的enName
+var file = "/content.js";
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  var e = key || event;
+  var keycode = e.keyCode || e.which || e.charCode;
+  switch (keycode) {
+    case 1:   // up
+    case 38:
+      upAndDown(-1);
+      return false;
+      break;
+    case 2:   // down
+    case 40:
+      upAndDown(1);
+      return false;
+      break;
+    case 3:   // left
+    case 37:
+      leftAndRight(-1);
+      return false;
+      break;
+    case 4:   // right
+    case 39:
+      leftAndRight(1);
+      return false;
+      break;
+    case 13:
+      doSelect();
+      return false;
+      break;
+	case 340:
+    case 8:
+	  if(backUrl == "")return;
+      window.location.href = backUrl;
+      event.returnValue = false;
+      return false;
+      break;
+	case 339:
+    case 27:
+	  if(typeof iSTB != "undefined"){
+      	iSTB.browser.gotoSTB("tv");
+	  }else{
+		if(backUrl == "")return;
+		window.location.href = backUrl;  
+	  }
+	  event.returnValue = false;
+      return false;
+      break;
+  }
+}
+
+function doSelect(){
+	if(menuData.length!=0 && menuData[subPos+currPage*pageNum].videoUrl!=""){
+		window.location.href = "play.htm?position="+(subPos+currPage*pageNum);	
+	}
+}
+
+function upAndDown(_num){
+  //需要翻页的情况
+  if(menuData.length==0)return;
+  $("sub_name_"+subPos).innerText = getStrChineseLen(menuData[currPage*pageNum+subPos].title,12);
+  if((pageNum/2-1)<subPos&&_num>0&&currPage<totalPage-1){
+    changePage(_num);
+  }else if((pageNum/2)>subPos&&_num<0&&currPage>0){
+    changePage(_num);
+  }
+  subPos = (subPos+_num*(pageNum/2)+pageNum)%pageNum;
+  //边界
+  if(subPos+currPage*pageNum>menuData.length-1) subPos = (menuData.length-1)%pageNum;
+  initFocus();
+} 
+
+function leftAndRight(_num){
+	if(menuData.length==0)return;
+  	$("sub_name_"+subPos).innerText = getStrChineseLen(menuData[currPage*pageNum+subPos].title,12);
+  	if(_num>0){
+    	if(subPos%(pageNum/2) == pageNum/2-1&&currPage<totalPage-1){
+      		changePage(_num);
+    	}else{
+      		subPos = subPos+_num;
+    	}
+  	}else{
+    	if(subPos%(pageNum/2) == 0&&currPage>0){
+      		changePage(_num);
+    	}else{
+      		subPos = subPos+_num;
+    	}
+  	}
+  	if(subPos+currPage*pageNum>menuData.length-1) subPos = (menuData.length-1)%pageNum;
+  	if(subPos+currPage*pageNum<0) subPos = 0;
+  	initFocus();
+}
+
+function changePage(_num){
+  currPage+=_num;
+  initCotent();
+  //$("current_page").innerText = currPage+1;
+  if(!isShowSroll) return;
+  scroll_bar.scroll(currPage);
+}
+
+function init(){
+	showTime();
+	initData();
+}
+
+function showTime(){
+	var _currTime = formatTime("hh:mm:ss",new Date());
+	var _currDate = formatTime("YYYY/MM/DD",new Date());
+	$("currTime").innerText = _currTime;
+	$("currDate").innerText = _currDate;
+	setTimeout("showTime()",1000);
+}
+
+function initData(){
+	var url=requestUrl +"/"+appEnName+file;
+	ajax_js(url,function(responseText){
+		var tempMenu=eval("("+responseText+")");
+		if(typeof(tempMenu)!="undefined" && tempMenu.length!=0){
+			menuData=tempMenu;
+			getItemPos();
+	  		initCotent();
+	  		initScroll();
+	  		initFocus();
+	  		checkPage();
+		}else{
+			noData();
+		}
+	});
+}
+
+function noData(){
+	$("sub_focus").style.visibility="hidden";
+	$("allContent").style.visibility="hidden";
+}
+
+function checkPage(){
+  if(!isShowSroll) return;
+  if(totalPage<2){
+    $("barDiv").style.visibility = "hidden";
+  }
+}
+
+function initScroll(){
+	//$("current_page").innerText = currPage+1;
+    $("total_page").innerText = menuData.length;//totalPage
+	if(!isShowSroll) return;
+    scroll_bar = new ScrollBar("barDiv", null, window);
+    scroll_bar.init(totalPage , 1, 395, 0);
+    scroll_bar.scroll(currPage);
+}
+
+function getItemPos(){
+	var position = 0;
+	if(window.location.href.indexOf("position")>-1){
+		position = getUrlParams("position", window.location.href, "&");
+    	position = parseInt(position,10);
+  	}
+  	subPos = position%pageNum;
+  	currPage = Math.floor(position/pageNum); 
+}
+
+function initCotent(){
+  totalPage = Math.ceil(menuData.length/pageNum);
+    for(i=0;i<pageNum;i++){
+      if(currPage*pageNum+i<menuData.length){
+        $("sub_poster_"+i).src = menuData[currPage*pageNum+i].entryImageUrl;
+        $("sub_name_"+i).innerText = getStrChineseLen(menuData[currPage*pageNum+i].title,12);
+      }else{
+        $("sub_poster_"+i).src = "";
+        $("sub_name_"+i).innerText = "";
+      }
+    }
+}
+
+function initFocus(){
+  $("sub_focus").style.top = Math.floor(subPos/(pageNum/2))*230+20+"px";
+  $("sub_focus").style.left = (subPos%(pageNum/2))*273+8+"px";
+  if(menuData[currPage*pageNum+subPos].title.length>11){
+    $("sub_name_"+subPos).innerHTML = "<marquee style=\"width:230px;\">"+menuData[currPage*pageNum+subPos].title+"</marquee>";
+  }
+}
+
+</script>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0" onload="init()">
+	<div style="position:absolute;left:73px;top:32px;"><img src="images/logo.png" width="475" height="67"></div>
+	<div style="position:absolute;left:1079px;top:56px; width:130px; line-height:px; font-size:18px; color:rgba(255,255,255,.6); letter-spacing:2px;line-height:18px;"><span id="currTime" style="font-size:26px;line-height:22px;">15:10:30</span><br/><span id="currDate">2015/01/13</span></div>
+    
+    <!--底部-->
+	<div style="position:absolute;left:75px;top:662px;width:720px;height:24px;line-height:24px; font-size:24px; color:#faf9f6; background:url(images/notice.png) no-repeat left center; padding-left:36px;"><marquee>尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</marquee></div>
+	<div style="position:absolute;left:903px;top:652px;"><img src="images/tips01.png" width="305" height="40"></div>
+    
+    <!--统计-->
+    <div style="position:absolute;left:1077px;top:120px;width:130px;height:20px;line-height:21px; font-size:20px; color:#7b2d05; text-align:right;">共<span id="total_page"></span>个视频</div>
+    
+    <!--栏目-->
+    <div style="position:absolute;left:75px;top:146px;width:1132px;height:489px; background:url(images/listR_bg11.png);">
+    	<div style="position:absolute;left:31px;top:37px;width:241px;height:156px;">
+        	<img id="sub_poster_0" src="" width="241" height="156">
+            <div id="sub_name_0" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+      <div style="position:absolute;left:304px;top:37px;width:241px;height:156px;">
+        	<img id="sub_poster_1" src="" width="241" height="156">
+            <div id="sub_name_1" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <div style="position:absolute;left:575px;top:37px;width:241px;height:156px;">
+       	  	<img id="sub_poster_2" src="" width="241" height="156">
+            <div id="sub_name_2" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <div style="position:absolute;left:850px;top:37px;width:241px;height:156px;">
+       	  	<img id="sub_poster_3" src="" width="241" height="156">
+            <div id="sub_name_3" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <!--第二排-->
+        <div style="position:absolute;left:31px;top:267px;width:241px;height:156px;">
+        	<img id="sub_poster_4" src="" width="241" height="156">
+            <div id="sub_name_4" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <div style="position:absolute;left:304px;top:267px;width:241px;height:156px;">
+        	<img id="sub_poster_5" src="" width="241" height="156">
+            <div id="sub_name_5" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <div style="position:absolute;left:575px;top:267px;width:241px;height:156px;">
+        	<img id="sub_poster_6" src="" width="241" height="156">
+            <div id="sub_name_6" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+      <div style="position:absolute;left:850px;top:267px;width:241px;height:156px;">
+        	<img id="sub_poster_7" src="" width="241" height="156">
+            <div id="sub_name_7" style="position:absolute;left:-2px;top:176px;width:244px;text-align:center; font-size:22px; color:#000;">&nbsp;</div>
+        </div>
+        
+        <div id="sub_focus" style="position: absolute; left: 8px; top: 20px; width: 287px; height: 202px; background: url(images/pic5_f1.png);"></div>
+    	
+    </div>
+    
+</body>
+</html>

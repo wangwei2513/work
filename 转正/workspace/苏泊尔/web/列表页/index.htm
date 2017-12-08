@@ -1,0 +1,343 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+
+    <!--logo、标题-->
+    <div style="position:absolute; left:50px; top:36px; width:266px; height:43px;"><img src="images/logo_sl.png" width="266" height="43" /></div>
+    <div id="node" style="position:absolute; left:343px; top:36px; width:auto; height:43px; font-size:24px; color:#000000; line-height:43px;">公告栏</div>
+
+
+    <!--内容-->
+    <div style="position:absolute; left:53px; top:90px; width:813px; height:540px; background:url(images/btm_bg0.png) no-repeat left top;">
+
+        <!--分割线-->
+        <div style="position:absolute; left:8px; top:73px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:138px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:203px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:268px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:333px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:398px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+        <div style="position:absolute; left:8px; top:463px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+
+        <!--内容列表-->
+        <div id="focus" style="position:absolute; left:8px; top:9px; width:729px; height:64px; background-color:#e28a0d;"></div>
+        <div style="position:absolute; left:28px; top:9px; width:700px; height:520px;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:24px; color:#000000; line-height:65px;">
+                <tr>
+                    <td id="list0">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date0" align="right">2015/4/9</td>
+                </tr>
+                <tr style="color:#fff;">
+                    <td id="list1">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date1" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list2">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date2" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list3">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date3" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list4">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date4" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list5">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date5" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list6">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date6" align="right">2015/4/9</td>
+                </tr>
+                <tr>
+                    <td id="list7">双龙社区扑克牌比赛报名通知</td>
+                    <td id="date7" align="right">2015/4/9</td>
+                </tr>
+            </table>
+        </div>
+
+        <!--页码-->
+        <div id="scrollBar" style="position:absolute; left:757px; top:29px; width:30px; height:483px; background:url(images/pageSliderBtm.png) no-repeat left top;">
+            <div id="scroll" style="position:absolute; left:0px; top:30px; width:30px; height:90px; background:url(images/pageSliderBar.png); font-size:22px; color:#ffffff; text-align:center; padding-top:8px;"><span id="curr">1</span><br/>/<br/><span id="totleLen">13</span></div>
+        </div>
+
+    </div>
+
+
+    <!--海报-->
+    <div style="position:absolute; left:880px; top:99px; width:340px; height:522px;"><img src="images/poster_img0.jpg" width="340" height="522" /></div>
+    <div style="position:absolute; left:1085px; top:98px; width:140px; height:128px;"><img src="images/mark_slsq.png" width="140" height="128" /></div>
+
+    <!--滚动字幕-->
+    <div style="position:absolute; left:100px; top:645px; width:1120px; height:40px; font-size:20px; color:#6d6d6d; line-height:40px;">
+        <marquee>明天会有大到小雨请相关部门做好相关安排工作引导做好相关安排工作。</marquee>
+    </div>
+    <script src="js/common.js"></script>
+    <script>
+        function grabKeyEvent(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    keyUp();
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    keyDown()
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+                    keyLeft();
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+                    keyRight();
+                    return false;
+                    break;
+                case 13: //ok
+                    doSelect();
+                    break;
+                case 8:
+                    goBack();
+                    return false;
+                    break;
+                case 27:
+                case 32:
+                case 340:
+                case 640:
+                    goBack();
+                    return false;
+                    break;
+            }
+        }
+        document.onkeydown = grabKeyEvent;
+        document.onsystemevent = grabKeyEvent;
+        var ajaxObj = null,
+            menuData = [],
+            nodeData = [],
+            contentData = [],
+            listPos = getGlobalParms("listPos") ? parseInt(getGlobalParms("listPos")) : 0,
+            focusPos = [{
+                    left: "8px",
+                    top: "9px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "73px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "138px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "203px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "268px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "333px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "398px",
+                    width: "729px",
+                    height: "66px"
+                },
+                {
+                    left: "8px",
+                    top: "465px",
+                    width: "729px",
+                    height: "66px"
+                }
+            ]
+        // 加载node数据
+        function ajaxLoadNodeData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "node.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                nodeData = getData;
+                initNode();
+                ajaxLoadContentData();
+            }
+            ajaxObj.failureCallback = function () {}
+            ajaxObj.requestData();
+        }
+        // 加载content数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "content.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                contentData = getData;
+                $("totleLen").innerText = contentData.length;
+                if (listPos > 0) {
+                    $("curr").innerText = listPos + 1;
+                }
+                initContent();
+            }
+            ajaxObj.failureCallback = function () {
+
+            }
+            ajaxObj.requestData();
+        }
+        // initNode
+        function initNode() {
+            var nodeArr = nodeData.navigator.split('>');
+            $("node").innerText = nodeArr[nodeArr.length - 1];
+        }
+        // initcontent
+        function initContent() {
+            initSignList(contentData);
+            console.log(listBox.position)
+            listBox.changeList(listPos);
+            setTimeout(function () {
+                setListFocus();
+                listMove();
+            }, 200);
+            initScroll('scroll', 'scrollBar', contentData.length);
+            scrollObj.scroll(listPos);
+        }
+
+        function initSignList(data) {
+            listData = data;
+            listBox = new showList2D(8, contentData.length, 0, 0);
+            listBox.focusObj = focusPos;
+            listBox.focusDiv = "focus";
+            listBox.isLoop = true;
+            // listBox.position = listPos;
+            listBox.haveData = showList;
+            listBox.noData = clearList;
+            listBox.startShow();
+        }
+
+        function showList(_list) {
+            $("list" + _list.idPos).innerText = contentData[_list.dataPos].title;
+            $("date" + _list.idPos).innerText = contentData[_list.dataPos].date;
+        }
+
+        function clearList(_list) {
+            $("list" + _list.idPos).innerText = '';
+            $("date" + _list.idPos).innerText = '';
+        }
+
+        /*初始化滚动条*/
+        function initScroll(scrollBar, scroll, length) {
+            scrollObj = new ScrollBar(scrollBar, scroll);
+            scrollObj.init(length, 1, 440, 0);
+        }
+        // 上
+        function keyUp() {
+            if (listBox.position === 0) {
+
+            } else {
+                listBox.changeList(-1);
+                setTimeout(function () {
+                    listMove();
+                }, 100);
+                scrollObj.scroll(listBox.position);
+                $("curr").innerText = listBox.position + 1;
+            }
+        }
+        // 下
+        function keyDown() {
+            listBox.changeList(1);
+            setTimeout(function () {
+                listMove();
+            }, 100);
+            scrollObj.scroll(listBox.position);
+            $("curr").innerText = listBox.position + 1;
+        }
+        // listMove
+        function listMove() {
+            clearListFocus();
+            $("list" + Math.floor($("focus").offsetTop / 65)).parentNode.style.color = '#fff';
+            console.log(Math.floor($("focus").offsetTop / 65))
+        }
+        // clearListFocus
+        function clearListFocus() {
+            for (var i = 0; i < 8; i++) {
+                $("list" + i).parentNode.style.color = '#000';
+            }
+        }
+        // setListFocus
+        function setListFocus() {
+            listMove();
+            $("focus").style.visibility = 'visible';
+        }
+        // loseListFocus
+        function loseListFocus() {
+            clearListFocus();
+            $("focus").style.visibility = 'hidden';
+        }
+        //setParmas
+        function setParmas() {
+            setGlobalParms({
+                "listPos": listBox.position
+            })
+        }
+        // removeParmas
+        function removeParmas() {
+            removeGlobalParms("listPos")
+        }
+        // init
+        function init() {
+            ajaxLoadNodeData();
+        }
+        // goback
+        function goBack() {
+            removeParmas();
+            window.location.href = '../index.htm'
+        }
+        // doselect
+        function doSelect() {
+            setParmas();
+            window.location.href = "content.htm";
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

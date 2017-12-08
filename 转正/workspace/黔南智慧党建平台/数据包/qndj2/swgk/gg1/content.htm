@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>播放页</title>
+<script src="../js/common.js"></script>
+<script src="../js/accoutMan.js"></script>
+<script src="../js/mediaPlayer.js"></script>
+<script>
+	var file = "content.js";
+	var url = window.location.href;
+	var position = 0;
+	var videoUrl = "";			// 播放id
+	var pfBarShowFlag = true;	// 是否显示pf信息条，默认显示
+	var pfTimeOut = -1;			// 隐藏pf条定时器
+	var elapsed = 0;			// 播放进度时间
+	var duration = 0;			// 总时长，毫秒
+	var muteFlag = false;		// 是否静音
+	var isStop = false;			// 是否暂停
+	var httpInstance = null;
+	var changeProgressTimer = -1;
+	var playProcessTimer = -1;
+	var off_time = 0;			//上次播放的截止时间
+
+	function eventHandler(eventObj){
+		iDebug("[dyjy content.htm] eventObj.code ===" + eventObj.code);
+		if (pfBarShowFlag == false && eventObj.code != "KEY_SELECT") {
+			showPlayProcess();
+			return;
+		}
+	    switch(eventObj.code){
+	        case "KEY_LEFT"://快退
+	        	changePlayProgress(-10);
+				return false;
+				break;
+	        case "KEY_RIGHT"://快进
+	        	changePlayProgress(10);
+				return false;
+				break;
+	        case "KEY_SELECT"://暂停/播放
+				doSelect();
+				return false;
+				break;
+	        case "KEY_EXIT":
+	        case "KEY_BACK":
+	        	goBack();
+				return false;
+				break;
+	        case "KEY_MUTE"://静音
+				return true;
+				break;
+			case "MSG_MEDIA_URL_VALID":  //媒体源路径有效
+            // case "EIS_VOD_PREPAREPLAY_SUCCESS":  //媒体源路径有效
+            	httpInstance.play();				
+				return false;
+				break;
+			case "EIS_VOD_PLAY_SUCCESS":
+			case "MSG_MEDIA_PLAY_SUCCESS":
+			case "MSG_BACKGROUND_VIDEO_PLAY_SUCCESS":
+				// httpInstance.seek(1,off_time);
+				return false;
+				break;
+		}
+	}
+
+	function goBack(){
+    	window.location.href = "index.htm";
+	}
+
+	// 快进/快退
+	function changePlayProgress(_num) {		
+		if (elapsed+_num < 0||elapsed+_num > duration)return;
+		clearTimeout(changeProgressTimer);
+		clearTimeout(playProcessTimer);
+		elapsed += _num;
+		changeWidth();
+		changeProgressTimer = setTimeout(function(){
+			elapsed += _num;
+			iDebug("changePlayProgress__elapsed="+elapsed);
+			httpInstance.seek(1,elapsed);
+			playProcess();
+		},1000);
+	}
+
+	function doSelect() {
+		if(isStop == false) {
+			httpInstance.pause(1);//暂停
+			$("playBtn").src = "images/icon2_02.png";
+			isStop = true;
+		}else {
+			httpInstance.resume();//还原到播放状态
+			$("playBtn").src = "images/icon2_02_1.png";
+			isStop = false;
+		}
+	}
+
+	function playProcess() {
+		elapsed = parseInt(httpInstance.elapsed(), 10);
+		if(elapsed < 1){
+			elapsed = 1;
+		}else if(elapsed > duration){
+			elapsed = duration;
+		}
+		iDebug("playProcess--elapsed="+elapsed);
+		changeWidth();
+		$("currTime").innerHTML = countTime(elapsed);
+		playProcessTimer = setTimeout(playProcess,1000);
+	}
+
+	function changeWidth() {
+		var currProcess = Math.floor(elapsed /duration * 980);
+		$("progressBar").style.width = currProcess + "px";
+	}
+
+	function showPlayProcess() {
+		$("navBox").style.visibility = "visible";
+		pfBarShowFlag = true;
+		clearTimeout(pfTimeOut);
+		pfTimeOut = setTimeout(function() {
+			hidePlayProcess();
+		},8000);
+	}
+
+	function hidePlayProcess() {
+		$("navBox").style.visibility = "hidden";
+		pfBarShowFlag = false;
+	}
+
+	function init() {
+		registerKeyEvent();
+		newInstance();
+		if(url.indexOf("position")!=-1){
+			position = parseInt(getParam("position",url),10);			
+		}
+		iDebug("[dj+ content.htm] init---url="+url+";--position="+position);
+		var tempParam = checkStrNull(getGlobalVar("djAddSub_playParam"));
+		iDebug("[dj+ content.htm]  init tempParam="+tempParam);
+		if(tempParam!=""){
+			tempParam = eval('('+decodeURI(tempParam)+')');
+			playUrl = tempParam.playUrl;
+			iDebug("[dj+ content.htm]  init playUrl="+playUrl);
+			off_time = parseInt(tempParam.off_time,10);
+			duration = parseInt(tempParam.duration,10);
+			$("duration").innerHTML = countTime(duration);
+			$("videoName").innerHTML = marqueeStr(tempParam.title?tempParam.title:"暂无",12,"375px");
+			playVideo();
+		}else{
+			getData();
+		}
+	}
+
+	function getData() {
+		var ajaxObj = new ajaxClass(file,function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data!=""&&data!=null&&typeof data!="undefined"){
+				$("videoName").innerHTML = marqueeStr(data[position].title?data[position].title:"暂无",12,"375px");
+				videoUrl = data[position].videoUrl;
+				iDebug("play videoUrl="+videoUrl);
+				checkAccoutLogin("getVideoDetail");
+			}
+		},function(_xmlHttp){
+			iDebug("[dj+ content.htm] getData fail !");
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	// 根据id获取视频详情
+	function getVideoDetail() {
+		var url = videoDetailUrl + "?accesstoken="+accessToken+"&videoid="+videoUrl;
+		iDebug("[dj+ content.htm]--getVideoDetail---url="+url);
+		var ajaxObj = new ajaxClass(url,function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data.ret == 0){
+				// if(data.demand_url)playUrl = getPlayUrlByType(data.demand_url ,"http://");
+				if(playUrl) playUrl += "?protocol=http";
+				iDebug("[dj+ content.htm]---getVideoDetail()---playUrl="+playUrl);	
+				if(playUrl){//支持http和rtsp直播
+					var play_token = data.play_token;
+					iDebug("[dj+ content.htm]---getVideoDetail()---play_token="+play_token);
+					play_token = play_token?play_token:"ABCDEFGHIGK";
+					if(playUrl.indexOf("?")>=0){//兼容url中已存在参数时的处理
+						playUrl += "&playtype=demand&accesstoken="+accessToken+"&programid="+videoUrl+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}else{
+						playUrl += "?playtype=demand&accesstoken="+accessToken+"&programid="+videoUrl+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}
+					off_time = data.off_time?data.off_time:0;
+					duration = parseInt(data.duration,10);
+					iDebug("[dj+ content.htm]---getVideoDetail()---playUrl1="+playUrl+"; | duration="+duration+" | off_time="+off_time);
+					$("duration").innerHTML = countTime(duration);
+					playVideo();
+				}
+			}else{
+				iDebug("[dj+ content.htm]--getVideoDetail--data.ret="+data.ret+";msg:"+data.ret_msg);
+				if(data.ret == 9021||data.ret == 9022){//token过期
+					delGlobalVar("accessToken");
+					checkAccoutLogin("getVideoDetail");
+					return;
+				}
+			}
+		},function(_xmlHttp){
+			iDebug("[dj+ content.htm]--getVideoDetail--fail !");
+		});
+		ajaxObj.requestData();
+	}
+
+	function playVideo() {
+		httpInstance.setMode(1);//全屏播放
+		httpInstance.setPosition(0,0,1280,720);
+		httpInstance.setSource(playUrl);
+		setTimeout(function (){
+			if(typeof DRMPlayer != "undefined" && DRMPlayer != null){
+				var openFlag = DRMPlayer.isOpen();
+				iDebug("openFlag==" + openFlag);
+				if(openFlag){
+					// httpInstance.seek(1,off_time);
+					showPlayProcess();
+					playProcess();
+				}
+			}			
+		},1500);
+	}
+
+	function newInstance(){
+		httpInstance = new PlayObj();
+		httpInstance.init();
+		httpInstance.bindID();
+	}
+
+	function closeVideo(){
+		httpInstance.stop(1);
+		httpInstance.close();
+		httpInstance = null;
+	}
+
+	function exitPage(){
+		closeVideo();	
+	}
+
+	function countTime(Time) {
+        var time = parseInt(Time,10);
+        var h = Math.floor(time / 3600);
+        if (h < 10) {
+            h = '0' + h;
+        }
+        var m = Math.floor((time - h * 3600) / 60)
+        if (m < 10) {
+            m = '0' + m;
+        }
+        var s = time - h * 3600 - m * 60;
+        if (s < 10) {
+            s = '0' + s;
+        }
+        var str = h + ':' + m + ':' + s
+        return str;
+    }
+</script>
+</head>
+<body bgcolor="transparent" leftmargin="0" topmargin="0" onLoad="init()" onunload="exitPage()">
+	<div id="navBox" style="position:absolute; left:0px; top:620px; width:1280px; height:100px; background:url(images/icon2_01.png);">
+		<!-- 播放/暂停按钮 -->
+		<div style="position:absolute; left:81px; top:22px; width:44px; height:52px;">
+			<img id="playBtn" src="images/icon2_02_1.png" width="44" height="52" />
+		</div>
+		<div style="position:absolute; left:240px; top:20px;width: 980px;height: 6px;background: #BFBFBF;">
+			<div id="progressBar" style="width: 1px;height: 100%;background: #F5AB0B;"></div>
+		</div>
+		<div id="videoName" style="position:absolute; left:240px; top:32px; font-size:30px; color:#fff;">
+			正在播放：习近平讲话
+		</div>
+		<div id="currTime" style="position: absolute;left: 630px;top: 26px;font-size: 30px;color: #fff;">00:00:00</div>
+		<!-- 总时长 -->
+		<div id="duration" style="position:absolute; left:1094px; top:26px; width:125px; font-size:30px; color:#fff; text-align:right;"></div>
+	</div>
+
+	<div id="logDebug" style="position: absolute;left: 20px;top: 20px;width: 1200px;height: 700px;background: rgba(0,0,0,0.7);color: #fff;font-size: 20px;z-index: 10;visibility: hidden;"></div>
+</html>

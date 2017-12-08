@@ -1,0 +1,73 @@
+[{
+	"blurImageUrl": "",
+	"enName": "dqfwtx",
+	"entryWord": "",
+	"focusImageUrl": "images/pic_img_06.png",
+	"isManaged": "notManaged",
+	"listType": "list",
+	"name": "热推美食",
+	"newAdd": 0,
+	"nodePath": "lqjysq/ccjy/dqfw/dqfwtx",
+	"clickable": 1,
+	"linkUrl": ""
+},{
+	"blurImageUrl": "",
+	"enName": "swgk",
+	"entryWord": "",
+	"focusImageUrl": "images/pic_img_05.png",
+	"isManaged": "managed",
+	"listType": "list",
+	"name": "",
+	"newAdd": 0,
+	"nodePath": "lqjysq/ccjy/dqfw/swgk",
+	"clickable ":1,
+	"linkUrl ":""
+},{
+	"blurImageUrl":"",
+	"enName":"wsjs",
+	"entryWord ":"",
+	"focusImageUrl":"images/pic_img_04.png",
+	"isManaged":"notManaged ",
+	"listType":"list ",
+	"name":"",
+	"newAdd":0,
+	"nodePath":"lqjysq/ccjy/dqfw/wsjs ",
+	"clickable": 1,
+	"linkUrl":""
+},{
+	"blurImageUrl": "",
+	"enName": "slfw",
+	"entryWord": "",
+	"focusImageUrl": "images/pic_img_03.png",
+	"isManaged": "managed",
+	"listType": "list",
+	"name":"",
+	"newAdd": 0,
+	"nodePath":"lqjysq/ccjy/dqfw/slfw",
+	"clickable":1,
+	"linkUrl":""
+},{
+	"blurImageUrl":"",
+	"enName":"rsmz",
+	"entryWord":"",
+	"focusImageUrl":"images/pic_img_02.png",
+	"isManaged":"managed ",
+	"listType":"list ",
+	"name":"",
+	"newAdd":0,
+	"nodePath":"lqjysq/ccjy/dqfw/rsmz ",
+	"clickable": 1,
+	"linkUrl": ""
+},{
+	"blurImageUrl":"",
+	"enName":"rsmz",
+	"entryWord":"",
+	"focusImageUrl":"images/pic_img_01.png",
+	"isManaged":"managed ",
+	"listType":"list ",
+	"name":"",
+	"newAdd":0,
+	"nodePath":"lqjysq/ccjy/dqfw/rsmz ",
+	"clickable": 1,
+	"linkUrl": ""
+}]

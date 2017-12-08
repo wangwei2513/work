@@ -1,0 +1,27 @@
+[
+	{
+		id:"100055049",
+		playUrl:"http://10.123.0.3:8080/back/123.mp4",
+		imgUrl:"images/pop_img3_01.jpg",
+		question:"儿童普通感冒应该怎么办？",
+		state:0,
+		time:"2017-07-17 08:00-09:30",
+		lawyer:"谭熊",
+	},{
+		id:"100055049",
+		playUrl:"http://10.123.0.3:8080/back/123.mp4",
+		imgUrl:"images/pop_img3_01.jpg",
+		question:"老人突然晕倒应该怎么办？",
+		state:2,
+		time:"2017-07-17 10:00-11:00",
+		lawyer:"潘晶",
+	},{
+		id:"100055049",
+		playUrl:"http://10.123.0.3:8080/back/123.mp4",
+		imgUrl:"images/pop_img3_01.jpg",
+		question:"高血压患者平时需要注意事项？",
+		state:1,
+		time:"2017-07-20 10:00-11:00",
+		lawyer:"黄琛",
+	}
+]

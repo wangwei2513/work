@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"jkCMS","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"list","name":"南湖监控列表","navigator":"南湖监控列表","newAdd":0,"nodePath":"jkCMS"}

@@ -1,0 +1,369 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>欢迎页</title>
+  <script type="text/javascript" src="js/global.js"></script>
+  <script type="text/javascript" src="js/config.js"></script>
+  <script type="text/javascript" src="js/ajax.js"></script>
+  <script type="text/javascript" src="js/accoutMan.js"></script>
+  <script language="javascript">
+    var ajaxObj = null;
+
+    function eventHandler(eventObj, type) {
+      var keyCode = eventObj.code;
+      iDebug("welcome.htm keyCode = " + keyCode);
+      switch (keyCode) {
+        case "KEY_UP":
+          return false;
+          break;
+        case "KEY_DOWN":
+          return false;
+          break;
+        case "KEY_LEFT":
+          return false;
+          break;
+        case "KEY_RIGHT":
+          return false;
+          break;
+        case "KEY_SELECT":
+          iDebug("hotelInfoObj.noCheckIn=="+hotelInfoObj.noCheckIn);
+          iDebug("stbNotExist=="+stbNotExist);
+          if (hotelInfoObj.noCheckIn == "false" && stbNotExist == "false") {
+            doSelect();
+          }
+          return false;
+          break;
+        case "KEY_EXIT":
+        case "KEY_HOMEPAGE":
+          return false;
+          break;
+        case "KEY_BACK":
+          doBack();
+          return false;
+          break;
+        case "MSG_MEDIA_URL_VALID":
+          play();
+          return false;
+        case "MSG_MEDIA_PROGRAM_END": //播放完重播
+          stop();
+          playVedio();
+          return false;
+        default:
+          return true;
+          break;
+      }
+    }
+
+
+    // function play() {
+    //   MPlayer.play();
+    // }
+
+    // function pause() {
+    //   MPlayer.pause();
+    // }
+
+    // function stop() {
+    //   MPlayer.stop(1);
+    // }
+
+    function doSelect() {
+      window.location.href = "index.htm?stbNotExist=" + stbNotExist;
+    }
+
+    // function doBack() {
+
+    // }
+
+    function init() {
+      initParams();
+      timeShow();
+      iDebug("1591954156156");
+      requestInfo();
+      if (showPicFlag == 0) {
+        $("adPicDiv").style.visibility = "hidden";
+        checkAccoutLogin("getVideoInfo");
+      } else {
+        $("adPicDiv").style.visibility = "visible";
+      }
+    }
+
+    // function exitPage() {
+    //   if (showPicFlag == 0) {
+    //     stop();
+    //   }
+    // }
+
+    function initParams() {
+
+    }
+
+    function timeShow() {
+      var date = new Date();
+      $("time").innerText = date.pattern("hh:mm");
+      $("date").innerText = date.pattern("yyyy/MM/dd");
+      setTimeout(function () {
+        timeShow();
+      }, 60000);
+    }
+
+    var hotelInfoObj = null;
+    var roomInfoObj = null;
+    var stbNotExist = '';
+
+    function requestInfo() {
+      iDebug("5987455745");
+      if (ajaxObj != null) {
+        ajaxObj.requestAbort();
+      } else {
+        ajaxObj = new ajaxClass();
+      }
+      ajaxObj.frame = window;
+      //ajaxObj.charset = "gbk";
+      ajaxObj.successCallback = function (_xmlHttp, _params) {
+        iDebug("061245184189516");
+        // if (!_xmlHttp.responseText) {
+        //   return;
+        // }
+        iDebug(">----_xmlHttp.responseText-------" + _xmlHttp.responseText);
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+        if (typeof (jsonData) != "undefined" && jsonData != null && jsonData !== "") {
+          stbNotExist = jsonData.stbNoExist;
+          if (jsonData.stbNoExist == "true") {
+            iDebug(">>welcome.htm__stbNoExist");
+            $("message").style.textAlign = "center";
+            $("message").style.paddingLeft = "0";
+            $("message").innerText = '请添加设备';
+            $("message").parentNode.style.visibility = "visible";
+            return;
+          } else if (jsonData.data.noCheckIn == "true") {
+            $("message").innerHTML = '尚未入住，请联系管理员，办理登记入住<br>前台服务内线：8777 或 8888';
+            $("message").style.textAlign = "left";
+            $("message").style.paddingLeft = "218px";
+            $("message").parentNode.style.visibility = "visible";
+            iDebug(">>welcome.htm__noCheckIn");
+            return;
+          } else {
+            hotelInfoObj = jsonData.data;
+            roomInfoObj = jsonData.room;
+            initInfo();
+          }
+        } else if (_xmlHttp.responseText == "") {
+          $("message").style.textAlign = "center";
+          $("message").style.paddingLeft = "0";
+          $("message").innerText = '请添加房间并且关联设备';
+          $("message").parentNode.style.visibility = "visible";
+        }
+      };
+      ajaxObj.failureCallback = function (_xmlHttp, _params) {
+        iDebug("519815616515156");
+        iDebug("request menu ajax failure! 2");
+      };
+      ajaxObj.url = ajaxUrls.queryHotelInfoUrl[debug] + "?stbid=" + stbId;
+      ajaxObj.requestData();
+    }
+
+    function initInfo() {
+      //$("rzTime").innerText = "入住时间 "+roomInfoObj.inDate.substring(0,11);
+      if (roomInfoObj && typeof (roomInfoObj.User) == "string") {
+        var user = roomInfoObj.User;
+        var _info = user ? (user + ["先生", "女士"][roomInfoObj.userSex]) : "";
+        $("name").innerText = _info;
+      }
+      if (hotelInfoObj) {
+        $("welcomeImg").src = hotelInfoObj.Logo;
+        $("marText").innerHTML ='<marquee>' + hotelInfoObj.HelloCN + '</marquee>';
+      }
+      //$("name").innerText = window.useSimulationCard?"":roomInfoObj.User+["先生","女士"][roomInfoObj.userSex];
+      //$("content").innerText = subStr(hotelInfoObj.HelloCN,290,"..");//45*6-2
+    }
+
+    // function iDebug(_str) {
+    //   $("logDebug").innerHTML += _str + "</br></br>";
+    // }
+    function iDebug(str) {
+      if (navigator.appName.indexOf("iPanel") != -1) {
+        iPanel.debug(str);
+      } else if (navigator.appName.indexOf("Opera") != -1) {
+        opera.postError(str);
+      } else if (navigator.appName.indexOf("Netscape") != -1 || navigator.appName.indexOf("Google") != -1) {
+        console.log(str);
+      }
+    }
+
+    var playTimeout = -1;
+
+    // function playVedio() {
+    //   iDebug("playVedio__playUrl=" + playUrl);
+    //   if (playUrl == "") return;
+    //   MPlayer.init();
+    //   MPlayer.setPosition(80, 150, 592, 337);
+    //   MPlayer.play(playUrl);
+    // }
+
+    /****************** 定义播放器-start *******************/
+    // var MPlayer = {
+    //   $MID: 0,
+    //   $browser: "stb",
+    //   checkBrowser: function () {
+    //     var appName = navigator.appName;
+    //     if (typeof MediaPlayer != "undefined") {
+    //       this.$browser = "NGB";
+    //     } else if (appName.indexOf("Google") != -1 || appName.indexOf("Netscape") != -1) {
+    //       this.$browser = "PC";
+    //     }
+    //     iDebug("[MPlayer]checkBrowser browser=" + this.$browser);
+    //   },
+    //   init: function () { //初始化播放器
+    //     this.checkBrowser();
+    //     if (this.$browser == "NGB") {
+    //       if (window.$MP == "" || window.$MP == null) window.$MP = new MediaPlayer();
+    //       /*var PLAYER_INSTANCE_ID = GlobalVarManager.getItemValue("PLAYER_INSTANCE_ID");
+    //       if(PLAYER_INSTANCE_ID == null) {
+    //       	this.$MID = $MP.getPlayerInstanceID();
+    //       	GlobalVarManager.setItemValue("PLAYER_INSTANCE_ID",this.$MID);
+    //       } else {
+    //       	this.$MID = GlobalVarManager.getItemValue("PLAYER_INSTANCE_ID");
+    //       }*/
+    //       this.$MID = $MP.getPlayerInstanceID();
+    //       var flag = $MP.bindPlayerInstance(this.$MID);
+    //       iDebug("[MPlayer] bind flag=" + flag + ";;mediaId=" + this.$MID);
+    //     }
+    //   },
+    //   play: function (__url, __type) {
+    //     //iDebug("[MPlayer]play typeof $MP="+ typeof($MP) + ";$MP="+$MP);
+    //     if (this.$browser == "NGB") {
+    //       if (__url == null && __type == null) {
+    //         $MP.play();
+    //         iDebug("[MPlayer]play start");
+    //         return;
+    //       } else if (__url == "" || __url == null) {
+    //         return;
+    //       }
+    //       $MP.setMediaSource(__url);
+    //       iDebug("[MPlayer]play url=" + __url);
+    //     }
+    //   },
+    //   setPosition: function (__x, __y, __w, __h) {
+    //     __x = __x || 0;
+    //     __y = __y || 0;
+    //     __w = __w || 1280;
+    //     __h = __h || 720;
+    //     if (this.$browser == "NGB") {
+    //       $MP.setVideoDisplayMode(0);
+    //       /*var rec = new Rectangle(__x, __y, __w, __h);
+    //       $MP.setVideoDisplayArea(rec);
+    //       $MP.refresh();*/
+    //       var videoRectangle = new Rectangle();
+    //       videoRectangle.left = __x;
+    //       videoRectangle.top = __y;
+    //       videoRectangle.width = __w;
+    //       videoRectangle.height = __h;
+    //       $MP.setVideoDisplayArea(videoRectangle);
+    //       $MP.refresh();
+    //     }
+    //   },
+    //   stop: function (__type) {
+    //     if (this.$browser == "NGB") {
+    //       $MP.stop();
+    //       // $MP.clearVideoOutput();//清帧
+
+    //       if (__type == 1) {
+    //         var flag = $MP.unbindPlayerInstance(this.$MID);
+    //         iDebug("[MPlayer] unbind flag=" + flag + ";;mediaId=" + this.$MID);
+    //       }
+    //     }
+    //   },
+    //   pause: function () {
+    //     if (this.$browser == "NGB") {
+    //       $MP.pause();
+    //     }
+    //   },
+    //   resume: function () {
+    //     if (this.$browser == "NGB") {
+    //       $MP.resume();
+    //     }
+    //   },
+    //   setMute: function () {
+    //     if (this.$browser == "NGB") {
+    //       AudioSetting.mute();
+    //     }
+    //   },
+    //   setUnmute: function () {
+    //     if (this.$browser == "NGB") {
+    //       AudioSetting.unMute();
+    //     }
+    //   },
+    //   getMuteStatus: function () {
+    //     if (this.$browser == "NGB") {
+    //       return AudioSetting.isMute();
+    //     }
+    //   },
+    //   setVolume: function (__vol) {
+    //     if (this.$browser == "NGB") {
+    //       $MP.setVolume(__vol);
+    //     }
+    //   },
+    //   getVolume: function () {
+    //     if (this.$browser == "NGB") {
+    //       return $MP.getVolume();
+    //     }
+    //   },
+    //   getElapsed: function () {
+    //     if (this.$browser == "NGB") {
+    //       return $MP.getCurrentPlayTime();
+    //     }
+    //   },
+    //   getDuration: function () {
+    //     if (this.$browser == "NGB") {
+    //       return $MP.getMediaDuration();
+    //     }
+    //   },
+    //   seek: function (__sec) {
+
+    //   },
+    //   setEventCallback: function (__eventCallback) {
+
+    //   }
+    // };
+    /****************** 定义播放器-end *******************/
+  </script>
+</head>
+
+<body background="images/bg.png" bgcolor="transparent" leftmargin="0" topmargin="0" style="font-family:微软雅黑;" onLoad="init()">
+  <div style="position:absolute;left:1056px;top:38px; width:109px; height:82px; font-size:21px; color:#9d8761;"><span id="time" style="font-size:40px;">&nbsp;</span><br/><span id="date">&nbsp;</span></div>
+
+  <!--跑马灯-->
+  <div id="marText" style="position: absolute; left: 121px; top: 636px; width: 784px; height: 30px; background: url(images/tips00.png) no-repeat left center; padding-left: 41px; font-size: 21px; color: #cbae7c;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+
+  <!--底部操作提示-->
+  <div style="position:absolute;left:963px;top:632px; width:210px; height:40px;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:21px; color:#9d8761; ">
+      <tr>
+        <td width="48"><img src="images/icon00.png" width="40" height="40" style="display:block;"></td>
+        <td width="64">选择</td>
+        <td width="48"><img src="images/icon01.png" width="40" height="40" style="display:block;"></td>
+        <td width="64">进入</td>
+      </tr>
+    </table>
+  </div>
+
+  <!--视频区-->
+  <div id="adPicDiv" style="position:absolute;left:128px;top:173px; width:674px; height:380px; visibility:hidden"><img id="welcomeImg" src="images/pic1_1.png" width="674" height="380"></div>
+
+  <div style="position:absolute;left:813px;top:228px; width:306px; height:188px; font-size:32px; color:#fff; line-height:95px;">尊敬的<span id="name">&nbsp;</span>：<br/> &nbsp;&nbsp;&nbsp;&nbsp;欢迎您的入住！</div>
+
+  <!-- 消息 -->
+  <div style="position:absolute;left:199px;top:228px;z-index:30; width:874px; height:345px; font-size:32px; color:#fff; line-height:210px;background:url(images/tips02.png);background-size:cover;text-align:center;visibility:hidden;">
+    <div style="position:absolute;left:0;top:0; width:874px; height:200px;line-height:200px;">温馨提示：</div>
+    <div id="message" style="position:absolute;left:0;top:150px; width:874px; height:145px;line-height:36px;color:#cc9649;font-size:26px;"></div>
+  </div>
+  <!--按钮-->
+  <div style="position:absolute;left:880px;top:493px; width:203px; height:60px; font-size:28px; color:#000; background:url(images/btn0_1.png);line-height:60px; text-align:center;">进入</div>
+
+  <div id="logDebug" style="position:absolute;left:20px;top:20px;width:1000px;height:700px;background:#999;;visibility:hidden;"></div>
+</body>
+
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>先锋社区-内容页</title>
+<script src="../js/common.js"></script>
+<script src="../config.js"></script>
+<script>
+	function eventHandler(eventObj) {
+		iDebug("[xfsq index.htm]__keycode=" + eventObj.code);
+		switch (eventObj.code) {
+			case "KEY_UP":
+				changeUD(-1);
+				return EVENT.STOP;
+				break;
+			case "KEY_DOWN":
+				changeUD(1);
+				return EVENT.STOP;
+				break;
+			case "KEY_LEFT":
+				return EVENT.STOP;
+				break;
+			case "KEY_RIGHT":
+				return EVENT.STOP;
+				break;
+			case "KEY_SELECT":
+				doSelect();
+				return EVENT.STOP;
+				break;
+			case "KEY_BACK":
+				window.location.href = "index.htm";
+				return EVENT.STOP;
+				break;
+			case "KEY_HOMEPAGE":
+				return EVENT.DOWN;
+				break;
+			default:
+				return EVENT.STOP;
+				break;
+		}
+	}
+
+	var url = window.location.href;
+	var file = "/content.js";
+	var ajaxObj = null;
+	var position = 0;
+	var pageContent = 504;
+	var currPage = 0;
+	var totalPage = 0;
+	var scroll_bar = null;
+
+	function changeUD(_num) {
+		currPage = (currPage+_num+totalPage)%totalPage;
+		scroll_bar.scroll(currPage);
+		$("content").style.top = -pageContent*currPage + "px";
+	}
+
+	// 获取文章内容或宫格列表
+	function getData() {
+		if (ajaxObj == null) {
+			ajaxObj = new AJAX_OBJ();
+		} else {
+			ajaxObj.requestAbort();
+		}
+		ajaxObj.charset = "gbk";
+		ajaxObj.successCallback = function(_xmlHttp) {
+			contentList = eval('(' + _xmlHttp.responseText + ')');
+			$("title").innerHTML = contentList[position].title;
+			$("txtContent").innerHTML = contentList[position].content;
+			totalPage = Math.ceil($("content").offsetHeight/pageContent);
+			scroll_bar = new ScrollBar("scrollBar", null, window);
+			scroll_bar.init(totalPage, totalPage, 432, -4);
+			scroll_bar.scroll(currPage);
+			$("currPage").innerHTML = currPage + 1;
+			$("totalPage").innerHTML = totalPage;
+			if (totalPage < 2) {
+				$("scrollStaff").style.visibility = "hidden";
+			} else {
+				$("scrollStaff").style.visibility = "visible";
+			}
+		}
+		ajaxObj.failureCallback = function(_xmlHttp) {
+			iDebug("[xfsq index.html]__getData__failureCallback !");
+		}
+		ajaxObj.url = requestUrl + file;
+		ajaxObj.requestData();
+	}
+
+	function init() {
+		var enName = getParam("enName",url)?getParam("enName",url):"jj";
+		position = getParam("position",url)?parseInt(getParam("position",url),10):0;
+		file = "xfsq/" + enName + file;
+		getData();
+	}
+</script>
+</head>
+<body background="../images/bg.jpg" leftmargin="0" topmargin="0" onload="init()">
+	<div style="position: absolute;left: 178px;top: 90px;background: url(../images/btm_bg1.png);width: 923px;height: 540px;">
+		<div style="position: absolute;left: 24px;top: 18px;width: 855px;height: 504px;overflow: hidden;line-height: 50px;text-indent: 2em;font-size: 22px;">
+			<div id="content" style="position: absolute;left: 0px;top: 0px;width: 100%;">
+				<div id="title" style="width: 100%;text-align: center;font-size: 24px;font-weight: bold;"></div>
+				<div id="txtContent" style="width: 100%;"></div>
+			</div>
+		</div>
+	</div>
+	<div id="scrollStaff" style="position: absolute; top:116px; left:1056px; width:30px; height:483px;background: url(../images/pageSliderBtm.png);visibility: hidden;">
+		<div id="scrollBar" style="position: absolute; top:0px; left:0px; width:29px; height:62px;">
+			<table width="29" height="62" border="0" cellspacing="0" cellpadding="0"
+			style="position:absolute; top:0px; left:0px; height:62px; font-size:24px; text-align:center; color:#fff;background: url(../images/hua_02.jpg);">
+				<tr>
+					<td id="currPage" height="20">1</td>
+				</tr>
+				<tr>
+					<td id="totalPage">1</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+</body>
+</html>

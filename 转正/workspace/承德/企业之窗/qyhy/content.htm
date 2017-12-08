@@ -1,0 +1,583 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+  <title>内容页--文字</title>
+
+  <script type="text/javascript" src="js/common.js"></script>
+  <script src="js/grabKeyEvent.js"></script>
+
+  <script type="text/javascript">
+    var dataAjaxPath = "content.js";
+
+    var logoAjaxPath = "";
+
+    var navTitleAjaxPath = "node.js";
+
+    var cellPadValue = 10;
+
+
+
+    var columnAjaxObj = null;
+
+    var logoAjaxObj = null;
+
+    var mainMenuPos = 0;
+
+    var focusArea = 0;
+
+    var itemPos = 0;
+
+
+
+    var currPage = 0;
+
+    var totalPage = 0;
+
+    var pageContent = 430;
+
+    var maxTitleSize = 39;
+
+    var scrollBox = null;
+
+    var menuData = [];
+
+    var backUrl = "../index.htm";
+
+
+
+    document.onkeydown = eventHandler;
+
+
+
+    function eventHandler(key) {
+
+      var e = key || event;
+
+      var keycode = e.keyCode || e.which || e.charCode;
+
+      switch (keycode) {
+
+        case 1: // up
+
+        case 38:
+
+          changeUD(-1);
+
+          return false;
+
+          break;
+
+        case 2: // down
+
+        case 40:
+
+          changeUD(1);
+
+          return false;
+
+          break;
+
+        case 3:
+
+        case 37:
+
+          break;
+
+        case 4:
+
+        case 39:
+
+          break;
+
+        case 13:
+
+          return false;
+
+          break;
+
+        case 339:
+        case 27: //exit
+          goPortal();
+          //iSTB.browser.gotoSTB("tv");
+
+          event.returnValue = false;
+
+          return false;
+
+          break;
+
+        case 8:
+
+          goBack();
+
+          event.returnValue = false;
+
+          return false;
+
+          break;
+        case 4097:
+          goExitMenu();
+          return false;
+          break;
+
+      }
+
+    }
+
+
+
+    function goBack() {
+
+      window.location.href = backUrl + "?mainMenuPos=" + mainMenuPos + "&focusArea=" + focusArea + "&itemPos=" +
+        itemPos;
+
+    }
+
+
+
+    function changeUD(_num) {
+
+      if (currPage == 0 && _num < 0 || currPage == totalPage - 1 && _num > 0) {
+
+        return;
+
+      } else {
+
+        currPage = currPage + _num;
+
+      }
+
+      scrollBox.scroll(currPage);
+
+      showScrollPage();
+
+      $("content").style.top = -pageContent * currPage + "px";
+
+    }
+
+
+
+    function init() {
+
+      getParms();
+
+      ajaxContentData();
+
+      //ajaxLoadLogo();
+
+      showTime();
+
+    }
+
+
+
+    function getParms() {
+
+      var currLocation = window.location.href;
+
+      var tempItemPos = getUrlParams("itemPos", window.location.href);
+
+      if (tempItemPos != "") {
+
+        itemPos = parseInt(tempItemPos, 10);
+
+      }
+
+
+
+      var tempMenuPos = getUrlParams("mainMenuPos", window.location.href);
+
+      if (tempMenuPos != "") {
+
+        mainMenuPos = parseInt(tempMenuPos, 10);
+
+      }
+
+
+
+      var tempFocusArea = getUrlParams("focusArea", window.location.href);
+
+      if (tempFocusArea != "") {
+
+        focusArea = parseInt(tempFocusArea, 10);
+
+      }
+
+      iDebug(">>>getParms--itemPos=" + itemPos + "|mainMenuPos=" + mainMenuPos + "|focusArea=" + focusArea);
+
+    }
+
+
+
+    function ajaxContentData() {
+
+      if (columnAjaxObj != null) {
+
+        columnAjaxObj.requestAbort();
+
+      }
+
+      columnAjaxObj = new AjaxClass();
+
+      columnAjaxObj.frame = window;
+
+      columnAjaxObj.charset = "gbk";
+
+      columnAjaxObj.successCallback = function (_xmlHttp, _params) {
+
+        //iDebug(">>>ajaxColumnData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+
+        if (typeof (jsonData) != "undefined" && jsonData.length > 0) {
+
+          menuData = jsonData[itemPos];
+
+          initTitle();
+
+          initContent();
+
+        } else {
+
+          noItemData();
+
+        }
+
+        ajaxNavTitle();
+
+      };
+
+      columnAjaxObj.failureCallback = function (_xmlHttp, _params) {
+
+        iDebug(">>>ajaxColumnData failureCallback");
+
+        ajaxNavTitle();
+
+        noItemData();
+
+      };
+
+      columnAjaxObj.url = dataAjaxPath;
+
+      iDebug(">>>ajaxColumnData columnAjaxObj.url=" + columnAjaxObj.url);
+
+      columnAjaxObj.requestData();
+
+    }
+
+
+
+    function ajaxNavTitle() {
+
+      ajaxObj = null;
+
+      if (ajaxObj != null) {
+
+        ajaxObj.requestAbort();
+
+      }
+
+      ajaxObj = new AjaxClass();
+
+      ajaxObj.frame = window;
+
+      ajaxObj.charset = "gbk";
+
+      ajaxObj.successCallback = function (_xmlHttp, _params) {
+
+        //iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+
+        if (typeof (jsonData) != "undefined") {
+
+          if (jsonData.navigator != "") {
+
+            $("navTitle").innerText = jsonData.navigator;
+
+            $("navTitle").style.left = (235 + ($("logoImage").width) + cellPadValue) + "px";
+
+          }
+
+        } else {}
+
+      };
+
+      ajaxObj.failureCallback = function (_xmlHttp, _params) {};
+
+      ajaxObj.url = navTitleAjaxPath;
+
+      ajaxObj.requestData();
+
+    }
+
+
+
+    function noItemData() {
+
+      $("content").innerText = "暂无数据";
+
+      noScrollBar();
+
+    }
+
+
+
+    function initTitle() {
+
+      $("title").innerHTML = menuData.title;
+
+      if (getStrChineseLength(menuData.title) > maxTitleSize) {
+
+        $("title").innerHTML = "<marquee width=1000;\">" + menuData.title + "</marquee>";
+
+      }
+
+    }
+
+
+
+    function initContent() {
+
+      if (menuData.content == "") {
+
+        $("content").innerHTML = "暂无相关介绍";
+
+      } else {
+
+        $("content").innerHTML = menuData.content;
+
+      }
+
+      $("content").style.top = -pageContent * currPage + "px";
+
+      setTimeout(function () {
+
+        totalPage = Math.floor($("content").offsetHeight / pageContent) + 1;
+
+        initScroll();
+
+      }, 200);
+
+    }
+
+
+
+    function initScroll() {
+
+      scrollBox = null;
+
+      if (totalPage > 1) {
+
+        $("barDiv").style.visibility = "visible";
+
+        scrollBox = new ScrollBar("barDiv", "barDiv", window);
+
+        scrollBox.init(totalPage, totalPage, 418, 0, 61);
+
+        scrollBox.scroll(currPage);
+
+        showScrollPage();
+
+      } else {
+
+        noScrollBar();
+
+      }
+
+    }
+
+
+
+
+
+    function noScrollBar() {
+
+      $("barDiv").style.visibility = "hidden";
+
+      $("currPage").innerText = 0;
+
+      $("totalPage").innerText = 0;
+
+      scrollBox = null;
+
+    }
+
+
+
+    function showScrollPage() {
+
+      if (totalPage > 1) {
+
+        $("currPage").innerText = currPage + 1;
+
+        $("totalPage").innerText = totalPage;
+
+      }
+
+    }
+
+
+
+    function ajaxLoadLogo() {
+
+      if (logoAjaxObj != null) {
+
+        logoAjaxObj.requestAbort();
+
+      }
+
+      logoAjaxObj = new AjaxClass();
+
+      logoAjaxObj.frame = window;
+
+      logoAjaxObj.charset = "gbk";
+
+      logoAjaxObj.successCallback = function (_xmlHttp, _params) {
+
+        //iDebug(">>>ajaxLogoData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+
+        if (typeof (jsonData) != "undefined" && jsonData.length > 0) {
+
+          if (typeof jsonData[0].logoImageUrl != "undefined" && jsonData[0].logoImageUrl != "") {
+
+            $("logoImage").src = jsonData[0].logoImageUrl;
+
+          } else {
+
+            $("logoImage").src = "images/global_tm.gif";
+
+          }
+
+        } else {
+
+          $("logoImage").src = "images/global_tm.gif";
+
+        }
+
+      };
+
+      logoAjaxObj.failureCallback = function (_xmlHttp, _params) {
+
+        //iDebug(">>>ajaxLogoData failureCallback");
+
+        $("logoImage").src = "images/global_tm.gif";
+
+      };
+
+      logoAjaxObj.url = logoAjaxPath;
+
+      //iDebug(">>>ajaxLogoData logoAjaxObj.url=" + logoAjaxObj.url);
+
+      logoAjaxObj.requestData();
+
+    }
+
+
+
+    function showTime() {
+
+      var currTime = formatTime("yyyy-MM-dd hh:mm", new Date());
+
+      $("time").innerText = currTime;
+
+      setTimeout("showTime()", 1000);
+
+    }
+  </script>
+
+
+
+</head>
+
+
+
+<body background="images/nr_bg.jpg" leftmargin="0" topmargin="0" onload="init()">
+
+
+
+  <div style="position: absolute; left: 230px; top: 32px;"><img id="logoImage" src="images/logo.png" /></div>
+
+
+
+  <div style="position: absolute; left: 924px; top: 41px; width: 291px; height: 35px; font-size: 24px; text-align: right;"
+    id="time"></div>
+
+  <!--logo、标题-->
+
+  <div style="position: absolute; left: 367px; width: 844px; height: 49px; top: 32px; line-height: 49px; font-size: 27px" id="navTitle"></div>
+
+
+
+  <!--分割线-->
+
+  <div style="position: absolute; left: 94px; top: 181px; width: 1091px; height: 3px; background: url(images/line.png);"></div>
+
+
+
+  <!---->
+
+  <div style="position: absolute; left: 50px; top: 90px; width: 1182px; height: 557px;">
+
+    <!--标题-->
+
+
+
+    <div id="title" style="position: absolute; left: 42px; top: 23px; width: 1093px; height: 53px; font-size: 30px; color: #000000; line-height: 57px; text-align: center; border-bottom: 1px; font-weight: 600">
+
+    </div>
+
+
+
+    <!--内容-->
+
+    <div style="position: absolute; left: 20px; top: 101px; width: 1117px; height: 405px; overflow: hidden;">
+
+      <div id="content" style="position: absolute; left: 39px; top: 0px; width: 1042px;"></div>
+
+    </div>
+
+
+
+    <!--页码-->
+
+    <div style="position: absolute; left: 1150px; top: 98px; width: 4px; height: 418px; background-color: #828282;">
+
+      <div style="position:absolute; left:-12px; top:40px; width:29px; height:61px; background-image: url(images/page.png); visibility:hidden"
+        id="barDiv">
+
+        <div style="position:absolute; left:0px; top:0px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;"
+          id="currPage"></div>
+
+        <div style="position:absolute; left:0px; top:31px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;"
+          id="totalPage"></div>
+
+      </div>
+
+    </div>
+
+
+
+  </div>
+
+  <!--海报-->
+  <!---滚动字幕-->
+
+  <!--<div style="position: absolute; left: 112px; top: 651px; width: 700px; height: 30px; font-size: 22px; line-height: 30px; overflow: hidden;">
+
+  <div style="position:absolute; left:0px; top:0px; height:30px;width:463px;;font-size:22px;line-height:30px;color:#000000; width: 727px;-webkit-transition-duration:500ms;" align="left" id="marquee_ad0"></div>
+
+  <div style="position:absolute; left:0px; top:-30px; height:30px;width:463px;;font-size:22px;line-height:30px;color:#000000; width: 727px;-webkit-transition-duration:500ms;" align="left" id="marquee_ad1"></div>-->
+
+  </div>
+
+</body>
+
+</html>

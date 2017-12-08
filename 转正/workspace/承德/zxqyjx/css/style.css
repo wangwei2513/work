@@ -1,0 +1,27 @@
+@charset "utf-8";
+/* CSS Document */
+body{ background:url(../images/nr_bg.jpg) top center;}
+.logo{ width:208px; height:46px; position:absolute; left:20px; top:15px; background:url(../images/logo.png) no-repeat;}
+.footer{width:100%; height:235px; position:absolute; bottom:0px; left:0px; background:url(../images/foot_bg.png) no-repeat top center;}
+.wrap{ width:1000px; margin:0 auto; height:322px; position:relative; z-index:1; padding-top:150px;}
+.link_area{ width:880px; height:600px;overflow:hidden; margin:0 auto; position:relative;}
+.arrow_l,.arrow_r{
+	width: 50px;
+	height: 50px;
+	display: block;
+	position: absolute;
+	top: 290px;
+}
+.arrow_l{ left:0px; background:url(../images/arrow0_l.png) no-repeat;}
+.arrow_r{ right:0px; background:url(../images/arrow0_r.png) no-repeat;}
+.linkDiv{ display:block; /*width:200px;*/ height:161px; overflow:hidden; background:#7d7e75; position:absolute;}
+.linkDiv:hover{ text-decoration:none;}
+.linkDiv img{ border:3px solid #FFF; margin:3px;}
+.linkDiv h3{ display:block; color:#FFF; font-size:20px; padding:3px 0 0 8px;}
+.pagenum{
+	position: absolute;
+	height: 23px;
+	width: 161px;
+	top: 535px;
+	right: 30px;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <router-link to="/a">a</router-link>
+        <router-link to="/b">b</router-link>
+        <router-link to="/user/join">user</router-link>
+        <router-link :to="{name:'user',params:{id:'james'}}">james</router-link>
+        <router-view></router-view>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script>
+        const a = {
+            template: '<div>这是a</div>'
+        };
+        const b = {
+            template: '<div>这是b</div>'
+        };
+        const c = {
+            template: '<div>{{$route.params.id}}</div>'
+        }
+        const routers = [{
+            path: '/a',
+            component: a
+        }, {
+            path: '/b',
+            component: b
+        }, {
+            path: '/user/:id',
+            name:'user',
+            component: c
+        }]
+        const router = new VueRouter({
+            routes: routers
+        })
+        const app = new Vue({
+            router
+        }).$mount("#app")
+        
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"cszc","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1496386866637741667.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"茶东陈氏宗祠","navigator":"南朗镇>旅游>茶东陈氏宗祠","newAdd":0,"nodePath":"xlz/lvyou/cszc"}

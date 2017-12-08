@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>无标题文档</title>
+<script type="text/javascript" src="../js/global.js"></script>
+<script type="text/javascript" src="../js/showList.js"></script>
+<script type="text/javascript">
+var topicId = window.location.search.split("?")[1].split("=")[1];
+var menuArr = null;
+var submitPos = 0;
+var pupShow = -1;
+var	pupShowFlag = false;
+var menuStatus = [];
+var pageMax = 6;
+var menuBox = null;
+var scrollObj = null;
+var listAjaxObj = null;
+var submitAjaxObj = null;
+var btnArr = [{focus:"images/sure1.png",blur:"images/sure0.png"},{focus:"images/cancel1.png",blur:"images/cancel0.png"}];
+var menuStatusPic = ["images/QA_select01.png","images/QA_select02.png"];
+var cardId = CA.icNo/*123*/;
+var basicUrl = "http://172.18.254.197:8080/";
+			
+function eventHandler(eventObj, type){
+	switch(eventObj.code) {
+		case "KEY_UP":
+			if(submitTipShow || pupShowFlag){
+				changeBtn(-1);
+			}else{
+				changeUD(-1);
+			}
+			break;
+		case "KEY_DOWN":
+			if(submitTipShow || pupShowFlag){
+				changeBtn(1);
+			}else{
+				changeUD(1);
+			}
+			break;
+		case "KEY_LEFT":
+			changeBtn(-1);
+			break;	
+		case "KEY_RIGHT":
+			changeBtn(1);
+			break;
+		case "KEY_SELECT":
+			doSelect();
+			break;
+		case "KEY_PAGE_UP":
+			changePage(-1)
+			break;
+		case "KEY_PAGE_DOWN":
+			changePage(1);
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+		case "KEY_HOMEPAGE":
+			window.location.href = "wjdc_list.htm";
+			return 0;
+			break;
+		case "KEY_GREEN"://绿键提交
+			if(!submitTipShow){
+				showSubmitTip();
+			}else{
+				hideSubmitTip();	
+			}
+			break;
+		default:
+			break;
+	}
+}
+
+
+function changeBtn(_num){
+	if (submitTipShow) {
+		$("btn"+submitPos).src = btnArr[submitPos].blur;
+		submitPos = (submitPos + _num + 2)%2;	
+		$("btn"+submitPos).src = btnArr[submitPos].focus;
+	}else if (pupShowFlag) {
+		$("pupBtn"+cancelPos).src = btnArr[cancelPos].blur;
+		cancelPos = (cancelPos + _num + 2)%2;	
+		$("pupBtn"+cancelPos).src = btnArr[cancelPos].focus;
+	}
+}
+
+var submitTipShow = false;
+function showSubmitTip(){
+	submitTipShow = true;
+	$("tipDiv").style.visibility = "visible";
+}
+
+function hideSubmitTip(){
+	submitTipShow = false;
+	$("tipDiv").style.visibility = "hidden";
+}
+
+function doSubmit(){
+	if(submitAjaxObj == null){
+		submitAjaxObj = new ajaxClass();
+		//测试去掉注释
+		//submitAjaxObj.charset = "gbk";
+	} 
+	else{
+		submitAjaxObj.requestAbort();
+	}
+	var tmpOptionList = menuArr.questions[0].optionList;
+	//问题ID+_+用户选择选项IDS，如果多题，则用英文逗号隔开，如果多个选项，选择之间用@符号连接
+	//data=1_2@3,2_1@3@4,3_4
+	var curr_questionId = menuArr.questions[0].questionId;
+	var optionIdArr = [];
+	for(var i = 0; i < menuStatus.length; i++){
+		if(menuStatus[i] == 1){
+			optionIdArr.push(tmpOptionList[i].optionId);	
+		}	
+	}
+	var optionIdStr = optionIdArr.join("@");
+	var data = curr_questionId + "_" +optionIdStr;
+	//submitAjaxObj.url = "data/submitData.js";
+	submitAjaxObj.url = basicUrl + "VoteSys_foshan/submitQuestion?topicId="+topicId+"&caid="+cardId+"&data="+data;
+	if (optionIdArr.length == menuArr.questions[0].optionList.length) {
+		showPup(1,"正在提交问卷...",false,false);
+		submitAjaxObj.successCallback = function(_xmlHttp){
+			var tmp = eval('('+_xmlHttp.responseText+')');
+			if(tmp != null){
+				if(tmp.code == 0){
+					showPup(1,"提交成功...",true,false);
+					
+				}else{
+					showPup(1,tmp.mes,true,false);
+				}
+				setTimeout('window.location.href = "wjdc_list.htm"',2000);
+			}
+		};
+		submitAjaxObj.failureCallback = function(_xmlHttp){
+			showPup(1,"提交失败...",true,false);
+			setTimeout('window.location.href = "wjdc_list.htm"',2000);
+		}
+		submitAjaxObj.requestData();	
+	}else {
+		showPup(1,"请完成所有的题目...",true,false);
+	}
+}
+
+function doSelect(){
+	if(submitTipShow){
+		if(submitPos == 0){
+			doSubmit();	
+		}
+		hideSubmitTip();	
+	}else if (pupShowFlag) {
+		if(cancelPos == 0){
+			hidePup();
+		}else if (cancelPos == 1){
+			window.location.href = "wjdc_list.htm?position="+pos;
+		}
+	}else{
+		var imgStatus = menuStatus[menuBox.position];
+		if(imgStatus == 0){
+			$("menuPic"+menuBox.focusPos).src = menuStatusPic[1];	
+			menuStatus[menuBox.position] = 1;
+		}else{
+			$("menuPic"+menuBox.focusPos).src = menuStatusPic[0];
+			menuStatus[menuBox.position] = 0;	
+		}
+	}
+}
+
+function changePage(_num){
+	stopMarquee();
+	menuBox.changePage(_num);
+	/*if(scrollObj) scrollObj.scroll(menuBox.position);*/
+	startMarquee();
+}
+
+function changeUD(_num){
+	stopMarquee();
+	menuBox.changeList(_num);
+	/*if(scrollObj) scrollObj.scroll(menuBox.position);*/
+	startMarquee();
+}
+
+function init(){
+	showTime();	
+	clearMenu();
+	getData();
+}
+
+
+function showTime(){
+	var weekArr = ["星期日","星期一","星期二","星期三","星期四","星期五","星期六"];
+	var d = new Date();
+	var year = d.getFullYear().toString();
+	var month = (d.getMonth() + 1).toString();
+	var day = d.getDate().toString();
+	var week = weekArr[d.getDay()];
+	var hour = d.getHours().toString();
+	var minute = d.getMinutes().toString();
+	var second = d.getSeconds().toString();
+	if(month.length < 2) month = "0" + month; 
+	if(day.length < 2) day = "0" + day; 
+	if(hour.length < 2) hour = "0" + hour; 
+	if(minute.length < 2) minute = "0" + minute; 
+	if(second.length < 2) second = "0" + second; 
+	
+	$("weekDiv").innerText = week;
+	$("dateDiv").innerText = year + "." + month + "." + day;
+	$("timeDiv").innerText = hour + ":" + minute +":" + second;
+	setTimeout("showTime();",1000);
+}
+
+function initMenuStatus(){
+	menuStatus = [];
+	var tmpOptionList = menuArr.questions[0].optionList;
+	for(var i = 0; i<tmpOptionList.length; i++){
+		menuStatus.push(0);
+	}
+}
+
+function clearMenu(){
+	for(var i = 0; i<6; i++){
+		$("menuPic"+i).src = "images/blank.png";
+		$("menuText"+i).innerText = "";
+	}	
+}
+
+function getData(){
+	if(listAjaxObj == null){
+		listAjaxObj = new ajaxClass();
+		//测试去掉注释
+		//listAjaxObj.charset = "gbk";
+	} 
+	else{
+		listAjaxObj.requestAbort();
+	}
+	//listAjaxObj.url = "data/voteContent2.js";
+	listAjaxObj.url = basicUrl + "VoteSys_foshan/getData?topicId="+topicId+"&caid="+cardId;
+
+	//showPup(1,"正在请求列表数据...",false,false);
+	listAjaxObj.successCallback = function(_xmlHttp){
+		var tmp = eval("("+_xmlHttp.responseText+")");
+		if(tmp != null){
+			hidePup();
+			//alert("tmp.code = "+tmp.code+" tmp.data.isFinished = "+tmp.data.isFinished);
+			if(tmp.code == 0 && !tmp.data.isFinished){//只有code为0时，data才有值；isFinished为0，表示未完成，获取到的数据才是投票问题列表，反正是投票结果的数据
+				
+				menuArr = tmp.data;
+				showData();
+			}else if(tmp.code == 0 && tmp.data.isFinished){
+				showPup(1,"您已投过票了！",false,false);
+			}else{
+				showPup(1,"请求到的列表为空",false,false);	
+			}
+		}
+		else{
+			showPup(1,"请求到的列表为空",false,false);
+		}
+	};
+	listAjaxObj.failureCallback = function(_xmlHttp){
+		showPup(1,"请求列表数据失败",false,false);
+	}
+	listAjaxObj.requestData();
+}
+
+function showData(){
+	initMenuStatus();
+	if(getStrChineseLength(menuArr.questions[0].questionContent) > 25){
+		$("menuTitle").innerText = menuArr.questions[0].questionContent.substring(0,25)+"..";
+	}else{
+		$("menuTitle").innerText = menuArr.questions[0].questionContent;	
+	}
+	var tmpOptionList = menuArr.questions[0].optionList;
+	menuBox = new showList1(pageMax, tmpOptionList.length, 0, 209, window);
+	menuBox.focusDiv = "focus";
+	menuBox.listHigh = 65;
+	menuBox.focusLoop = true;
+	menuBox.pageLoop = true;
+	menuBox.haveData = function(List){
+		$("menuPic"+List.idPos).src = menuStatusPic[menuStatus[List.dataPos]];
+		var tempTxt = tmpOptionList[List.dataPos].optionContent;
+		if(getStrChineseLength(tempTxt) > 30){
+			$("menuText"+List.idPos).innerHTML =(List.dataPos+1)+"、"+tempTxt.substring(0,30) + "..";
+		}else{
+			$("menuText"+List.idPos).innerHTML = tempTxt;	
+		}
+	};
+	menuBox.notData = function(List){
+		$("menuPic"+List.idPos).src = "images/blank.png";
+		$("menuText"+List.idPos).innerText = "";
+	};
+	menuBox.startShow();
+	startMarquee();
+	
+/*	scrollObj = new ScrollBar("slider", null, window);
+	scrollObj.init(tmpOptionList.length, pageMax, 532, -3, 1);
+	scrollObj.scroll(menuBox.position);	*/
+}
+
+function startMarquee(){
+	var tempTxt = menuArr.questions[0].optionList[menuBox.position].optionContent;
+	if(getStrChineseLength(tempTxt) > 40){
+		$("menuText"+menuBox.focusPos).innerHTML = "<marquee behavior='scroll' width='980' startposition='10%'>" + tempTxt + "</marquee>";		
+	}
+}
+
+function stopMarquee(){
+	var tempTxt = menuArr.questions[0].optionList[menuBox.position].optionContent;
+	if(getStrChineseLength(tempTxt) > 30){
+		$("menuText"+menuBox.focusPos).innerHTML = tempTxt.substring(0,30) + "..";
+	}
+}
+
+/*显示弹出框，flag:0,弹出框需要交互  1::弹出框不需要交互 2:有一个交互按钮的弹出框*/ 
+var pupTimeout = -1;
+var pupShow = -1;
+function showPup(_flag,_text,_autoHide,_backFlag){
+	pupShow = _flag;
+	pupShowFlag = true;
+	$("msg").innerText = _text;
+	$("pupBox").style.visibility = "visible";
+	clearTimeout(pupTimeout);
+	if(_autoHide){
+		pupTimeout = setTimeout(function(){
+			hidePup();
+		},5000);
+	}
+}
+
+function hidePup(){
+	pupShow = -1;
+	pupShowFlag = false;
+	$("pupBox").style.visibility = "hidden";
+	$("msg").innerText = "";
+}
+
+</script>
+</head>
+
+<body background="images/inner_bg.jpg" leftmargin="0" topmargin="0" onload="init()">
+<div style="position:absolute;left:170px;top:25px;color:#fff;font-size:36px;">
+		在线调查
+	</div>
+<!--title-->
+<img src="images/title_QA.png" width="196" height="44" style="position:absolute; left:102px; top:70px;" />
+
+<!--时间-->
+<div style="position:absolute; left:959px; top:70px; width:249px; height:44px;">
+  <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" style="color:#fff;">
+  <tr>
+    <td width="100" align="right"><span id="weekDiv" style="font-size:20px;">星期二</span><br /><span id="dateDiv" style="font-size:18px;">2015.03.12</span></td>
+	<td width="30" align="center"><img src="images/div_line.png" width="2" height="36" /></td>
+    <td id="timeDiv" style="font-size:44px; color:#d9e9ed; ">19:30</td>
+  </tr>
+</table>
+</div>
+
+<!--问卷内容-->
+<div style="position:absolute; left:100px; top:150px; width:1081px; height:483px; background:url(images/text_bg.png) no-repeat; ">
+	<table width="1040" height="455" border="0" cellspacing="0" cellpadding="0" style="position:absolute; left:25px; top:11px; font-size:30px; color:#fff;">
+  <tr>
+    <td id="menuTitle"  height="65" colspan="2" align="center" style="font-size:40px;">禅城区2015年民生实事备选</td>
+  </tr>
+  <tr>
+    <td width="45" height="65"><img id="menuPic0" src="images/QA_select01.png" width="37" height="28" /></td>
+    <td id="menuText0">1、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+  <tr>
+    <td height="65"><img id="menuPic1" src="images/QA_select02.png" width="37" height="28" /></td>
+    <td id="menuText1">2、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+  <tr>
+    <td height="65"><img id="menuPic2" src="images/QA_select01.png" width="37" height="28" /></td>
+    <td id="menuText2">3、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+  <tr>
+    <td height="65"><img id="menuPic3" src="images/QA_select02.png" width="37" height="28" /></td>
+    <td id="menuText3">4、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+  <tr>
+    <td height="65"><img id="menuPic4" src="images/QA_select02.png" width="37" height="28" /></td>
+    <td id="menuText4">5、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+  <tr>
+    <td height="65"><img id="menuPic5" src="images/QA_select01.png" width="37" height="28" /></td>
+    <td id="menuText5">6、改革和创新社会服务模式，为市民提供专业社工服务，提升社会服务</td>
+  </tr>
+</table>
+</div>
+
+<div id="focus" style="position:absolute; left:83px; top:209px; width:1118px; height:103px; background:url(images/focus_QA.png) no-repeat center;"></div>
+
+<!--页码-->
+<div style="position:absolute; left:100px; top:638px; width:200px; height:30px; font-size:30px; color:#fff; ">10/20</div>
+
+<!--帮助信息-->
+<div style="position:absolute; left:331px; top:638px; width:854px; height:32px; ">
+	<img src="images/help_green.png" width="99" height="32" style="position:absolute; left:312px; top:0px;" />
+	<img src="images/help_page.png" width="134" height="32" style="position:absolute; left:457px; top:0px;" />
+	<img src="images/help_enter.png" width="101" height="32" style="position:absolute; left:627px; top:0px;" />
+	<img src="images/help_return.png" width="100" height="32" style="position:absolute; left:749px; top:0px;" />
+</div>
+
+<div id="pupBox" style="position:absolute;top:195px;left:409px;width:462px; height:330px;background-image:url(images/alertImg.png); visibility:hidden;">
+ <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:28px; position:absolute; top:116px; left:25px; color:#FFFFFF; line-height:85px; width: 406px;">
+    <tr>
+      <td id="msg" colspan="2" align="center"></td>
+    </tr>
+	<tr>
+      <td colspan="2" height="20px"></td>
+    </tr>
+    <tr align="center">
+      <td><img id="pupBtn0" src="images-02/sure1.png" width="150" height="47"/></td>
+      <td><img id="pupBtn1" src="images-02/cancel0.png" width="150" height="47"/></td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

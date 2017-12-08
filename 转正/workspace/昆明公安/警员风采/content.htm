@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>05</title>
+    <style>
+        p {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+    <!--文字内容-->
+    <div style="position:absolute;left:68px;top:56px; width:1146px; height:609px; background:url(images/tab_bg3.png);">
+        <div id="title" style="position:absolute;left:0px;top:11px; width:1146px; line-height:52px; font-size:34px; color:#333; text-align:center;">德城区人民政府与德州学院举行战略合作签约仪式</div>
+
+        <div style="position:absolute;left:0px;top:63px; width:1146px; line-height:38px; font-size:24px; color:#333; text-align:center;">发布日期：<span id="date">2017-4-17 09:30</span></div>
+
+        <div style="position:absolute;left:21px;top:113px; width:1074px; height:1px; background:rgba(117,117,117,.5);"></div>
+
+        <div style="position:absolute;left:21px;top:131px; width:321px; height:458px;">
+            <img id="img" src="images/pic3_1.jpg" width="321" height="458">
+            <div id="imgTitle" style="position:absolute;left:0px;top:392px; width:321px; height:67px; background:rgba(11,11,11,.68); line-height:67px; text-align:center; color:#fff; font-size:26px;">战略合作签约仪式</div>
+        </div>
+
+        <div id="contentBox" style="position:absolute;left:366px;top:117px;overflow:hidden; width:735px; height:486px; line-height:54px; font-size:26px; color:#666; text-indent:2em;">
+            <div id="content" style="position:absolute;left:0;top:0; width:735px;">
+                <p>4月14日，德城区人民政府与德州学院举行战略合作签约仪式，双方签订战略合作框架协议。德州学院党委书记刘文烈，党委委员、副校长巩建闽，区委书记巩洪波，区委副书记、区长王洪林出席签约仪式。</p>
+                <p>刘文烈指出，德州学院将以此次签约为新起点，进一步密切与德城区战略合作关系，在文化创新、人才培养、科学研究、成果转化、服务社会等方面，打造特色，提升质量，建立长期稳定的产学研合作关系。</p>
+                <p>巩洪波在致辞中说，德城区始终坚持“科技是第一生产力，人才是第一资源”发展理念，认真落实人才政策“黄金30条”，大力实施“5111”人才计划，积极引进高端人才，不断集</p>
+            </div>
+        </div>
+
+        <!--滚动条-->
+        <div id="scrollBar" style="position:absolute;left:1119px;top:112px; width:4px; height:454px; background:rgba(184,12,8,.4);">
+            <div id="scroll" style="position:absolute;left:-13px;top:0; width:30px; height:62px; background:url(images/page01.jpg); line-height:31px; font-size:24px; color:#000; text-align:center;"><span id="currPage">1</span><br/><span id="totlePage" style="color:#666;">13</span></div>
+        </div>
+
+
+    </div>
+    <script src="js/common.js"></script>
+    <script>
+        function grabKeyEvent(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    keyUp();
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    keyDown()
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+                    keyLeft();
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+                    keyRight();
+                    return false;
+                    break;
+                case 13: //ok
+                    // doSelect();
+                    break;
+                case 8:
+                    // goBack();
+                    window.location.href = 'index.htm';
+                    return false;
+                    break;
+                case 27:
+                case 32:
+                case 340:
+                case 640:
+                    return false;
+                    break;
+            }
+        }
+        document.onkeydown = grabKeyEvent;
+        document.onsystemevent = grabKeyEvent;
+        var ajaxObj = null,
+            contentData = [],
+            currPage = 0,
+            totlePage = 0,
+            listPos = getGlobalParms("listPos") ? parseInt(getGlobalParms("listPos")) : 0;
+        // 加载content数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "content.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                contentData = getData;
+                initContent();
+            }
+            ajaxObj.failureCallback = function () {
+
+            }
+            ajaxObj.requestData();
+        }
+        // initContent
+        function initContent() {
+            $("content").innerHTML = contentData[listPos].content;
+            $("title").innerText = contentData[listPos].title;
+            $("date").innerText = contentData[listPos].date;
+            $("img").src = contentData[listPos].entryImage.imageUrl;
+            $("imgTitle").innerText = contentData[listPos].subTitle;
+            totlePage = Math.ceil($("content").offsetHeight / $("content").parentNode.offsetHeight)
+            $("totlePage").innerText = totlePage;
+            initScroll('scroll', 'scrollBar', totlePage);
+        }
+        /*初始化滚动条*/
+        function initScroll(scrollBar, scroll, length) {
+            scrollObj = new ScrollBar(scrollBar, scroll);
+            scrollObj.init(length, 1, 360, 0);
+        }
+        // 上
+        function keyUp() {
+            if (currPage <= totlePage - 1 && currPage > 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = $("content").offsetTop + 454 + "px"
+            } else if (currPage === 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = "0px"
+            }
+        }
+        // 下
+        function keyDown() {
+            totleLen = $("content").offsetHeight;
+            if (totlePage > 2 && currPage < totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(currPage * 458) + "px"
+            } else if (totlePage > 2 && currPage == totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 458) + "px"
+            } else if (totlePage == 2 && currPage < 1) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 458) + "px"
+            }
+        }
+        // init
+        function init() {
+            ajaxLoadContentData();
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>

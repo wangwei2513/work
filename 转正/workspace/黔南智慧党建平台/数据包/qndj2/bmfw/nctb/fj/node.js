@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"fj","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"服装","navigator":"便民服务>农村淘宝>服装","newAdd":0,"nodePath":"qndj2/bmfw/nctb/fj","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

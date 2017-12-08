@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"KEC","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495529072313370552.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山开益禧(KEC)半导体有限公司","navigator":"南朗镇>名企>中山开益禧(KEC)半导体有限公司","newAdd":0,"nodePath":"xlz/mingqi/KEC"}

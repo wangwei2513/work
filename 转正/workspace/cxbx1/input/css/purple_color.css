@@ -1,0 +1,105 @@
+@charset "gb2312";
+
+
+#keytable{
+	background-color:#675388;
+	border-top: 1px solid #060606;
+	box-sizing: border-box;
+}
+#keytable td {
+	width:61px;
+	height:55px;
+	/*background:url(bg.png) no-repeat;*/
+	text-align:center;
+	font-size:36px;
+	color:#f0f0f0;	
+	text-align:center;
+	border: 1px solid #060606;
+	box-sizing: border-box;
+}
+
+.wordrightborder {
+	border-right:#060606 solid 1px;
+	color:#000000;
+	font-size:30px;
+}
+
+.wordbottomborder {
+	border-bottom:#060606 solid 1px;
+}
+
+.wordtopborder {
+	border-top:#060606 solid 1px;
+}
+
+.rightborder {
+	border-right:#060606 solid 1px;
+}
+
+.leftborder {
+	border-left:#060606 solid 1px;
+}
+
+.bottomborder {
+	border-bottom:#060606 solid 1px;
+}
+
+.topborder {
+	border-top:#060606 solid 1px;
+}
+
+.numbg {
+	background-color:#483667;	
+}
+
+.letterbg {
+	background-color:#675388;	
+}
+
+.specialbg {
+	background-color:#483667;	
+}
+
+.onfocus {
+	background-color:#ffca28;
+	color:#000000;
+}
+
+.opreabg {
+	background-color:#5e4783;
+}
+#keyinput{
+	background-color:#675388;
+	color:#ffffff;
+}
+
+
+#inputValue {	
+	word-break:break-all; /*支持IE，chrome，FF不支持*/
+　　word-wrap:break-word;/*支持IE，chrome，FF*/
+	font-size:36px;
+}
+#inputButton{
+	background-color:#5e4783;
+	border-top:#060606 solid 1px;
+	border-left:#060606 solid 1px;
+	border-bottom:#060606 solid 1px; 
+	font-size:36px;
+}
+#keyword{
+	background-color:#7a669d;
+}
+#r_arrow{
+	font-size: 30px; color:#ffffff;
+	border-bottom:#060606 solid 1px;
+	border-left:#060606 solid 1px;
+}
+
+#txtRight{
+	border-left: #060606 solid 1px;
+}
+
+#txtRightTable td{
+	font-size: 30px; color:#ffffff;
+	border-bottom: 1px solid #060606;
+}

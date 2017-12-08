@@ -1,0 +1,1 @@
+{code:0,msg:"",data:{id:12,ca:123456,stbid:123456,usernum:"0123",status:0,bingdingTime:"2017.11.28",unbingdingTime:"2017.11.28"}}

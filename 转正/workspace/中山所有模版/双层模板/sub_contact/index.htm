@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>联系我们06</title>
+<script src="js/DataCollection.js"></script>
+<script src="js/common.js"></script>
+<script>
+window.onload = function () {
+	var navStr = getGlobalVar("navigator");
+	navStr = navStr.replace(/ > /g,">");
+	var navStrArr = navStr.split(">")
+	var listType = "栏目";
+	var bacUrlDed = "http://172.23.252.132/sazs/index.htm"
+	function getInitData() {
+		var title = navStrArr[1]+"||"+ listType +"||" +navStr+"||"+ navStrArr[2]+"||"+"加载" ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStrArr[1]+"||"+ listType +"||" +navStr +"||"+ navStrArr[1] +"||"+"返回";
+				try{
+					DataCollection.collectData(["01",bacUrlDed,location.href,title,"",""])
+				}catch(e){};
+	}
+	getInitData();
+	document.onkeydown = eventHandler;
+function eventHandler(eve){
+	var e = eve || window.event;
+	var keycode = e.keyCode || e.which || e.charCode;
+ 	switch(keycode){
+	    case 8:  //KEY_BACK
+			getBackTitleData();
+			navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+			setGlobalVar("navigator",navStr);
+	      	window.location.href = "../index.htm";
+	      	return false;
+	      	break;
+	}
+}
+}
+</script>
+</head>
+
+<body style="background:url(images/bg.jpg) no-repeat;">
+    <img id="titleImg" style="position:absolute;left:850px;top:18px;with:65px;height:89px" src="../images/1.png"/>
+	<span style="position:absolute;left:912px;top:63px;color:#000;font-size:22px;">中山市食品药品监督管理局</span>
+	<!--左侧信息-->
+	<div style="position:absolute;left:72px;top:95px;"><img src="images/border_top_05.png"/></div>
+	<img src="images/boder_pic.jpg" style="position:absolute;left:72px;top:140px;"/>
+	<div style="position:absolute;left:72px;top:292px;background:url(images/border_left.png);width:238px;height:364px;">
+		<div style="position:absolute;left:31px;top:22px;background:url(images/border_middle.png);width:179px;height:41px;color:#ffffff;font-size:20px;text-align:center;line-height:41px;">
+			联系我们
+		</div>
+	</div>
+	<!--右侧内容-->
+	<div style="position:absolute;left:323px;top:138px;background:url(images/right_pic.jpg);width:899px;height:518px;color:#537900;font-size:15px;">
+	<!--
+		<div style="position:absolute;left:123px;top:138px;">
+			<img src="images/pop_img_01.png"/>
+			<span style="position:absolute;left:-80px;top:121px;width:280px;height:50px;">联系地址：中山市石岐区梅基街27号</span>	
+		</div>
+		<div style="position:absolute;left:415px;top:138px;">
+			<img src="images/pop_img_02.png"/>
+			<div style="position:absolute;left:-75px;top:116px;width:200px;height:130px;">
+				<table border="0" cellpadding="0" cellspacing="0" width="200" height="130" style="padding-left:23px;">
+					<tr>
+						<td style="text-align:center;">咨询投诉电话</td>
+					</tr>
+					<tr>
+						<td>质量举报：12345或12331</td>
+					</tr>
+					<tr>
+						<td>行风投诉：0760-88816008</td>
+					</tr>
+					<tr>
+						<td>业务窗口：0760-88921000</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div style="position:absolute;left:707px;top:138px;">
+			<img src="images/pop_img_03.png"/>
+			<img src="images/pop_img_04.png" style="position:absolute;left:-20px;top:123px;"/>
+		</div>
+		-->
+	</div>
+</body>
+</html>

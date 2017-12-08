@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>党章党规学习内容页</title>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
+window.onkeydown = function(e){
+	var e = e || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	switch(keycode){
+		case 1:
+		case 38: 	//up
+			changeUD(-1);
+			return EVENT.STOP;
+			break;
+		case 2:
+		case 40: 	//down
+			changeUD(1);
+			return EVENT.STOP;
+			break;
+		case 3:
+		case 37: 	//left
+			changeLR(-1);
+			return EVENT.STOP;
+			break;
+		case 4:
+		case 39: 	//right
+			changeLR(1);
+			return EVENT.STOP;
+			break;
+		case 33:
+		case 372:
+		case 374: 	//page up
+			changePage(-1);
+			return EVENT.STOP;
+			break;
+		case 34:
+		case 373:
+		case 375: 	//page down
+			changePage(1);
+			return EVENT.STOP;
+			break;
+		case 13: 	//enter
+			doSelect();
+			return EVENT.STOP;
+			break;
+		case 8:
+		case 340: 	//back
+			window.location.href = "index.htm";
+			return EVENT.STOP;
+			break;
+		case 27:
+		case 339: 	//exit
+			return EVENT.STOP;
+			break;
+	}
+}
+/**********************变量**********************/
+var prevPos = 0;
+
+var menuData = [];
+var listPos = 0;
+var focusArea = 0;
+var currPage = 1;
+var totalPage = 1;
+var pageHeight = 370;
+var scrollHeight = 10; //每次翻动翻滚的值
+
+var ajaxObj = null;
+var file = "content.js";
+
+var receiveAjaxPath = "http://10.225.255.2:8080/service/signforSave?callback=&cardId={0}&tzId={1}&startTime={2}&endTime={3}";
+var cardId = getCAId();
+var tzId = 1;
+var startTime = "";
+var endTime = "";
+/**********************方法**********************/
+function init(){
+	initParams();
+	initTime();
+	ajaxMenuList();
+	var date = new Date();
+	startTime = formatTime("yyyy-MM-dd hh:mm:ss",date);
+}
+
+function initParams(){
+	if(mySessionStorage.getItem("xxjy_tListPos")){
+		prevPos = parseInt(mySessionStorage.getItem("xxjy_tListPos"),10);
+	}
+}
+
+function initTime(){
+	var date = new Date();
+	$("date").innerHTML = formatTime("yyyy-MM-dd W",date) + "<br/>" + formatTime("hh:mm:ss",date);
+	setTimeout(initTime,1000);
+}
+
+function ajaxMenuList(){
+	if(ajaxObj == null){
+		ajaxObj = new AjaxClass();
+		ajaxObj.charset = "gbk";
+		ajaxObj.frame = window;
+	}
+	else{
+		ajaxObj.requestAbort();
+	}
+
+	var url = file;
+	ajaxObj.url = url;
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		var getData = eval("("+_xmlHttp.responseText+")");
+		menuData = getData;
+		initContent();
+		// onFocus();
+	}
+
+	ajaxObj.failureCallback = function(){
+		initContent();
+		// onFocus();
+	}
+
+	ajaxObj.requestData();
+}
+
+function initContent(){
+	clearContent();
+	if(menuData.length > 0){
+		$("title").innerText = menuData[prevPos].title;
+		$("content").innerHTML = menuData[prevPos].content;
+		var str = menuData[prevPos].content;
+		var pattern = new RegExp("<img[^<>]*?\\ssrc=['\"]?(.*?)['\"].*?>");
+		if($("content").offsetHeight > 0){
+			totalPage = Math.ceil($("content").offsetHeight/pageHeight);
+		}
+		while(pattern.test(str)){
+			var img = new Image();
+			img.src = pattern.exec(str)[1];
+			img.onload = function(){
+				if($("content").offsetHeight > 0){
+					totalPage = Math.ceil($("content").offsetHeight/pageHeight);
+				}
+				initPage();
+			}
+			str = str.replace(pattern.exec(str)[0],"");
+		}
+	}
+	initPage();
+}
+
+function clearContent(){
+	$("title").innerText = "";
+	$("content").innerHTML = "";
+}
+
+function initPage(){
+	$("cur").innerText = currPage;
+	$("total").innerText = totalPage;
+}
+
+// function onFocus(){
+// 	switch(focusArea){
+// 		case 0:
+// 			onContentFocus();
+// 			break;
+// 		default:
+// 			break;
+// 	}
+// }
+
+// function onContentFocus(){
+// 	switch(listPos){
+// 		case 0:
+// 			$("btn_prev").src = "images/btn0_1.png";
+// 			break;
+// 		case 1:
+// 			$("btn_next").src = "images/btn1_1.png";
+// 			break;
+// 		case 2:
+// 			$("btn_back").src = "images/btn2_1.png";
+// 			break;
+// 	}
+// }
+
+// function loseContentFocus(){
+// 	switch(listPos){
+// 		case 0:
+// 			$("btn_prev").src = "images/btn0_0.png";
+// 			break;
+// 		case 1:
+// 			$("btn_next").src = "images/btn1_0.png";
+// 			break;
+// 		case 2:
+// 			$("btn_back").src = "images/btn2_0.png";
+// 			break;
+// 	}
+// }
+
+function changeUD(_num){
+	if(menuData.length <= 0){return false;}
+	if(focusArea === 0) { 
+		if($("content").offsetTop <= 0 && $("content").offsetTop + $("content").offsetHeight >= 0){
+			var tmp = $("content").offsetTop - _num*scrollHeight;
+			tmp = tmp > 0 ? 0 : tmp + $("content").offsetHeight < 0 ? -$("content").offsetHeight : tmp;
+			$("content").style.top = tmp + "px";
+			currPage = Math.floor(Math.abs($("content").offsetTop)/pageHeight) + 1;
+			initPage();
+
+			if(_num > 0 && tmp === -$("content").offsetHeight) {
+				focusArea = 1;
+				$("receiveBtn").src = "images/qiandao-1.png";
+			}
+		} 
+	} else if(focusArea === 1 && _num < 0) {
+		focusArea = 0;
+		$("receiveBtn").src = "images/qiandao.png";
+	}
+	// if(_num == 1){
+	// 	if(currPage < totalPage){
+	// 		currPage++;
+	// 		$("content").style.top = $("content").offsetTop - pageHeight + "px";
+	// 		initPage();
+	// 	}
+	// }
+	// else if(_num == -1){
+	// 	if(currPage > 1){
+	// 		currPage--;
+	// 		$("content").style.top = $("content").offsetTop + pageHeight + "px";
+	// 		initPage();
+	// 	}
+	// }
+		}
+function changePage(_num){
+	if(menuData.length <= 0){return false;}
+	if($("content").offsetTop <= 0 && $("content").offsetTop + $("content").offsetHeight >= 0){
+		var tmp = $("content").offsetTop - _num*pageHeight;
+		tmp = tmp > 0 ? 0 : tmp + $("content").offsetHeight < 0 ? -$("content").offsetHeight : tmp;
+		$("content").style.top = tmp + "px";
+		currPage = Math.floor(Math.abs($("content").offsetTop)/pageHeight) + 1;
+		initPage();
+	}
+}
+
+function changeLR(_num){
+	if(menuData.length <= 0){return false;}
+	// loseContentFocus();
+	// listPos += _num;
+	// listPos = listPos < 0 ? 0 : listPos;
+	// listPos = listPos > 2 ? 2 : listPos;
+	// onContentFocus();
+}
+
+function ajaxReceive() {
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params){
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(jsonData.success == true) {
+			$("resultDiv").style.display = "block";
+			$("result").src = "images/qscg.png" ;
+			focusArea = 2;
+		} else {
+			$("resultDiv").style.display = "block";
+			$("result").src = "images/qssb.png" ;
+			focusArea = 2;
+		}
+		
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		$("resultDiv").style.display = "block";
+		$("result").src = "images/qssb.png" ;
+		focusArea = 2;
+	};
+	var date = new Date();
+	endTime = formatTime("yyyy-MM-dd hh:mm:ss",date);
+	ajaxObj.url = receiveAjaxPath.replace("{0}",cardId).replace("{1}",tzId).replace("{2}",startTime).replace("{3}",endTime);
+	ajaxObj.requestData();
+}
+
+
+function doSelect(){
+	if(menuData.length <= 0){return false;}
+	if(focusArea === 1) {
+		ajaxReceive();
+	} else if(focusArea === 2) {
+		$("resultDiv").style.display = "none";
+		focusArea = 1;
+	}
+	// switch(listPos){
+	// 	case 0:
+	// 		if(currPage > 1){
+	// 			currPage--;
+	// 			$("content").style.top = $("content").offsetTop + pageHeight + "px";
+	// 			initPage();
+	// 		}
+	// 		break;
+	// 	case 1:
+	// 		if(currPage < totalPage){
+	// 			currPage++;
+	// 			$("content").style.top = $("content").offsetTop - pageHeight + "px";
+	// 			initPage();
+	// 		}
+	// 		break;
+	// 	case 2:
+	// 		window.location.href = "index.htm";
+	// 		break;
+	// }
+}
+</script>
+</head>
+<body background="images/bg1.jpg" topmargin="0" leftmargin="0" onload="init()">
+<!-- 时间日期 -->
+<div id="date" style="position:absolute;width:250px;height:55px;left:930px;top:47px;font-size:25px;color:#fff;text-align:right;"></div>
+<!-- 内容区 -->
+<div id="title" style="position:absolute;width:1006px;height:50px;line-height:50px;left:140px;top:140px;font-size:34px;color:#000;text-align:center;"></div>
+<div id="wrap" style="position:absolute;width:1006px;height:370px;left:140px;top:210px;background-color:#fff;overflow:hidden;">
+	<div id="content" style="position:absolute;"></div>
+</div>
+<!-- <img id="btn_prev" src="images/btn0_0.png" width="84" height="30" style="position:absolute;left:476px;top:591px;">
+<img id="btn_next" src="images/btn1_0.png" width="84" height="30" style="position:absolute;left:604px;top:591px;">
+<img id="btn_back" src="images/btn2_0.png" width="84" height="30" style="position:absolute;left:726px;top:591px;"> -->
+<!-- 页码 -->
+<div style="position:absolute;width:300px;height:44px;line-height:44px;left:493px;top:590px;font-size:22px;color:#000;text-align:center;">第<span id="cur"></span>页/共<span id="total"></span>页</div>
+
+<img id="receiveBtn" style="position:absolute;left:945px;top:465px;" src="images/qiandao.png" width="300" height="300">
+
+<div id="resultDiv" style="background:url(images/wrap.png);position:absolute;display:none;">
+	<img id="result" src="images/qscg.png"  />
+</div>
+</body>
+</html>

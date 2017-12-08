@@ -1,0 +1,271 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta name=page-view-size content=1280*720 />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title></title>
+<style type="text/css">
+	body{background:url(images/tm_bg.jpg) no-repeat;}
+	.wrap{width:950px;position:absolute;top:200px;left: 190px;}
+	.link_area{ 
+		width:880px; 
+		height:600px;
+		margin:0 auto; 
+		font-size: 30px;
+		font-weight: bold;
+	}
+	.arrow_l,.arrow_r{
+		width: 50px;
+		height: 50px;
+		position: absolute;
+		top: 140px;
+	}
+	.arrow_l{ left:-80px; background:url(images/arrow0_l.png) no-repeat;}
+	.arrow_r{ right:0px; background:url(images/arrow0_r.png) no-repeat;}
+	.linkDiv{ width:212px; height:161px; overflow:hidden; background:#7d7e75; position:absolute;visibility: hidden;}
+	.linkDiv:hover{ text-decoration:none;}
+	.linkDiv img{ border:3px solid #FFF; margin:3px;}
+	.linkDiv div{color:#FFF; font-size:20px; padding:3px 0 0 8px;}
+	.pagenum{
+		position: absolute;
+		height: 30px;
+		width: 161px;
+		top: 385px;
+		right: 30px;
+		line-height: 30px;
+		font-size: 24px;
+		font-weight: bold;
+		color: #D33E3E;
+	}
+</style>
+</head>
+
+<body leftmargin="0" topmargin="0" onload="init()">
+	<div style="position: absolute; left: 255px;top: 32px; ">
+		<img id="logoImage" src="images/logo.png"/>
+	</div>
+	<div style="position: absolute; left: 306px;width: 844px; height: 49px; top: 32px; line-height: 49px; font-size: 27px" id="navTitle"></div>
+    <div style="position: absolute; left: 1006px; top: 41px; width: 209px; height: 35px; font-size: 24px; text-align: right;" id="time"></div>
+	<div class="wrap"> 
+		<a id="arrow_l" class="arrow_l"></a><!-- 左箭头 -->
+	  	<div class="link_area">
+		    <div id="div0" class="linkDiv" style="left: 0px; top: 0px;">
+		        <img id="icon_0" width="200" height="110" />
+		        <div id="title_0"></div>
+		    </div>
+		    <div id="div1" class="linkDiv" style="left: 220px; top: 0px;">
+		        <img id="icon_1" width="200" height="110" />
+		        <div id="title_1"></div>
+		    </div>
+		    <div id="div2" class="linkDiv" style="left: 440px; top: 0px;">
+		        <img id="icon_2" width="200" height="110" />
+		        <div id="title_2"></div>
+		    </div>
+		    <div id="div3" class="linkDiv" style="left: 660px; top: 0px;">
+		        <img id="icon_3" width="200" height="110" />
+		        <div id="title_3"></div>
+		    </div>
+		    <div id="div4" class="linkDiv" style="left: 0px; top: 180px;">
+		        <img id="icon_4" width="200" height="110" />
+		        <div id="title_4"></div>
+		    </div>
+		    <div id="div5" class="linkDiv" style="left: 220px; top: 180px;">
+		        <img id="icon_5" width="200" height="110" />
+		        <div id="title_5"></div>
+		    </div>
+		    <div id="div6" class="linkDiv" style="left: 440px; top: 180px;">
+		        <img id="icon_6" width="200" height="110" />
+		        <div id="title_6"></div>
+		    </div>
+		    <div id="div7" class="linkDiv" style="left: 660px; top: 180px;">
+		        <img id="icon_7" width="200" height="110" />
+		        <div id="title_7"></div>
+		    </div>
+		</div>
+	  	<a id="arrow_r" class="arrow_r"></a><!-- 右箭头 -->
+	  	<!-- 页码 -->
+	  	<div class="pagenum">
+	  		<span id="currPage">1</span>&nbsp;/
+	  		<span id="totalPage">1</span>
+	  	</div>
+	</div>
+</body>
+</html>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
+	var prePageUrl = "";
+	var currPage = 0;
+	var totalPage = 0;
+	var pageSize = 8;
+	var menuPos = 0;
+	var menuData = [];
+	var eachNum = 4;		//每行4个
+	var maxWord = 10;
+	var enName = "";
+
+	function eventHandler(eventObj){
+		iDebug("[hwh index.htm] eventObj.code ===" + eventObj.code);
+	    switch(eventObj.code){
+	        case "KEY_UP":
+	        	changeUD(-1);
+				return false;
+				break;
+	        case "KEY_DOWN":
+	        	changeUD(1);
+				return false;
+				break;
+	        case "KEY_LEFT":
+	        	changeLR(-1);
+				return false;
+				break;
+	        case "KEY_RIGHT":
+	        	changeLR(1);
+				return false;
+				break;
+	        case "KEY_SELECT":
+				doSelect();
+				return false;
+				break;
+	        case "KEY_EXIT":
+	        	delGlobalVar(enName+"_backUrl");
+	        	if(typeof $G!="undefined"){
+	        		$G.gotoPortal($G.config.webUiUrl);
+	        	}else if(typeof gotoPortal!="undefined"){
+	        		gotoPortal();
+	        	}
+				return false;
+				break;
+	        case "KEY_BACK":
+	        case "KEY_MENU":
+	        	delGlobalVar(enName+"_backUrl");
+	        	if(typeof $G!="undefined"){
+	        		$G.gotoPortal($G.config.webUiUrl);
+	        	}else if(typeof gotoPortal!="undefined"){
+	        		gotoPortal();
+	        	}else{
+	        		window.location.href = prePageUrl;
+	        	}
+				return false;
+				break;
+		}
+	}
+
+	function changeUD(_num) {
+		if(menuPos+_num*eachNum<0||menuPos+_num*eachNum>pageSize-1||menuPos+currPage*pageSize+_num*eachNum>menuData.length-1)return;
+		loseFocus();
+		menuPos += _num*eachNum;
+		onFocus();
+	}
+
+	function changeLR(_num) {
+		if((menuPos%eachNum==0&&_num<0)||(menuPos%eachNum==eachNum-1&&_num>0)||menuPos+currPage*pageSize+_num>menuData.length-1){
+			changePage(_num);
+			return;
+		}
+		loseFocus();
+		menuPos += _num;
+		onFocus();
+	}
+
+	function changePage(_num) {
+		if(totalPage < 2)return;
+		loseFocus();
+		menuPos = 0;
+		currPage = (currPage+_num+totalPage)%totalPage;
+		initMenu();
+	}
+
+	function onFocus() {
+		$("div" + menuPos).style.backgroundColor = 'rgb(255, 165, 0)';
+		$("title_" + menuPos).innerHTML = marqueeStr(menuData[menuPos+currPage*pageSize].name,maxWord);
+	}
+
+	function loseFocus() {
+		$("div" + menuPos).style.backgroundColor = '#7d7e75';
+		$("title_" + menuPos).innerHTML = getStrChineseLen(menuData[menuPos+currPage*pageSize].name,maxWord);
+	}
+
+	function doSelect() {
+		setGlobalVar("hwhIndexPos","menuPos="+menuPos+"&currPage="+currPage);
+		window.location.href = menuData[menuPos+currPage*pageSize].enName+"/index.htm";
+	}
+
+	function init() {
+		var tempUrl = checkStrNull(getGlobalVar("hwhIndexPos"));
+		delGlobalVar("hwhIndexPos");
+		iDebug("hwh index tempUrl="+tempUrl);
+		if(tempUrl!=""){
+			menuPos = parseInt(getParam("menuPos",tempUrl),10);
+			currPage = parseInt(getParam("currPage",tempUrl),10);
+		}
+		ajaxNavTitle();
+		ajaxLoadMenuData();
+		showTime();
+	}
+
+	// 节点信息
+	function ajaxNavTitle(){
+		var ajaxObj = new ajaxClass();
+		ajaxObj.charset = "gbk";
+		ajaxObj.successCallback = function(_xmlHttp, _params) {
+			var jsonData = eval('(' + _xmlHttp.responseText + ')');
+			if(checkStrNull(jsonData) != ""){
+				$("navTitle").innerText = jsonData.navigator;
+				enName = data.enName;
+				if(window.location.href.indexOf("backUrl")!=-1){
+					prePageUrl = getParam("backUrl",window.location.href);
+					setGlobalVar(enName+"_backUrl",prePageUrl);
+				}else if(checkStrNull(getGlobalVar(enName+"_backUrl"))!=""){
+					prePageUrl = getGlobalVar(enName+"_backUrl");
+				}
+				iDebug("heh index--prePageUrl="+prePageUrl);
+			}
+		};
+		ajaxObj.failureCallback = function(_xmlHttp, _params) {};
+		ajaxObj.url = "node.js" ;
+		ajaxObj.requestData();
+	}
+
+	function ajaxLoadMenuData(){
+		var ajaxObj = new ajaxClass();
+		ajaxObj.charset = "gbk";
+		ajaxObj.successCallback = function(_xmlHttp, _params) {
+			menuData = eval('(' + _xmlHttp.responseText + ')');
+			totalPage = Math.ceil(menuData.length/pageSize);
+			iDebug("ajaxLoadMenuData menuData.length="+menuData.length+" | totalPage="+totalPage);
+			$("totalPage").innerHTML = totalPage;
+			initMenu();
+		};
+		ajaxObj.failureCallback = function(_xmlHttp, _params) {
+			iDebug(">>>ajaxLoadMenuData failureCallback");
+		};
+		ajaxObj.url = "menu.js";
+		iDebug(">>>ajaxLoadMenuData ajaxObj.url=" + ajaxObj.url);
+		ajaxObj.requestData();
+	}
+
+	function initMenu() {
+		for(var i=0;i<pageSize;i++){
+			if(menuData[i+currPage*pageSize]){
+				$("div"+i).style.visibility = "visible";
+				$("icon_"+i).src = menuData[i+currPage*pageSize].focusImageUrl?menuData[i+currPage*pageSize].focusImageUrl:"images/default.png";
+				$("title_"+i).innerHTML = getStrChineseLen(menuData[i+currPage*pageSize].name,maxWord);
+			}else{
+				$("div"+i).style.visibility = "hidden";
+				// $("icon_"+i).src = "";
+				$("title_"+i).innerHTML = "";
+			}
+		}
+		$("currPage").innerHTML = currPage+1;
+		onFocus();
+		$("arrow_l").style.backgroundImage = currPage==0?"url(images/arrow0_l.png)":"url(images/arrow1_l.png)";
+		$("arrow_r").style.backgroundImage = currPage==totalPage-1?"url(images/arrow0_r.png)":"url(images/arrow1_r.png)";
+	}
+
+	function showTime(){
+		var date = new Date();
+		var currTime = date.Format("yyyy-MM-dd hh:mm");
+		$("time").innerText = currTime;
+		setTimeout(showTime,1000);
+	}
+</script>

@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"zagz","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"","name":"组织工作","navigator":"黔南党建2版本>党建动态>组织工作","newAdd":0,"nodePath":"qndj2/djdt/zagz","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

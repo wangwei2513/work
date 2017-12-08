@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+  <title></title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+  <div style="position:absolute; left:48px; top:46px;"><img src="images/logo.png" width="411" height="58" /></div>
+
+  <div style="position:absolute; left:0px; top:168px; width: 263px; height: 409px;">
+    <img id="img0" src="images/pic1_01.png" style="position: absolute; left: -43px; top: 0; width: 263px; height: 409px;" /></div>
+
+  <div style="position:absolute; left:206px; top:168px; width:325px; height:409px; background:url(images/pic1_bg1.png)">
+    <div style="position:absolute; left:42px; top:0px;"><img id="img1" src="images/pic1_02.png" width="241" height="392" /></div>
+  </div>
+  <div style="position:absolute; left:475px; top:168px; width:325px; height:409px; background:url(images/pic1_bg1.png)">
+    <div style="position:absolute; left:42px; top:0px;"><img id="img2" src="images/pic1_03.png" width="241" height="392" /></div>
+  </div>
+
+  <div style="position:absolute; left:744px; top:168px; width:325px; height:409px; background:url(images/pic1_bg1.png)">
+    <div style="position:absolute; left:42px; top:0px;"><img id="img3" src="images/pic1_04.png" width="241" height="392" /></div>
+  </div>
+
+  <div style="position:absolute; left:1014px; top:168px; width:266px; height:409px; background:url(images/pic1_bg1.png); overflow:hidden;">
+    <div style="position:absolute; left:42px; top:0px;"><img id="img4" src="images/pic1_05.png" width="241" height="392" /></div>
+  </div>
+
+  <div id="focus" style="position:absolute; left:458px; top:111px; visibility: hidden;"><img src="images/focus01.png" width="364" height="509" /></div>
+  <script src="js/common.js"></script>
+  <script src="js/imgList.js"></script>
+  <script>
+    //document.onkeydown = grabKeyEvent;
+    function grabKeyEvent(keycode) {
+      var e = keycode || event;
+      var keycode = e.keyCode || e.which || e.charCode;
+      switch (keycode) {
+        case 1:
+        case 38: //up
+          main.changeUD(-1);
+          return false;
+          break;
+        case 2:
+        case 40: //down
+          main.changeUD(1);
+          return false;
+          break;
+        case 3:
+        case 37: //left
+          main.changeLR(-1);
+          return false;
+          break;
+        case 4:
+        case 39: //right
+          main.changeLR(1);
+          return false;
+          break;
+        case 13: //ok
+          main.select();
+          break;
+        case 8:
+        case 27:
+        case 32:
+        case 340:
+        case 640:
+          main.back();
+          return false;
+          break;
+      }
+    }
+    document.onkeydown = grabKeyEvent;
+    document.onsystemevent = grabKeyEvent;
+    var main = {
+      file: "menu.js",
+      dom: {},
+      oAjax: new AjaxClass(),
+      imgList: "",
+      imgArr: [],
+      pos: 1,
+      backUrl: 0,
+      position: 0,
+      init: function () {
+        this.getPar();
+        this.initDom();
+        this.requestData();
+      },
+      initDom: function () {
+        var dom = this.dom,
+          tmp = [];
+        dom.img = [];
+        for (var i = 0; i < 5; i++) dom.img.push($("img" + i));
+        dom.focus = $("focus");
+      },
+      requestData: function () {
+        var oAjax = this.oAjax,
+          dom = this.dom,
+          self = this;
+        oAjax.requestAbort();
+        oAjax.successCallback = function (res) {
+          var data = eval("(" + res.responseText + ")");
+          self.data = data;
+          if (data.length == 0) self.notData();
+          else self.setData();
+        }
+        oAjax.charset = "gbk";
+        oAjax.url = this.file;
+        oAjax.requestData();
+      },
+      setData: function () {
+        var imgSize = [],
+          tmp = this.dom.img,
+          position = 458;
+        this.dom.img = [];
+        for (var i = 0; i < this.data.length; i++) this.imgArr.push(this.data[i].focusImageUrl);
+        switch (this.imgArr.length) {
+          case 0:
+            return;
+          case 1:
+            this.dom.img.push(tmp[1]);
+            position = 458;
+            break;
+          case 2:
+            this.dom.img.push(tmp[1]);
+            this.dom.img.push(tmp[2]);
+            imgSize = [0, this.imgArr.length, 0];
+            break
+          case 3:
+            this.dom.img.push(tmp[1]);
+            this.dom.img.push(tmp[2]);
+            this.dom.img.push(tmp[3]);
+            position = 189;
+            imgSize = [0, this.imgArr.length, 0];
+            break;
+          case 4:
+            // imgSize = [1,3,0];
+            // break;
+          default:
+            this.dom.img = tmp;
+            position = -80;
+            imgSize = [1, 3, 1];
+            break;
+        }
+        this.dom.focus.style.visibility = "visible";
+        this.imgList = new imgList_w(this.imgArr, imgSize, [this.position, this.pos], position);
+        this.imgList.focusDiv = "focus";
+        this.imgList.imgDom = this.dom.img;
+        this.imgList.imgHeight = 269;
+        this.imgList.imgLoop = 1;
+        this.imgList.startShow();
+        this.hideImg();
+      },
+      getPar: function () {
+        var par = mySessionStorage.getItem("qxfcIndex_w"),
+          tmp = getUrlParams("backUrl", window.location.href);
+        if (tmp != "" && tmp != null && tmp != "null") this.backUrl = tmp;
+        else this.backUrl = mySessionStorage.getItem("qxfcIndexBUL");
+        if (par == "" || par == null || par == "null") return;
+        var sp = par.split("|");
+        this.position = parseInt(sp[0]);
+        this.pos = parseInt(sp[1]);
+        mySessionStorage.removeItem("qxfcIndex_w");
+      },
+      changeLR: function (_num) {
+        this.imgList.changeImg(_num);
+      },
+      changeUD: function () {},
+      back: function () {
+        // window.lication.href = "./../index.htm";
+        if (!!this.backUrl) {
+          window.location.href = decodeURIComponent(this.backUrl);
+          return;
+        }
+        iPanel.misc.goBackApp();
+      },
+      select: function () {
+        mySessionStorage.setItem("qxfcIndex_w", this.imgList.position + "|" + this.imgList.focusPos);
+        mySessionStorage.setItem("qxfcIndexBUL", this.backUrl);
+        console.log(this.imgList.position)
+        window.location.href = this.data[this.imgList.position].enName + "/index.htm";
+      },
+      hideImg: function () {
+        switch (this.imgArr.length) {
+          case 1:
+            var arr = "2";
+            break;
+          case 3:
+            var arr = "1,2,3";
+            break;
+          case 5:
+            var arr = "0,1,2,3,4";
+            break;
+          default:
+            var arr = "0,1,2,3,4";
+        }
+        arr = arr.split(",");
+        for (var i = 0; i < 5; i++) {
+          if (arr.inArray(i.toString())) continue;
+          $("img" + i).style.visibility = "hidden";
+        }
+      },
+    };
+    main.init();
+
+    function $(id) {
+      return document.getElementById(id)
+    }
+    Array.prototype.inArray = function (str) {
+      for (var i = 0; i < this.length; i++) {
+        if (this[i] == str) return true;
+      }
+      return false;
+    }
+  </script>
+</body>
+
+</html>

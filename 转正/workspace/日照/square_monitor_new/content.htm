@@ -1,0 +1,235 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>监控播放页</title>
+</head>
+<script language="javascript" src="js/common.js"></script>
+<script>
+var itemPos = 0;
+var mainMenuPos = 0;
+var focusArea = 0;
+
+var dataAjaxPath = "content.js";
+var ajaxObj = null;
+var playUrl = ""; 
+var muteFlag = false;
+
+
+//获取token令牌
+var stbid = "8538002343839692";//默认CA卡序列号
+var bootAutoLogin = 0;
+var accessToken = "";
+var password = "";
+var addr = ["http://10.191.69.209:12690","http://172.25.0.75:12690"][0];
+
+
+var menuData = [];
+var backUrl = "index.htm?itemPos=";
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  	var e = key || event;
+  	var keycode = e.keyCode || e.which || e.charCode;
+  	switch (keycode) {
+		case 27:
+			iSTB.browser.gotoSTB("tv");
+			event.returnValue = false;
+			return false;
+			break;
+		case 8:
+			goBack();
+			event.returnValue = false;
+			return false;
+			break;
+		case 77:  //静音键
+			if(muteFlag == false){
+				muteFlag = true;
+				iSTB.player.mute();
+			}else{
+				muteFlag = false;
+				iSTB.player.unmute();
+			}
+			return false;
+			break;
+  	}
+}
+
+function goBack(){
+	window.location.href = backUrl+"?itemPos="+itemPos+"&mainMenuPos="+mainMenuPos+"&focusArea="+focusArea;
+}
+
+
+function init() {
+	getParms();
+	ajaxLoadMenuData();
+}
+
+function getParms(){
+	var currLocation  = window.location.href;
+	var tempItemPos = getUrlParams("itemPos",currLocation);
+	if(tempItemPos!=""){
+		itemPos = parseInt(tempItemPos,10);
+	}
+	var tempmMainMenuPos = getUrlParams("mainMenuPos",currLocation);
+	if(tempmMainMenuPos!=""){
+		mainMenuPos = parseInt(tempmMainMenuPos,10);
+	}
+	var tempFocusArea = getUrlParams("focusArea",currLocation);
+	if(tempFocusArea!=""){
+		focusArea = parseInt(tempFocusArea,10);
+	}
+	//iDebug(">>>getParms--itemPos="+itemPos);
+}
+
+
+function ajaxLoadMenuData(){
+	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		////iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+			menuData = jsonData;
+			getUserInfo();
+		}else{
+			goBack();
+		}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		//iDebug(">>>ajaxLoadMenuData failureCallback");
+		goBack();
+	};
+	ajaxObj.url = dataAjaxPath;
+	//iDebug(">>>ajaxLoadMenuData ajaxObj.url=" + ajaxObj.url);
+	ajaxObj.requestData();
+}
+
+
+
+function getUserInfo(){	
+	ajaxObj = null;
+ 	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		//iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+		var res = eval('('+_xmlHttp.responseText+')');
+		var	userArr = res.user_list;
+		if(res.ret == "0" && userArr && userArr.length>0){
+			bootAutoLogin = userArr[0].user_id;			
+			password = accessToken==""?"96e79218965eb72c92a549dd5a330112":"";
+			userLogin(1,bootAutoLogin,password,accessToken,userArr[0].user_name);	
+		}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		//iDebug(">>>ajaxLoadMenuData failureCallback");
+	};
+	ajaxObj.url = addr+"/account/user/get_list?deviceno="+stbid+"&devicetype=2&iconsize=140x140";
+	//iDebug(">>>ajaxLoadMenuData ajaxObj.url=" + ajaxObj.url);
+	ajaxObj.requestData();
+}
+
+function userLogin(_type,user_id,_pwd,_token,user_name){
+	ajaxObj = null;
+ 	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		//iDebug(">>>userLogin successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+		var res = eval('('+_xmlHttp.responseText+')');
+		if(res.ret == 0){  //新建账号or登录成功进入				
+			accessToken = res.access_token;	
+		}else{
+			accessToken = "TOKEN50001002";
+		}
+		//document.getElementById("test").innerHTML +="accessToken="+accessToken;
+  		getPlayURL();
+		if(playUrl == ""){
+			goBack();
+		}else{
+			openVoid(playUrl);
+		}	
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		//iDebug(">>>userLogin failureCallback");
+	};
+	ajaxObj.url = addr + "/account/login?deviceno="+stbid+"&devicetype=2&accounttype=1&account="+user_id+"&pwd="+_pwd+"&accesstoken="+_token+"&isforce=1";
+	//iDebug(">>>userLogin ajaxObj.url=" + ajaxObj.url);
+	ajaxObj.requestData();
+}
+
+function getPlayURL(){
+	playUrl = menuData[itemPos].videoUrl+accessToken;
+}
+
+ //开始播放视频方法
+function openVoid(url){
+	iDebug(">>>openVoid--playUrl="+url);
+	if(BrowserType == "Inspur"){
+		iSTB.player.play(url);
+		iSTB.player.set_video_window(0,0,1280,720); 
+	}else if(BrowserType == "Chrome" || BrowserType == "FireFox"){
+		if(url!=""){
+			//creatVideoTag(1280,720,url,"autoplay","none","controls");
+		}
+	}
+}
+
+function creatVideoTag(width,height,videoSrc,autoPlay,preLoad,controls){
+	var videoObj = document.createElement("video");
+	videoObj.width = width;
+	videoObj.height = height;
+	videoObj.src = videoSrc;
+	videoObj.autoplay = autoPlay;
+	videoObj.preload = preLoad;
+	videoObj.controls = controls;
+	document.body.appendChild(videoObj);
+}
+
+
+//退出关闭视频方法
+function stopVoid(){
+	try{
+		iSTB.player.stop();
+	}catch( E ){}
+}
+
+function exit(){
+	if(BrowserType == "Inspur"){
+		stopVoid();
+		iSTB.player.unmute(); //清除静音
+	}
+}
+
+var playTimeout = -1;
+if(BrowserType=="Inspur"){
+	iSTB.evt.set_event_callback("eventCallback");
+}
+function eventCallback(type,event_name,event_type,event_value){
+    switch(event_name){
+    	case  "PLAYER_BUFFERING_END":
+			break;
+		case "PLAYER_FINISH":
+			break;
+	}
+}
+</script>
+
+
+<body leftmargin="0" topmargin="0" onload="init()" onunload="exit()" bgcolor="transparent">
+
+<!--静音图标-->
+<div id="test" style="position:absolute; left:159px; top:100px; width:500px; height:400px; background-color:red; font-size:24px; visibility:hidden;">cccccc</div>
+</body>
+</html>

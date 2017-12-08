@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="page-view-size" content="1280*720"/>
+<title>锦溪政务内容页</title>
+
+<script src="js/common.js"></script>
+<script src="js/function.js"></script>
+
+<script type="text/javascript">
+
+var itemPos = 0;
+var subPos = 0;
+var subFocusPos = 0;
+
+var currPage = 0;
+var totalPage = 0;
+var pageContent = 382; //可见区域的高度
+
+var file="menu.js";
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+    var e = key || event;
+    var keycode = e.keyCode || e.which || e.charCode;
+    switch (keycode) {
+    case 1:   // up
+    case 38:
+      upAndDown(-1);
+      return false;
+      break;
+    case 2:   // down
+    case 40:
+      upAndDown(1);
+      return false;
+      break;
+    case 13:
+      //doSelect();
+      return false;
+      break;
+    case 8:
+    case 340:
+	case 339:
+      // window.location.href = "index.htm?itemPos="+itemPos;
+      window.location.href = "index.htm";
+      return false;
+      break;
+    case 27: //菜单键
+      window.location.href = "../../portal/index.htm";
+      return false;
+      break;
+    }
+}
+
+function init(){
+    getItemPos();
+    getMenuData();
+}
+
+function getItemPos(){
+	if(getUrlParams("subPos", window.location.href)){
+		subPos = getUrlParams("subPos", window.location.href,"?");
+		subPos = parseInt(subPos,10);
+		debugInfo("subPos="+subPos);
+	}else{
+		subPos = 0;
+	}
+
+	if(getUrlParams("itemPos", window.location.href)){
+		itemPos = getUrlParams("itemPos", window.location.href, "&");
+		itemPos = parseInt(itemPos,10);
+		debugInfo("itemPos="+itemPos);
+	}else{
+		itemPos = 0;
+	}
+
+	if(getUrlParams("subFocusPos", window.location.href)){
+		subFocusPos = getUrlParams("subFocusPos", window.location.href, "&");
+		subFocusPos = parseInt(subFocusPos,10);
+		debugInfo("subFocusPos="+subFocusPos);
+	}else{
+		subFocusPos = 0;
+	}
+}
+
+function getMenuData(){
+        var url= file;
+        debugInfo("jxzw---getMenuData---url=="+url);
+        ajax_js(url,function(responseText){
+            var tempData=eval("("+responseText+")");
+            debugInfo("jxzw.htm---getMenuData---responseText=="+responseText);
+            if(typeof(tempData)!="undefined" && tempData!=""){
+                noDataFlag=false;
+                menuData=tempData[itemPos];
+                getData();
+            }else{
+                noDataFlag=true;
+            }
+        });
+}
+
+function getData(){
+	var url= menuData.enName+"/content.js";
+	debugInfo("jxzw-content-getData()---url="+url);
+	ajax_js(url,function(responseText){
+		debugInfo("ajax_f");
+		var tempData=eval("("+responseText+")");
+		debugInfo("jxzw-content-getData()---responseText="+responseText);
+		if(typeof(tempData)!="undefined" && tempData!=null){
+			noDataFlag=false;
+			listData=tempData[subPos];
+			debugInfo("listData="+listData);
+			//initTitle();
+			initCotent();
+		}else{
+			noDataFlag=true;
+		}
+	});
+}
+
+/*function initTitle(){
+	if(noDataFlag)return;
+	$("title").innerHTML = listData.title;
+	debugInfo("jxzw_title="+listData.title);
+	if(getStrChineseLength(listData.title)>27){
+		$("title").innerText = "<marquee style=\"width:580px;\">"+listData.title+"</marquee>";
+	}
+}*/
+
+var listBox=null;
+var menuObj = [];
+var arrTop = [{ top:"0px",left:"0px", width:"1052px", height:"432px"},
+			{ top:"435px",left:"0px", width:"1052px", height:"432px"},
+			{ top:"870px",left:"0px", width:"1052px", height:"432px"}
+			];
+var startTop = {top:"-435px", left:"0px", width:"1052px", height:"432px"};
+var img_arr;
+function initCotent(){
+	for(var i=0;i<3;i++){
+		menuObj[i] = $("list_img"+i);
+	}
+	if(noDataFlag)return;
+	$("content").innerHTML = listData.content;
+	img_arr=$("content").getElementsByTagName("img");
+	$("totalPage").innerText = img_arr.length;
+	listBox=new showListCSS2D(1,img_arr.length,0,0,"200ms");
+	listBox.arrTop = arrTop;
+	listBox.startTop = startTop;
+	listBox.arrTopObj = menuObj;
+	listBox.haveData = haveData;
+	listBox.type = "circle";
+	listBox.startShow();	
+}
+
+function haveData(list){
+	menuObj[list.idPos].src=img_arr[list.dataPos].src;
+	$("currentPage").innerText = list.dataPos + 1;
+}
+
+function upAndDown(_num){
+	if(noDataFlag)return;
+	//alert("listBox.poxition:"+listBox.poxition);
+	// iPanel.debug("----_num:"+_num+"----listBox.poxition:"+listBox.position+"----img_arr.length:"+img_arr.length);
+	if(_num>0 && (listBox.position+1==img_arr.length))
+		return;
+	if(_num<0 && (listBox.position==0))
+		return;
+	listBox.changeList(_num);
+}
+
+function debugInfo(str){
+	if(navigator.appName.indexOf("iPanel") != -1){
+		iPanel.debug(str);	//假如要看打印的时间，可以改：iPanel.debug(str, 2);
+	}else if(navigator.appName.indexOf("Opera") != -1){
+		opera.postError(str);
+	}else if(navigator.appName.indexOf("Netscape") != -1 || navigator.appName.indexOf("Google") != -1){
+		console.log(str);
+	}
+}
+</script>
+</head>
+
+<body background="images/tm_bg.jpg" topmargin="0" bottommargin="0" onLoad="init()">
+<!-- logo -->
+<div style="width:150px; height:37px; position:absolute; left:80px; top:38px; font-size:36px;"><img src="images/logo.png" alt="社区政务"></div>
+<div style="position:absolute; left:82px; top:114px; width:1123px; height:513px;">
+    <!-- 背景图片-->
+    <div style="position:absolute; left:0px; top:0px; width:1123px; height:513px;"><img src="images/nr_bg.jpg" width="1123" height="513"></div>
+<!-- 
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 64px;"><img src="images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 173px;"><img src="images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 281px;"><img src="images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 389px;"><img src="images/line_block.png" width="1092" height="54"></div>
+ -->
+    <div style="position:absolute; left:32px; top:13px; width:1052px; height:432px; visibility:hidden">
+        <div id="title" ></div>
+        <div id="contentDIV" style="position:absolute; height:390px; overflow: hidden;">
+            <div id="content" style="left:16px; width: 1052px;"></div>
+        </div>
+    </div>
+</div>
+ <div style="position: absolute; left: 862px; top: 15px; width: 20px; height: 480px;">
+    <div id="barDiv" style="width: 20px; height: 75px; position: absolute; left: 305px; top: 131px; background-image:url(images/scroll_block.jpg); font-size:20px; color:#ffffff; text-align:center;">
+		<span id="currentPage"></span><br />/<br /><span id="totalPage"></span>
+	</div>
+</div>
+
+<div style="position:absolute; left: 113px; top: 146px; width: 1052px; height: 432px; overflow:hidden">
+	<img id="list_img0" src="" style=" position:absolute;left:0px; top:0px; width:1052px; height:432px;-webkit-transition-duration:1ms">
+	<img id="list_img1" src="" style="position:absolute; left:0px;top:435px; width:1052px; height:432px;-webkit-transition-duration:1ms">
+	<img id="list_img2" src=""  style="position:absolute; left:0px;top:870px; width:1052px; height:432px;-webkit-transition-duration:1ms"></div>
+<!-- 底部信息 -->
+<div style="position:absolute; left:684px; top:648px; width:513px; height:48px;"><img src="images/bottom.png" width="513" height="48"></div>
+</body>
+</html>

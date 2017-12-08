@@ -1,0 +1,575 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>精品</title>
+<script src="js/tvui.model.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/keyEvent.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+<script type="text/javascript">
+var msg = "";
+	var listType = "";
+	var navStr = mySessionStorage.getItem('navigator');
+	var navStr = navStr.replace(/ > /g,">");
+	var clickLink = "";
+	var backUrlDead = "http://172.23.252.132/jingpin2/index.htm"
+	var clickLinkHead = location.href.split("/").slice(0,5).join("/")
+	function getTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr +"||"+ msg +"||"+"点击";
+				try{
+					DataCollection.collectData(["01",clickLink,location.href,title,"",""])
+				}catch(e){};
+	}
+	function getInitData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr+"||"+ navStr.split(">")[2]+"||"+"加载" ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr +"||"+ navStr.split(">")[1] +"||"+"返回";
+				try{
+					DataCollection.collectData(["01",backUrlDead,location.href,title,"",""])
+				}catch(e){};
+	}
+function eventHandler(eventObj){
+	iDebug(">>>eventHandler--eventObj.code="+eventObj.code);
+	switch(eventObj.code){
+		case "KEY_UP":
+			page.changeUD(-1);
+		return EVENT.STOP;
+		break;
+		case "KEY_DOWN":
+			page.changeUD(1);
+		return EVENT.STOP;	
+		break;
+		case "KEY_LEFT":
+			page.changeLR(-1);
+		return EVENT.STOP;
+		break;
+		case "KEY_RIGHT":
+			page.changeLR(1);
+		return EVENT.STOP;
+		break;
+		case "KEY_SELECT":
+			page.doSelect();
+		return EVENT.STOP;
+		break;
+		case "KEY_BACK":
+			page.goBack();
+		return EVENT.STOP;
+		break;
+		case "KEY_PAGE_UP":
+			var index = page.subPos;
+			page.changePage(-1);
+			page.subPos = index;
+			page.scrollBar.scroll(page.subPos+page.currPage*page.pageNum);
+			page.setFocus();
+		return EVENT.STOP;
+		break;
+		case "KEY_PAGE_DOWN":
+			if(page.focusArea === 1 && (page.currPage+1)*page.pageNum<page.menuData[page.mainPos].subList.length) {
+				var index = page.subPos;
+				page.changePage(1);
+				page.subPos = (page.currPage*page.pageNum+index)<page.menuData[page.mainPos].subList.length ? index : ((page.menuData[page.mainPos].subList.length-1) % page.pageNum);
+				page.scrollBar.scroll(page.subPos+page.currPage*page.pageNum);
+				page.setFocus();
+			}		
+		return EVENT.STOP;
+		break;
+	}
+}
+
+var page = {
+	DEBUG:0,//0:接口，1:测试数据使用
+	focusArea:mySessionStorage.getItem("jp_focusArea")==""?0:parseInt(mySessionStorage.getItem("jp_focusArea"),10),
+	menuData:[],
+	ajaxObj:null,
+	BOServer:"http://172.23.200.171",//BO请求接口
+	portalServer:"http://172.23.200.171:80",//海报图片地址
+	vodPlayURL : "http://172.23.200.171/NewFrameWork/web/vodPlayer.html?assetId=",
+	mainPath : "menu.js",
+	requestParms : {
+		client:  (typeof CA != 'undefined' ? CA.icNo :'8002002601164988'),
+		account: (typeof CA !='undefined' ? DataAccess.getInfo('UserInfo', 'account'):'8002002601164988'),
+		assetId: getUrlParams("assetId",window.location.href)!=""?getUrlParams("assetId",window.location.href):"gd_yyzq",
+		startAt: 1,   
+		maxItems: 200,
+		profile:0,      //不清楚这个干嘛的
+		folderType:"1",//0:非叶子栏目 1:叶子栏目 2:电视剧
+		resultType: 'json'
+	},
+	navStr : "",
+	backPath : mySessionStorage.getItem("backPath"),
+	ajaxData:function(type){
+		ajaxObj  = null;
+		if (ajaxObj != null) {
+			ajaxObj.requestAbort();
+		}
+		ajaxObj = new AjaxClass();
+		ajaxObj.frame = window;
+		ajaxObj.charset = "utf-8";
+		ajaxObj.successCallback = function(_xmlHttp, _params) {
+			var tempResult = eval("("+_xmlHttp.responseText+")");
+			if(tempResult && tempResult.length>0){
+				if(type == 0){
+					for(var i=0,len = tempResult.length;i<len;i++){
+						var obj = {
+							"name":tempResult[i].name,
+							"enName":tempResult[i].enName,
+							"subList":[]
+						};
+						page.menuData.push(obj);
+					}
+					$("mainFocus").style.visibility = "visible";
+					page.initMainBox();
+					if(page.mainBox.position != page.mainBox.currFocus) {
+						$("upArrow").style.visibility = "visible";
+					} else {
+						$("upArrow").style.visibility = "hidden";
+					}
+					if(page.mainBox.position+(9-page.mainBox.currFocus) < page.menuData.length-1) {
+						$("downArrow").style.visibility = "visible";
+					} else {
+						$("downArrow").style.visibility = "hidden";
+					}
+				}else if(type == 1){
+					for(var i=0,len = tempResult.length;i<len;i++){
+						var obj = {
+							"videoUrl" : tempResult[i].videoUrl,
+							"entryImage":tempResult[i].entryImage.imageUrl,
+							"title" : tempResult[i].title
+						};
+						page.menuData[page.mainBox.position].subList.push(obj);
+					}	
+					page.menuData[page.mainBox.position].isLoad = true;//已经加载过了
+					page.initSubItem();
+					page.initScrollBar();
+					page.setFocus();
+				}
+			}else{
+				iDebug(">>>ajaxData dataLen=0");
+			}
+		};
+		ajaxObj.failureCallback = function(_xmlHttp, _params) {
+			if(type == 1){
+				page.menuData[page.mainBox.position].isLoad = true;//已经加载过了
+				page.clearAllSubItem();
+			}
+			iDebug(">>>ajaxData--failBack");
+		};
+		if(this.DEBUG == 0){
+			if(type === 0) {
+				ajaxObj.url = this.mainPath;
+			} else {
+				ajaxObj.url = this.menuData[this.mainBox.position].enName + "/content.js";
+			}
+		}else{
+			ajaxObj.url = "data/"+this.requestParms.assetId+".js";
+		}
+		iDebug(">>>ajaxData ajaxObj.url=" + ajaxObj.url);
+		ajaxObj.requestData();
+	},
+	initNav:function(){
+		this.navStr = mySessionStorage.getItem('navigator');
+		$("navTitle").innerText = this.navStr.replace(/>/g," > ");
+	},
+	mainBox:null,
+	leftColumnLen:10,
+	leftMaxWord:6,
+	mainPos:mySessionStorage.getItem("jp_mainPos")==""?0:parseInt(mySessionStorage.getItem("jp_mainPos"),10),
+	mainDivArr : (function(step){
+		var arr = [];
+		for(var i=0;i<10;i++){
+			arr.push({left:"65px", top:(step*i+115)+"px", width:"200px", height:"70px"});
+		}
+		return arr;
+	})(48.5),
+	initMainBox:function(){
+		if(this.menuData.length<=0)return;
+		this.mainBox =  new showList2D(this.leftColumnLen,this.menuData.length,this.mainPos,300,window);
+		this.mainBox.focusObj = this.mainDivArr;
+		this.mainBox.isLoop   = true;
+		this.mainBox.pageLoop = true;
+		this.mainBox.focusDiv = "mainFocus";
+		this.mainBox.haveData = function(_list){			
+			$("mainItem"+_list.idPos).innerText = subStr(page.menuData[_list.dataPos].name,page.leftMaxWord,"...");
+		};
+		this.mainBox.notData = function(_list){
+			$("mainItem"+_list.idPos).innerText = "";
+		};
+		this.mainBox.startShow(); 
+		if(!this.menuData[this.mainBox.position].isLoad){
+			this.ajaxSubData();
+		}else{
+			this.setFocus();
+		}
+	},
+	ajaxSubData:function(){
+		if(this.mainBox){
+			this.requestParms.profile = 1;
+			this.requestParms.assetId = this.menuData[this.mainBox.position].assetId;
+			this.ajaxData(1);
+		}
+	},
+	currPage:mySessionStorage.getItem("jp_currPage")==""?0:parseInt(mySessionStorage.getItem("jp_currPage"),10),
+	totalPage:0,
+	rightMaxWord:8,
+	pageNum:10,
+	subPos:mySessionStorage.getItem("jp_subPos")==""?0:parseInt(mySessionStorage.getItem("jp_subPos"),10),
+	initSubItem:function(){
+		if(this.menuData[this.mainBox.position].subList && this.menuData[this.mainBox.position].subList.length<=0){
+			this.focusArea = 0;
+			this.setFocus();
+			return;
+		}
+		var subList = this.menuData[this.mainBox.position].subList;
+		this.totalPage = Math.ceil(subList.length/this.pageNum);
+		for(var i=0;i<this.pageNum;i++){
+			if(i+this.currPage*this.pageNum<subList.length){
+				$("poster"+i).src = subList[i+this.currPage*this.pageNum].entryImage;
+				if(i== this.subPos){
+					if(getStrChineseLength(subList[i+this.currPage*this.pageNum].title)>this.rightMaxWord){
+						$("title"+i).innerHTML = "<marquee width=140>"+subList[i+this.currPage*this.pageNum].title+"</marquee>";
+					}else{
+						$("title"+i).innerText = subList[i+this.currPage*this.pageNum].title;
+					}
+				}else{
+					$("title"+i).innerText = subStr(subList[i+this.currPage*this.pageNum].title,this.rightMaxWord,"...");
+				}
+				$("title"+i).style.visibility = "visible";
+			}else{
+				$("poster"+i).src = "images/global_tm.gif";
+				$("title"+i).style.visibility = "hidden";
+			}
+		}
+	},
+	scrollBar:null,
+	initScrollBar:function(){
+		if(this.menuData[this.mainBox.position].subList && this.menuData[this.mainBox.position].subList.length<=0){
+			this.hideAndShowBar(0);
+		}else{
+			this.hideAndShowBar(1);
+			this.scrollBar = new ScrollBar("barDiv", null, window);
+			this.scrollBar.init(this.menuData[this.mainBox.position].subList.length,0,491,102);//510-32
+			this.scrollBar.scroll(this.subPos+this.currPage*this.pageNum);
+		}
+	},
+	setFocus:function(){
+		if(this.focusArea == 0){
+			$("mainFocus").style.webkitTransitionDuration = this.mainBox.time;
+			$("mainFocus").style.visibility = "visible";
+			$("subFocus").style.visibility = "hidden";
+		
+			if(getStrChineseLength(this.menuData[this.mainBox.position].name)>this.leftMaxWord){
+				$("mainItem"+this.mainBox.currFocus).innerHTML = "<marquee width=140>"+this.menuData[this.mainBox.position].name+"</marquee>";
+			}
+			$("mainItem"+this.mainBox.currFocus).style.color = "#fff";
+			$("mainItem"+this.mainBox.currFocus).style.fontWeight = "bolder";
+		}else if(this.focusArea == 1){
+			$("subFocus").style.webkitTransitionDuration = "200ms";
+			$("mainFocus").style.visibility = "hidden";
+			$("subFocus").style.visibility = "visible";
+			$("mainItem"+this.mainBox.currFocus).innerText = subStr(this.menuData[this.mainBox.position].name,this.leftMaxWord,"...");
+			$("mainItem"+this.mainBox.currFocus).style.color = "#F90";
+			//$("mainItem"+this.mainBox.currFocus).style.color = "";
+			$("mainItem"+this.mainBox.currFocus).style.fontWeight = "";
+			
+			if(getStrChineseLength(this.menuData[this.mainBox.position].subList[this.subPos+this.currPage*this.pageNum].title)>this.rightMaxWord){
+				$("title"+this.subPos).innerHTML = "<marquee width=140>"+this.menuData[this.mainBox.position].subList[this.subPos+this.currPage*this.pageNum].title+"</marquee>";
+			}
+			$("subFocus").style.left = 296+(this.subPos%5)*182+"px";
+			$("subFocus").style.top  = 105+Math.floor(this.subPos/5)*273+"px";
+		}
+	},
+	changeLR:function(_num){
+		if(this.focusArea == 0 && _num>0 && this.mainBox && this.menuData[this.mainBox.position].subList.length>0){
+			$("mainFocus").style.webkitTransitionDuration = "0ms";
+			this.focusArea = 1;
+			this.setFocus();
+		}else if(this.focusArea == 1){
+			var beforeFocus = this.subPos;
+			$("title"+this.subPos).innerText = subStr(this.menuData[this.mainBox.position].subList[this.subPos+this.pageNum*this.currPage].title,this.rightMaxWord,"...");
+			if((this.subPos == 0 || this.subPos == 5) && _num<0 && this.mainBox){
+				this.focusArea = 0;			
+			}else if((this.subPos == 9) && _num>0 && this.currPage<this.totalPage-1){//this.subPos == 4 || 
+				this.changePage(_num);	
+			}else{
+				this.subPos += _num;
+			}
+			if(this.subPos+this.currPage*this.pageNum>=this.menuData[this.mainBox.position].subList.length){
+				this.subPos = beforeFocus;
+				//return;
+			}
+			$("poster"+beforeFocus).style.borderRadius = "";
+			$("poster"+this.subPos).style.borderRadius = "3px";
+			if(getStrChineseLength(this.menuData[this.mainBox.position].subList[this.subPos+this.currPage*this.pageNum].title)>this.rightMaxWord){
+				$("title"+this.subPos).innerHTML = "<marquee width=140>"+this.menuData[this.mainBox.position].subList[this.subPos+this.pageNum*this.currPage].title+"</marquee>";
+			}
+			this.scrollBar.scroll(this.subPos+this.currPage*this.pageNum);
+			//$("subFocus").style.webkitTransitionDuration = "0ms";
+			this.setFocus();
+		}
+	},
+	changePage:function(_num){
+		this.currPage = this.currPage+_num>0?this.currPage+_num:0;
+		this.subPos = 0;
+		this.initSubItem();
+	},
+	changeUD:function(_num){
+		if(this.focusArea == 0){
+			if(this.mainBox){
+				$("mainItem"+this.mainBox.currFocus).style.color = "";
+				$("mainItem"+this.mainBox.currFocus).style.fontWeight = "";
+				$("mainItem"+this.mainBox.currFocus).innerText = subStr(this.menuData[this.mainBox.position].name,this.leftMaxWord,"...");
+				this.mainBox.changeList(_num);
+				if(getStrChineseLength(this.menuData[this.mainBox.position].name)>this.leftMaxWord){
+					$("mainItem"+this.mainBox.currFocus).innerHTML = "<marquee width=110>"+this.menuData[this.mainBox.position].name+"</marquee>";
+				}
+				$("mainItem"+this.mainBox.currFocus).style.color = "#fff";
+				$("mainItem"+this.mainBox.currFocus).style.fontWeight = "bolder";
+				this.subPos = 0;
+				this.currPage = 0;
+				this.scrollBar = null;
+				this.clearAllSubItem();
+				this.hideAndShowBar(0);
+				if(this.menuData[this.mainBox.position].isLoad){//已经加载过一次
+					this.initSubItem();
+					this.initScrollBar();
+				}else{//未加载，再去请求一次
+					this.ajaxSubData();
+				}
+				if(page.mainBox.position != page.mainBox.currFocus) {
+					$("upArrow").style.visibility = "visible";
+				} else {
+					$("upArrow").style.visibility = "hidden";
+				}
+				if(page.mainBox.position+(9-page.mainBox.currFocus) < page.menuData.length-1) {
+					$("downArrow").style.visibility = "visible";
+				} else {
+					$("downArrow").style.visibility = "hidden";
+				}
+			}
+		}else if(this.focusArea == 1){
+			var beforePos = this.subPos;
+			$("title"+this.subPos).innerText = subStr(this.menuData[this.mainBox.position].subList[this.subPos+this.pageNum*this.currPage].title,this.rightMaxWord,"...");
+			if(((this.subPos >= 0 && this.subPos <5) && this.currPage == 0 && _num<0) || ((this.subPos>=5 && this.subPos <=9) && _num>0 && this.currPage == this.totalPage-1))return;
+			else if(((this.subPos >= 0 && this.subPos <5) && this.currPage > 0 && _num<0) || ((this.subPos>=5 && this.subPos <=9) && _num>0 && this.currPage < this.totalPage-1)){
+				this.changePage(_num);
+			}else{
+				this.subPos += _num*5;
+			}
+			if(this.subPos+this.pageNum*this.currPage>=this.menuData[this.mainBox.position].subList.length){
+				this.subPos = beforePos;
+				//return;
+			}
+			$("poster"+beforePos).style.borderRadius = "";
+			$("poster"+this.subPos).style.borderRadius = "3px";
+			if(getStrChineseLength(this.menuData[this.mainBox.position].subList[this.subPos+this.currPage*this.pageNum].title)>this.rightMaxWord){
+				$("title"+this.subPos).innerHTML = "<marquee width=140>"+this.menuData[this.mainBox.position].subList[this.subPos+this.pageNum*this.currPage].title+"</marquee>";
+			}
+			this.scrollBar.scroll(this.subPos+this.currPage*this.pageNum);
+			this.setFocus();			
+		}
+	},
+	goBack:function(){//返回至porta
+		listType = "栏目";
+		getBackTitleData();
+		mySessionStorage.removeItem("jp_focusArea");
+		mySessionStorage.removeItem("jp_mainPos");
+		mySessionStorage.removeItem("jp_subPos");
+		mySessionStorage.removeItem("jp_currPage");
+		
+			var navStrArr = navStr.split(">")
+			navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+			// this.navStr = this.navStr.substr(0,this.navStr.lastIndexOf(">"));
+			mySessionStorage.setItem("navigator",navStr);
+			
+		window.location.href = this.backPath;
+		//window.history.go(-1);
+		//window.location.href = "main://index.html";
+	},
+	doSelect:function(){//进入播放
+		if(this.focusArea == 1){
+			mySessionStorage.setItem("jp_focusArea",this.focusArea);
+			mySessionStorage.setItem("jp_mainPos",this.mainBox.position);
+			mySessionStorage.setItem("jp_subPos",this.subPos);
+			mySessionStorage.setItem("jp_currPage",this.currPage);
+			var currObj = this.menuData[this.mainBox.position].subList[this.subPos+this.pageNum*this.currPage];
+			if(currObj.videoUrl != "") {
+				TVUI.Page.clearHistory();
+				TVUI.API.SysSetting.env('backUrl',window.location.href);
+				msg = currObj.title;
+				listType = "视频";
+				clickLink = currObj.videoUrl;
+				getTitleData();
+				window.location.href = currObj.videoUrl;			
+			} else {
+				mySessionStorage.setItem("navigator",this.navStr + ">" +currObj.title);
+				msg = this.menuData[this.mainBox.position].name;
+				listType = "图文";
+				clickLink =clickLinkHead+"/"+ this.menuData[this.mainBox.position].enName  + "/index.htm";
+				getTitleData();
+				window.location.href = this.menuData[this.mainBox.position].enName + "/index.htm?index=" + (this.subPos+this.pageNum*this.currPage); 
+			}
+		}
+	},
+	clearAllSubItem:function(){
+		for(var i=0;i<this.pageNum;i++){
+			$("title"+i).style.visibility = "hidden";
+			$("title"+i).innerText = "";
+			$("poster"+i).src = "images/global_tm.gif";
+		}
+	},
+	hideAndShowBar:function(__type){
+		if(__type){
+			$("scrollBarDiv").style.visibility = "visible";
+			$("barDiv").style.visibility = "visible";
+		}else{
+			$("scrollBarDiv").style.visibility = "hidden";
+			$("barDiv").style.visibility = "hidden";
+		}
+	},
+	init:function(){
+		TVUI.Page.clearHistory();
+		TVUI.API.SysSetting.env('backUrl',window.location.href);
+		this.initNav();
+		this.ajaxData(0);
+		
+	}
+
+}
+listType = "栏目";
+getInitData();
+window.onload = function(){
+	page.init();
+}
+
+</script>
+</head>
+<body style="background:url(images/bg.jpg) no-repeat;">
+	<!--标题信息-->
+<div style="position:absolute;left:85px;top:30px;color:#d2dce6;font-size:16px;" id="navTitle"></div>
+	<img src="images/line_02.png" style="position:absolute;left:0px;top:58px;"/>
+	<!--左侧信息-->
+	<img style="position:absolute;left: 60px; top: 109px;width: 220px; height: 531px;" src="images/border_left_02.png" />
+	<div style="position: absolute; left: 60px; top: 109px;width: 220px; height: 531px; font-size: 20px; color: #d2dce6; text-align: center;">
+	<img id="upArrow" src="images/arrowUp.png" alt="" style="position:absolute;top:10px;left:100px;visibility:;" height="13" />
+	<table style="margin-top:20px;" border="0" cellpadding="0" cellspacing="0" width="220" height="485">
+			<tr>
+				<td style="font-size:20px;color:#fff;"  height="40" id="mainItem0"></td>
+			</tr>
+			<tr>
+				<td height="40" id="mainItem1">&nbsp;</td>
+			</tr>
+			<tr>
+				<td height="40" id="mainItem2">&nbsp;</td>
+			</tr>
+			<tr>
+				<td height="40" id="mainItem3">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem4">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem5">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem6">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem7">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem8">&nbsp;</td>
+			</tr>
+            <tr>
+				<td height="40" id="mainItem9">&nbsp;</td>
+			</tr>
+		</table>	
+		<img id="downArrow" src="images/arrowDown.png" alt="" style="position:absolute;top:510px;left:100px;visibility:;" height="13" />
+	</div> 
+    
+   <!--焦点--> 
+    <div style="position: absolute; left: 65px; top: 81px; visibility: hidden" id="mainFocus"><img src="images/focus_border_03.png" width="210" height="70" /></div>
+    
+    <!--右侧信息-->
+	<div style="position:absolute;left:300px;top:109px;width:172px;height:258px;">
+		<!--cover-->
+		<img id="poster0" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title0">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:482px;top:109px;width:172px;height:258px;">
+		<!--cover-->
+		<img id="poster1" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title1">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:664px;top:109px;width:172px;height:258px;">
+		<!--cover-->
+		<img id="poster2" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title2">
+		
+		</div>
+	</div>
+	<div style="position:absolute;left:846px;top:109px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster3" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title3">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:1028px;top:109px;width:172px;height:258px;"> 
+		<!--cover-->
+		<img id="poster4" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title4">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:300px;top:382px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster5" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title5">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:482px;top:382px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster6" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title6">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:664px;top:382px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster7" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title7">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:846px;top:382px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster8" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title8">
+			
+		</div>
+	</div>
+	<div style="position:absolute;left:1028px;top:382px;width:172px;height:258px;" >
+		<!--cover-->
+		<img id="poster9" src="" width="172" height="258" />
+		<div style="position:absolute;left:0px;bottom:0px;background:url(images/border_cover_03.png);width:172px;height:40px;color:#d2dce6;font-size:18px;text-align:center;line-height:40px; visibility:hidden" id="title9">
+			
+		</div>
+	</div>
+	 <div id="subFocus" style="position: absolute; left: 298px; top: 105px; width: 176px; height: 262px; border-radius: 5px; border: #F90 2px solid; opacity: 0.9;box-shadow:1px 1px 30px #7b5719; visibility: hidden"></div>
+    
+    
+	<!--滑动条-->
+	<div style="position:absolute;left:1220px;top:109px; visibility:hidden" id="scrollBarDiv"><img src="images/line_05.png" /></div>
+	<div style="position:absolute;left:1211px;top:102px; visibility:hidden" id="barDiv"><img src="images/slide_bar.png"/></div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+    "result": {
+        "state": "0",
+        "new_state": "45",
+        "reason": "\u6839\u636e\u4e1a\u52a1\u53f7\u8fc7\u6ee4\u4ea7\u54c1\u5217\u8868\u540e\uff0c\u4ea7\u54c1\u5217\u8868\u4e3a\u7a7a\uff0c\u8be5\u89c6\u9891 \u6e38\u5ba2\u514d\u8d39\u3002\u8fd9\u79cd\u60c5\u51b5\u7684\u51fa\u73b0\uff0c\u8bf4\u660e\u5a92\u8d44\u6240\u5728\u7684\u4ea7\u54c1\u5305\uff0c\u4e0e\u4e1a\u52a1\u53f7\u6240\u5728\u7684\u4ea7\u54c1\u5305\uff0c\u6ca1\u6709\u4ea4\u96c6\u3002 \u4e5f\u5c31\u662f\u8fd9\u4e2a\u89c6\u9891\u6240\u5728\u7684\u4ea7\u54c1\u5305\uff0c\u6ca1\u6709\u7ed1\u5b9a\u5230\u7248\u672c\u53f7\u5bf9\u5e94\u4e1a\u52a1\u53f7\u4e0a\u3002\u8981\u8fdb\u5165\u9274\u6743\u8fc7\u7a0b\uff0c\u9700\u8981\u5c06\u89c6\u9891\u5bf9\u5e94\u7684\u4ea7\u54c1\u5305\uff0c\u7ed1\u5b9a\u5230 \u7248\u672c\u53f7\u5bf9\u5e94\u7684\u4e1a\u52a1\u53f7\u4e0a\u3002\r\n CMS\u540e\u53f0\u64cd\u4f5c\u65b9\u6cd5\u5982\u4e0b\uff1a\u8fdb\u5165 AAA\u7ba1\u7406\uff08\u9876\u90e8\uff09->\u4ea7\u54c1\u7ba1\u7406\uff08\u5de6\u4fa7\uff09->\u4ea7\u54c1\u4e1a\u52a1\u4e0b\u884c\u7ba1\u7406->\u9274\u6743\u4ea7\u54c1\u5305\u3002\u540c\u65f6\uff0c\u8fdb\u5165 \u4e1a\u52a1\u53f7\u7ba1\u7406->\u7248\u672c\u53f7\u7ba1\u7406->\u7248\u672c\u5217\u8868 \u7ed1\u5b9a\u7248\u672c\u53f7\u548c\u4e1a\u52a1\u53f7\u3002\u5373\u53ef\u6dfb\u52a0\u4ea7\u54c1\u5305\u5230\u4e1a\u52a1\u53f7",
+        "order_url": null
+    },
+    "video": {
+        "id": "59d6da181c07523830088b122d1d9260",
+        "cp_id": "wasu",
+        "is_support_ncl": 0,
+        "index": {
+            "id": "59dac717ec3eb9d8f88458d96806b2d0",
+            "index_num": "3",
+            "media": {
+                "id": "0c8a7ce7bea32591003f9405351a39aa",
+                "url": "http:\/\/10.21.12.6:5005\/nn_vod\/nn_x64\/aWQ9NjIwY2I3MDhhNWU4YzA3NDBlOWYwZTIwMTBlYjlkNjkmdXJsX2MxPTMyMzAzMTM3MzEzMDMwMzkyZjM1Mzk2NDYxNjMzNDM3MzE2NDYxNjEzMzM0Mzc2MjYxMzY2NjMzMzg2MTY0MzgzMjMxMzczOTY2MzI2NDM2NjIyZjYyNzc2Mzc4NmE3ODcxNmE2NDczNmE2ZTc4N2E2ODJkMzAyZTZkMzM3NTM4MDAmbm5fYWs9MDE2YjYyZWQ1MjY3MGZjZGU4YjJhZjE4NjBjZTM3NDMxNiZucGlwcz0xMC4yMS4xNi40Nzo1MTAwJm5jbXNpZD0xMTAxMjYmbmdzPTVhMGQ1OWYyMWUxMWNjNGYzMTcwMWQ4OGU0OGJhNDI3Jm5uZD1nemdkLmd1aXlhbmcmbmZ0PW0zdTgmbm5fdXNlcl9pZD0wMTAxMDIxNjExMTYwNDAxNTM3NSZuZHQ9c3RiJm5kdj0xLjEyLjAwNS5TVEIuR1pHRC5BVVRPLk9UVDAxLlJlbGVhc2UmbnN0PWlwdHYmbm5fdHJhY2VfaWQ9NWEwZDU5ZjIxZTExY2M0ZjMxNzAxZDg4ZTQ4YmE0MjcmbmNhPSUyNm5jb2klM2RTdG9yYWdlLUZ0cC1TY2FuLTAxJTI2bmFpJTNkV0FTVTAwMjAxNzEwMDcwMjU4MzIlMjZubl9jcCUzZHdhc3U,\/620cb708a5e8c0740e9f0e2010eb9d69.m3u8",
+                "url_backup": "",
+                "filetype": "ts",
+                "quality": "hd",
+                "begin_play_time": "",
+                "ts_limit_min": "",
+                "ts_default_pos": "",
+                "play_time_len": "0",
+                "dimensions": "0",
+                "file_id": "WASU0020171007025832",
+                "import_source": "\u534e\u6570",
+                "original_id": "WASU0020171007025832",
+                "is_video": null
+            },
+            "metadata": [],
+            "index_caption_data": []
+        }
+    },
+    "drm_list": [],
+    "arg_list": {
+        "drm_encrypt_solution": "",
+        "drm_flag": 0,
+        "client_ip": "",
+        "isothercdn": 1
+    }
+}

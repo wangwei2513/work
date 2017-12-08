@@ -1,0 +1,877 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta name="page-view-size" content="1280*1920">
+<title></title>
+</head>
+<script type="text/javascript" src="js/comm.js"></script>
+<script type="text/javascript">
+var dataAjaxPath;
+var menuAjaxPath = "menu.js";
+var ajaxObj;
+var columnAjaxObj;
+var menuData;                 // menuajax请求得到的数据
+var columnBox = null;
+var listArea = null;          // 列表区
+var listAreaType = "";
+
+var columnMaxSize = 7;
+var menuLen = 6;              // menu菜单栏最多显示6个
+var focusArea = 0;            // 焦点区域：0:上部菜单 1：下部左侧菜单 2：下部右侧列表区 3：下部右侧内容区
+var listArea = null;
+var contentArea = null;
+
+var filePath = "";            // 获取子模板的路径，方便拿到里面的content.js
+
+var titleAjaxPath = "node.js";
+var ajaxj = null;
+function ajaxFooter(){        // 获取跑马灯文字
+  if (ajaxj != null) {
+    ajaxj.requestAbort();
+  }
+  ajaxj = new AjaxClass();
+  ajaxj.frame = window;
+  ajaxj.charset = "gb2312";
+  ajaxj.successCallback = function(_xmlHttp, _params) {
+    var jsonData = eval('(' + _xmlHttp.responseText + ')');
+    if(typeof(jsonData) != "undefined"){
+      $("marqueeContent").innerText = jsonData.entryWord;
+    }
+  };
+  ajaxj.failureCallback = function(_xmlHttp, _params) {  
+  };
+  ajaxj.url = titleAjaxPath;
+  ajaxj.requestData();
+}
+
+document.onkeydown = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(keycode){
+  var e = keycode || event;
+  var keycode = e.keyCode || e.which || e.charCode;
+  switch (keycode) {   
+    case 38:        // up
+      changeUD(-1);
+      return false;
+      break;
+    case 40:       // down
+     changeUD(1);
+      return false;
+      break;
+    case 37:       // left
+    changeLR(-1);  
+      return false;
+      break;
+    case 39:        // right
+      changeLR(1);   
+      return false;
+      break;
+    case 13:
+      doSelect();
+      return false;
+      break;
+    case 8:    
+    case 27:
+    case 32:
+    case 339:
+    case 340:
+    case 640:
+    case 4:
+      return doBack();
+      break;
+  }
+}
+
+function changeLR(_num){
+  if(_num > 0) {                        // right
+    if(focusArea == 0) {
+      focusArea = 1;
+      clearFocus();
+      listArea.showFocus();
+    }else if(focusArea == 1) {
+    listArea.changeLR(_num);
+    }else if(focusArea == 2) {
+      contentArea.changeLR(_num);
+    }
+  }else if(_num < 0) {                    // left
+    if(focusArea == 1) {
+      listArea.changeLR(_num);
+    }else if(focusArea == 2) {
+      contentArea.changeLR(_num);
+    }  
+  }
+}
+
+function changeUD(_num){  // 焦点区域：0:上部菜单 1：下部左侧菜单 2：下部右侧列表区 3：下部右侧内容区
+  if(_num < 0) {                            // up
+    if(focusArea == 0) {
+      if(columnBox.position + _num < 0) return;
+      clearFocus();
+      columnBox.changeList(_num);
+      switchListArea();
+      showFocus();
+    }else if(focusArea == 1) {
+      listArea.changeUD(_num);       
+    }
+  }else if(_num > 0){                       //down
+    if(focusArea == 0) {
+      if(columnBox.position + _num > menuData.length) return;
+      clearFocus();
+      columnBox.changeList(_num);
+      switchListArea();
+      showFocus();
+    }else if(focusArea == 1) {
+      listArea.changeUD(_num);            
+    }   
+  }
+}
+
+function doSelect(){
+  if(focusArea == 0) {
+    return;
+  }else if(focusArea == 1) {
+    if(listArea.listArea == 0) {
+        focusArea = 2;
+        isHideFrame();
+        contentArea = new contentNode();
+        contentArea.mainData = listArea.listData[listArea.itemBox.position];
+        contentArea.init();
+        return;
+    }
+    listArea.doSelect();
+  }else if(focusArea == 2) {
+    contentArea.doSelect();
+  }
+} 
+
+function doBack() {
+  if(focusArea == 0) {
+    window.history.go(-1);
+    //goBackUrl();
+  }else if(focusArea == 1) {
+    if(listAreaType == "squareFrame") {
+      listArea.doBack();
+      return;
+    }
+    listArea.clearFocus();
+    focusArea = 0;
+    showFocus();
+    return false;
+  }else if(focusArea == 2) {
+    isHideFrame()
+    focusArea = 1;
+    return false;
+  }
+}
+
+function clearFocus(){
+  if(focusArea == 0){
+    $("menu"+columnBox.focusPos).style.background="url(images/list_ct.png)";
+    $("menu"+ columnBox.focusPos).style.color = "#fff";
+  }else if(focusArea == 1){
+    $("menu"+columnBox.focusPos).style.background="url(images/list_fff.png)";
+    $("menu"+ columnBox.focusPos).style.color = "#000";
+    // $("menu"+columnBox.focusPos).style.color = "#e28a0d";
+  }
+}
+
+function showFocus(){
+  if(focusArea == 0){
+    $("menu"+columnBox.focusPos).style.background="url(images/list_f1.png)";
+    $("menu"+ columnBox.focusPos).style.color = "#fff";
+  }else if(focusArea == 1){
+    // $("menu"+columnBox.focusPos).style.backgroundImage="url(images/mf01.png)";
+    // $("menu"+columnBox.focusPos).style.color = "#e28a0d";
+  } 
+}
+
+function showMenu(){
+  columnBox = new showList(menuLen,menuData.length,0,0,window);
+  columnBox.haveData = function(_list){
+    $("menu"+ _list.idPos).style.visibility = "visible";
+    $("menu"+ _list.idPos).style.color = "#fff";
+    $("menu"+ _list.idPos).innerText = menuData[_list.dataPos].name;
+    $("menu"+ _list.idPos).style.background = "url(images/list_ct.png)";
+  };
+  columnBox.notData = function(_list){
+    $("menu"+ _list.idPos).style.visibility = "hidden";
+  };
+  columnBox.startShow();
+  clearFocus();
+  showFocus();        
+  switchListArea();                  // 打开tab
+}
+
+function noMenuData(){
+  for(var i=0;i<menuLen;i++){
+    $("menu"+i).style.visibility = "hidden";
+  }
+}
+
+function isHideFrame() {
+  $("listFrame").style.display = $("listFrame").style.display == "none" ? "block" : "none";
+  $("contentFrame").style.display = $("listFrame").style.display == "none" ? "block" : "none";
+}
+
+function handleMainData(_getData) {                       // 实际渲染内容页的页面
+  listAreaType = menuData[columnBox.position].listType;   // 列表页的样式类型
+  if(listAreaType == "tv_words"){                    // 列表
+    listArea = new wordList();
+    listAreaType = "listFrame";
+    listArea.listData = _getData.list;
+  }else if(listAreaType == "tv_square"){             // 宫格大图预览
+    listArea = new picListNode();
+    listAreaType = "squareFrame";
+    listArea.listData = _getData;
+  }
+  $(listAreaType).style.display = "block";    // 列表区显示对应的模块
+  listArea.init();                            // 初始化列表区页面
+}
+
+function ajaxLoadMenuData(){
+  ajaxObj = null;
+  if (ajaxObj != null) {
+    ajaxObj.requestAbort();
+  }
+  ajaxObj = new AjaxClass();
+  ajaxObj.frame = window;
+  ajaxObj.charset = "gbk";
+  ajaxObj.successCallback = function(_xmlHttp, _params) {
+    var jsonData = eval( _xmlHttp.responseText );    
+    if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+      menuData = jsonData;
+      showMenu();
+    }else{
+      noMenuData();
+    }
+  };
+  ajaxObj.failureCallback = function(_xmlHttp, _params) {
+    noItemData(); 
+  };
+  ajaxObj.url = menuAjaxPath;
+  ajaxObj.requestData();
+}
+
+function ajaxLoadMainData(){
+  if (columnAjaxObj != null) {
+    columnAjaxObj.requestAbort();
+  }
+  columnAjaxObj = new AjaxClass();
+  columnAjaxObj.frame = window;
+  columnAjaxObj.charset = "gbk";
+  columnAjaxObj.successCallback = function(_xmlHttp, _params) {
+    var jsonData = eval( '('+_xmlHttp.responseText+')' );
+    if(typeof(jsonData) != "undefined" && jsonData != ""){
+      handleMainData(jsonData);                         // 初始化列表区页面
+    }
+  };
+  columnAjaxObj.failureCallback = function(_xmlHttp, _params) {
+  };
+  columnAjaxObj.url = dataAjaxPath;
+  columnAjaxObj.requestData();
+}
+
+function switchListArea(){        // 切换列表区的数据来源,并确定列表区的样式类型(去ajax内判断)
+  filePath = menuData[columnBox.position].nodePath;  // 分类文件夹的名称
+  if(filePath.indexOf("/") > -1){
+    var tempArr = filePath.split("/");
+    filePath = tempArr[tempArr.length-1];
+  }
+  $("headerName").innerText = menuData[columnBox.position].name;
+  if(listAreaType != "") {
+    $(listAreaType).style.display = "none";          // 让当前的列表区隐藏 ，实现切换不同的列表区样式结构
+  } 
+  columnAjaxObj = null;
+  dataAjaxPath = filePath + "/content.js";           // 得到要获取的详情区域的数据源
+  ajaxLoadMainData();                                // 为了确定，进行一次请求
+}
+
+function init(){
+  ajaxLoadMenuData();
+  ajaxFooter();
+}
+
+window.onload = init;
+
+
+
+//wordList列表图文类型的列表区域
+var wordList = function() {};
+wordList.prototype ={
+  listData : [],
+  listArea : 0,
+  itemPos : 0,
+  itemLen : 6,                 // 内容区条目数量
+  itemMaxSize : 25,            // 每个条目允许的文字最多，超出用...代替
+  btnPos : 0,
+  itemBox : null,
+  scrollBox : null,
+  init: function() {            
+      if(typeof(this.listData) != "undefined" && this.listData.length != ""&& this.listData.length != null){
+        this.showItem();
+        this.initScroll();
+      }else{
+        this.noItemData();
+      }
+  },
+  changeLR: function(_num) {
+    if(_num<0){
+      doBack(); 
+    } 
+  },
+  doSelect: function() {
+    
+  },
+  changeUD: function(_num) {
+    if(this.listArea == 0){
+      this.clearFocus();
+      this.itemBox.changeList(_num);
+      this.showFocus();
+    }
+  },
+  noItemData: function() {
+    for(var i = 0;i <this.itemLen;i++){
+      if(i==0){
+        $("item"+i).innerText = "暂无数据";
+      }else{
+        $("item"+i).innerText = "";
+      }
+    }
+    $("itemFocus").style.visibility = "hidden";
+  },
+  showItem: function() {
+    var that = this;
+    this.itemBox = new showList(that.itemLen,that.listData.length,that.itemPos,-15,window);
+    this.itemBox.focusDiv  = "itemFocus";
+    this.itemBox.listSign  = "top";
+    this.itemBox.listHigh = 65;
+    this.itemBox.showType  = 0; 
+    this.itemBox.haveData = function(_list){
+      $("item" + _list.idPos).innerHTML = subStr(that.listData[_list.dataPos].title,that.itemMaxSize,"...");
+    };
+    this.itemBox.notData = function(_list){
+      $("item" + _list.idPos).innerHTML = "";
+    };
+    this.itemBox.startShow();
+    this.initScroll();
+    this.clearFocus();
+    this.showFocus();
+  },
+  clearFocus: function() {
+    if(focusArea == 0) return;
+    if(this.listArea == 0) {
+      $("itemFocus").style.visibility = "hidden";
+      $("item" + this.itemBox.focusPos).innerHTML = subStr(this.listData[this.itemBox.position].title,this.itemMaxSize,"...");
+    }
+  },
+  showFocus: function() {
+    if(focusArea == 0) return;
+    if(this.listArea == 0) {
+      $("itemFocus").style.visibility = "visible";
+      if(getStrChineseLength(this.listData[this.itemBox.position].title) > this.itemMaxSize){
+        $("item" + this.itemBox.focusPos).innerHTML = "<marquee style='direction:left;width:680px;height:64px;line-height:64px;scrollamount:7px;'>" + this.listData[this.itemBox.position].title+"</marquee>";
+      } 
+    }
+  },
+  initScroll: function() {
+    this.scrollBox = null;
+    if(this.itemBox!=null){
+      var total = this.itemBox.listPage;
+      $("barDiv").style.visibility = "visible";
+      this.scrollBox = new ScrollBar("barDiv", "barDiv" , window);
+      this.scrollBox.init(total, 1, 426,-3, 59);
+      $("current_page").innerText  = this.itemBox.currPage;
+      this.scrollBox.scroll(this.itemBox.currPage - 1);
+      $("total_page").innerText = this.itemBox.listPage;
+      this.showScrollPage();
+    }else{
+      this.noScrollBar();
+    }
+  },
+  noScrollBar: function() {
+    $("barDiv").style.visibility = "hidden";
+    $("current_page").innerText  = 0;
+    $("total_page").innerText = 0;
+    this.scrollBox = null;
+  },
+  showScrollPage: function() {
+    $("current_page").innerText  = this.itemBox.currPage;
+  } 
+}
+
+//图文并存的内容区域
+var contentNode = function() {};
+contentNode.prototype = {
+  mainData: [],
+  currPage: 0,
+  totalPage: 0,
+  btnPos: 0,
+  pageContent: 250,
+  maxTitleSize: 25,
+  imagePos:0,
+  scroll_bar:null,
+  init: function() {
+    if (typeof(this.mainData) != "undefined" && this.mainData.length != "" && this.mainData != null) {
+      this.currPage = 0;
+      this.initContent();
+      this.showFocus();
+    } else {
+      this.noItemData();
+    }
+  },
+  showFocus: function() {
+    $("contentPageFocus").style.visibility = "visible";
+    $("contentPageFocus").style.left = 542 + this.btnPos*121 +"px";
+    $("btn_con" + this.btnPos).style.background = "url(images/btn02_bg1.png)";
+  },
+  clearFocus: function() {
+    $("contentPageFocus").style.visibility = "hidden;";
+    $("btn_con" + this.btnPos).style.background = "url(images/btn02_bg1.png)";
+  },
+  changeLR: function(_num) {
+      this.clearFocus();
+      this.btnPos = (this.btnPos + _num + 2) % 2;
+      this.showFocus(); 
+  },
+  doSelect: function() {
+    if (this.currPage == 0 && _num < 0 || this.currPage == this.totalPage - 1 && _num > 0) {
+      return;
+    } else {
+      var _num = this.btnPos == 0 ? -1 : 1;
+      if(this.currPage + _num < 0 || this.currPage + _num > this.totalPage - 1) return;
+      this.currPage = this.currPage + _num;
+    }
+    this.showScrollPage();
+    $("content").style.top = -this.pageContent * this.currPage + "px";
+  },
+  initTitle: function() {
+    $("navTitle").innerHTML = this.mainData.title;
+    if (getStrChineseLength(this.mainData.title) > this.maxTitleSize) {
+      $("navTitle").innerHTML = "<marquee width=735 height=68\">" + this.mainData.title + "</marquee>";
+    }
+  },
+  noItemData: function() {
+    $("content").innerText = "暂无数据";
+  },
+  initContent: function() {
+    if (this.mainData.content == "") {
+      $("content").innerHTML = "暂无相关介绍";
+    } else {
+      $("content").innerHTML = this.mainData.content;
+      this.initTitle();
+    }
+    $("content").style.top = -this.pageContent * this.currPage + "px";
+    var that = this;
+    setTimeout(function() {
+      that.totalPage = Math.floor($("content").offsetHeight / that.pageContent) + 1;
+      that.showScrollPage();
+    }, 100);
+  },
+  showScrollPage: function() {
+    $("currentPage").innerText  = this.currPage+1;
+    $("totalPage").innerText = this.totalPage;
+  }
+}
+
+//宫格图片模块
+var picListNode = function() {};
+picListNode.prototype = {
+  listData: [],
+  totalPage : 0,          // 总页数
+  currPage : 0,           // 当前第几页
+  subPos : 0,             // 焦点在页面上边的位置
+  pageNum : 6,            // 每页显示的个数
+  subPosMaxSize : 11,     // 标题允许最大字数
+  picList : [],           // 提取出来的图片列表
+  picName : [],           // 提取到的图片名字列表
+  picNode: null,          // 浮动层对象
+  havFloatPic: false,     // 是否弹出浮动层
+  init: function() {
+    if (typeof(this.listData) != "undefined" && this.listData.length != "" && this.listData != null) {
+      this.currPage = 0;        // 防止再次使用值未重置,尤其是picList
+      this.subPos = 0;  
+      this.picList = []; 
+      this.picName = [];
+      this.picNode = null; 
+      this.initList();          // 提取图片
+      this.initCotent();
+    }else {
+      this.noContent();
+    }
+  },
+  changeUD: function(_num) {
+    if(this.havFloatPic) { this.picNode.changeUD(_num);return;} // 有弹出框则转到处理它
+    this.clearFocus();
+    //需要翻页的情况
+    if((this.pageNum/2-1)<this.subPos&&_num>0&&this.currPage<this.totalPage-1){   //第二行 大于0 是不最后一页则下翻页
+      this.changePage(_num);
+    }else if((this.pageNum/2)>this.subPos&&_num<0&&this.currPage>0){   //第一行 小于0 不是首页则上翻页
+      this.changePage(_num);
+    }
+    this.subPos = (this.subPos+_num*(this.pageNum/2)+this.pageNum)%this.pageNum;   //序号转换保证原位置不变
+    //边界
+    if(this.subPos+this.currPage*this.pageNum>this.listData.length-1) this.subPos = (this.listData.length-1)%this.pageNum;
+    this.showFocus();
+  },
+  changeLR: function(_num) {
+    if(this.havFloatPic) { this.picNode.changeLR(_num);return;} // 有弹出框则转到处理它
+    // 当数据焦点为0或者3才返回左侧栏目按钮
+    if((this.currPage*this.pageNum+this.subPos == 0 || this.currPage*this.pageNum+this.subPos == 3) && _num < 0) { doBack();return;}
+    this.clearFocus();
+    if(_num>0){
+      if(this.subPos%(this.pageNum/2) == this.pageNum/2-1&&this.currPage<this.totalPage-1){  
+        this.changePage(_num);
+      }else{
+        this.subPos = this.subPos+_num;
+      }
+    }else{
+      if(this.subPos%(this.pageNum/2) == 0&&this.currPage>0){    
+        this.changePage(_num);
+      }else{
+        this.subPos = this.subPos+_num;
+      }
+    }
+    if(this.subPos+this.currPage*this.pageNum>this.listData.length-1) this.subPos = (this.listData.length-1)%this.pageNum;
+    if(this.subPos+this.currPage*this.pageNum<0) this.subPos = 0;
+    this.showFocus();
+  },
+  changePage: function (_num) {
+    this.currPage += _num;
+    this.initCotent();
+  },
+  initList: function () {
+    for(var i = 0;i < this.listData.length; i++){
+        this.picList.push(this.listData[i].entryImage.imageUrl);
+        this.picName.push(this.listData[i].title);
+    }
+    this.totalPage = Math.ceil(this.listData.length/this.pageNum);
+  },
+  noContent: function() {
+    for(var i =0;i < this.pageNum;i++) {
+      $("squ" + i).style.visibility = "hidden";
+    }
+  },
+  initCotent: function() {
+    for(var i = 0;i < this.pageNum;i++){
+      if(this.currPage*this.pageNum+i<this.listData.length){
+        $("squ" + i).style.visibility = "visible";
+        $("sub_poster_"+i).src = this.listData[this.currPage*this.pageNum+i].entryImage.imageUrl;
+        $("sqText" + i).innerText = this.listData[this.currPage*this.pageNum+i].title;
+      }else{
+        $("squ" + i).style.visibility = "hidden";
+      }
+    }
+    this.showScrollPage();
+  },
+  showFocus: function () {          
+    $("sub_focus").style.visibility = "visible";
+    $("sub_focus").style.top = Math.floor(this.subPos/(this.pageNum/2))*209+19+"px";
+    $("sub_focus").style.left = (this.subPos%(this.pageNum/2))*285+(-1)+"px";
+    $("sub_poster_"+this.subPos).style.top = parseInt($("sub_poster_"+this.subPos).style.top)-2+"px";
+    $("sub_poster_"+this.subPos).style.left = parseInt($("sub_poster_"+this.subPos).style.left)-4+"px";
+    $("sub_poster_"+this.subPos).style.width = "280px";
+    $("sub_poster_"+this.subPos).style.height = "205px";
+    // 返回字符串的汉字长度若大于则滚动显示
+    if(getStrChineseLength(this.listData[this.subPos].title) > this.subPosMaxSize){     
+      $("sqText"+this.subPos).innerHTML ="<marquee width=270>"+this.listData[this.subPos].title+"</marquee>";
+    }
+    // 拉长cover层
+    $("cov"+this.subPos).style.left = "-3px";
+    $("cov"+this.subPos).style.width = "278px";
+  },
+  clearFocus: function () {
+    $("sub_focus").style.visibility = "hidden";
+    $("sub_poster_"+this.subPos).style.top = parseInt($("sub_poster_"+this.subPos).style.top)+2+"px";
+    $("sub_poster_"+this.subPos).style.left = parseInt($("sub_poster_"+this.subPos).style.left)+4+"px";
+    $("sub_poster_"+this.subPos).style.width = "273px";
+    $("sub_poster_"+this.subPos).style.height = "199px";
+    $("sqText"+this.subPos).innerHTML = subStr(this.listData[this.subPos].title,this.subPosMaxSize,"...");
+    $("cov"+this.subPos).style.left = "0px";
+    $("cov"+this.subPos).style.width = "273px";
+  },
+  showScrollPage: function() {
+    $("currPage_con").innerText = this.currPage + 1;
+    $("totalPage_con").innerText = this.totalPage;
+    // 识别是否可翻页，切换图标
+    $("arr_left").src = (this.currPage == 0) ? "images/arr_left_out.png":"images/arr_left_in.png";
+    $("arr_right").src = (this.currPage == this.totalPage - 1) ? "images/arr_right_out.png":"images/arr_right_in.png";
+  },
+  doBack: function() {
+    if(this.havFloatPic) {
+      this.havFloatPic = false;
+      $("floatTab").style.display = "none";
+    }else {
+      this.clearFocus();
+      parent.focusArea = 0;
+      parent.showFocus();
+    } 
+  },
+  doSelect: function() {
+    this.havFloatPic = true;
+    this.picNode = new floatNode();                               // 浮动图片模板的实例化
+    this.picNode.listData = this.picList;
+    this.picNode.picName = this.picName;
+    this.picNode.currPic = this.currPage*this.pageNum+this.subPos; // 记录当前图片位置
+    $("floatTab").style.display = "block";
+    this.picNode.init();
+  }
+}
+
+
+
+// 弹出浮动层模板
+var floatNode = function() {};
+floatNode.prototype = {
+  listData: [],
+  picName: [],
+  isPicName: false,
+  totalPic : 0,      
+  currPic : 0,
+  picBox : null,        
+  init: function() {
+    if (typeof(this.listData) != "undefined" && this.listData.length != "" && this.listData != null) {
+      this.isPicName = false;
+      if(this.picName.length > 0) {
+        this.isPicName = true;
+        $("ftPicName").style.visibility = "visible";
+      }else{
+        $("ftPicName").style.visibility = "hidden";
+      }
+      this.initCotent();
+    }
+  },
+  initCotent: function() {
+    this.totalPic = this.listData.length;
+    if(this.totalPic > 0) {
+      this.initPic();
+      this.showPic();      
+    }
+  },
+  initPic: function() {
+    var that = this;
+    this.picBox = new showList(6,that.totalPic,that.currPic,140, window);
+    this.picBox.focusDiv = "ftFocus"; 
+    this.picBox.listSign = 'left';
+    this.picBox.listHigh = 168;
+    //this.picBox.showLoop = true;
+    this.picBox.showType = 0;
+    this.picBox.haveData = function (List){
+      $("ftPic"+List.idPos).style.visibility = "visible";
+      $("ftPic"+List.idPos).src = that.listData[List.dataPos];
+    }
+    this.picBox.notData = function (List){
+      $("ftPic"+List.idPos).style.visibility = "hidden";
+    }
+    this.picBox.startShow();
+  },
+  changeLR: function(_num) {
+    if(this.currPic + _num < 0 || this.currPic + _num > this.totalPic - 1) return;
+    this.currPic += _num;
+    this.picBox.changeList(_num);
+    this.showPic();
+  },
+  changeUD: function (_num) {
+    if(this.currPic + _num < 0 || this.currPic + _num > this.totalPic - 1) return;
+    this.currPic += _num;
+    this.picBox.changeList(_num);
+    this.showPic();
+  },
+  showPic: function (){
+    $("bigPic").src = this.listData[this.currPic];
+    // 识别是否可翻页，切换图标
+    $("floatL").src = (this.currPic == 0) ? "images/tt_left_out.png":"images/tt_left_in.png";
+    $("floatR").src = (this.currPic == this.totalPic - 1) ? "images/tt_right_out.png":"images/tt_right_in.png";
+    // 显示页码
+    $("ftCurrPage").innerText = this.currPic + 1;
+    $("ftTotolPage").innerText = this.totalPic;
+    // 显示图片名字
+    if(this.isPicName) {
+      $("ftPicName").innerText = this.picName[this.currPic];      
+    }
+  }
+}
+</script>
+<body background="images/bg.png" topmargin="0" leftmargin="0">
+  <div style="position:absolute;left:370px;top:119px;font-size:29px; color:#4a671c;z-index:10;">><span id="headerName"></span></div>
+  <div style="position:absolute;left:950px;top:47px; width:300px;font-size:32px; color:#263b3e;">毕节朱昌镇欢迎您！</div>
+  <!--跑马灯-->
+  <div style="position:absolute;left:131px;top:625px; width:984px;line-height:50px; font-size:23px; color:#f0f0f0;">
+    <marquee id="marqueeContent">
+    </marquee>
+  </div>
+  <!-- 广告位 -->
+  <div style="position:absolute;left:81px;top:286px; width:230px;height:320px;"><img src="images/pic2_1.png" width="230" height="320"></div>
+  <!--左侧列表-->
+  <div style="position:absolute;left:78px;top:119px; width:234px;height:388px;">
+    <table border="0"cellpadding="0"cellspacing="0"width="100%"height="100%"style="font-size:30px; color:#fff; text-align:center;">
+    <tr height="64">
+      <td id="menu0"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    <tr height="17"><td></td></tr>
+    <tr height="64">
+      <td id="menu1"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    <tr height="17"><td></td></tr>
+    <tr height="64">
+      <td id="menu2"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    <tr height="17"><td></td></tr>
+    <tr height="64">
+     <td id="menu3"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    <tr height="17"><td></td></tr>
+    <tr height="64">
+      <td id="menu4"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    <tr height="17"><td></td></tr>
+    <tr height="64">
+      <td id="menu5"style="background:url(images/list_ct.png);"></td>
+    </tr>
+    </table>
+  </div>
+  <!--右侧列表-->
+  <div style="position:absolute;left:331px;top:116px; width:872px;height:492px; background:url(images/tab_bg1.png);">
+  </div>
+  <!-- 列表区 列表竖向-->
+  <div id="listFrame" style="display:block;">
+    <!--详情-->
+    <div style="position:absolute;left:355px;top:145px; width:860px; height:471px;">
+      <!--滑动条-->
+      <div style="position:absolute;left:820px;top:29px;width:4px;height:426px;background:url(images/page01.png);">
+            <div id="barDiv" style="position:absolute;left:-13px;top:-3px;width:30px; height:59px; background:url(images/page02.png); font-size:18px; color:#fff; text-align:center; line-height:30px;">
+              <div style="position:absolute; left:0px; top:0px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;" id="current_page"></div>
+              <div style="position:absolute; left:0px; top:31px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;" id="total_page"></div>
+            </div>
+      </div>
+      <!--列表-->
+      <div style="position:absolute;left:30px;top:10px; width:688px; height:325px;">
+              <div style="position:absolute;left:0px;top:65px;width:776px;height:1px; background:#bdcddf;"></div>
+                <div style="position:absolute;left:0px;top:132px;width:776px;height:1px; background:#bdcddf;"></div>
+                <div style="position:absolute;left:0px;top:197px;width:776px;height:1px; background:#bdcddf;"></div>
+                <div style="position:absolute;left:0px;top:262px;width:776px;height:1px; background:#bdcddf;"></div>
+                <div style="position:absolute;left:0px;top:327px;width:776px;height:1px; background:#bdcddf;"></div>
+                <div style="position:absolute;left:0px;top:392px;width:776px;height:1px; background:#bdcddf;"></div>
+        <!-- 焦点 -->
+        <div id="itemFocus" style="position:absolute;left:-40px;top:-15px;width:750px;height:105px;background:url(images/list_djf1.png);visibility:hidden;"></div>
+        <table border="0"cellpadding="0"cellspacing="0"width="688"height="325"style=" position:absolute;left:0px;font-size:24px;color:#000;">
+          <tr height="65">
+            <td id="item0">1、党建专题片《“五百五”心连百姓》</td></tr>
+          <tr height="65">
+            <td id="item1">2、党建专题片《农商行打造普惠金融新样本》</td>
+          </tr>
+          <tr height="65">
+            <td id="item2">3、党建专题片《ICU里有温情》</td>
+          </tr>
+          <tr height="65">
+            <td id="item3">4、党建专题片《税徽闪耀党旗红》</td>  
+          </tr>
+          <tr height="65">
+            <td id="item4">5、党建专题片《税徽闪耀党旗红》</td>
+          </tr>
+          <tr height="65">
+            <td id="item5">5、党建专题片《税徽闪耀党旗红》</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 列表区 宫格图片 -->
+  <div id="squareFrame" style="display:none;position:absolute;left:337px;top:140px; width:921px; height:470px; display:none;overflow:hidden;">
+      <!--焦点信息-->         
+      <div id="sub_focus" style="position: absolute; top: 19px; left: -1px; width: 319px; height: 227px; background: url(images/focus_01.png); z-index: 3;visibility:hidden;">
+      </div>  
+      <!--图片信息-->
+      <div id="squ0" style="position: absolute; top: 27px; left: 8px;width:273px;height:199px;">
+        <img id="sub_poster_0" src="" style="position: absolute; top: 0px; left: 0px;width:273px;height:199px;"> 
+        <img id="cov0" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/>  
+        <div id="sqText0" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div>     
+      </div>  
+
+      <div id="squ1" style="position: absolute; top: 27px; left: 293px;width:273px;height:199px;">
+        <img id="sub_poster_1" src="" style="position: absolute; top: 0px; left: 0px;width:273px;height:199px;">  
+        <img id="cov1" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/>
+        <div id="sqText1" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div> 
+      </div>
+      
+      <div id="squ2" style="position: absolute; top: 27px; left: 578px;width:273px;height:199px;">
+        <img id="sub_poster_2" src="" style="position: absolute; top: 0px; left: 0px;width:273px;height:199px;">
+        <img id="cov2" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/>  
+        <div id="sqText2" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div>     
+      </div>
+
+      <div id="squ3" style="position: absolute; top: 235px; left: 8px;width:273px;height:199px;">
+        <img id="sub_poster_3" src="" style="position: absolute; top: 0px; left: 0px;width:273px;height:199px;">
+        <img id="cov3" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/>  
+        <div id="sqText3" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div>       
+      </div>
+
+      <div id="squ4" style="position: absolute; top: 235px; left: 293px;width:273px;height:199px;">
+        <img id="sub_poster_4" src="" style="position: absolute; top: 0px; left: 0px;width:273px;height:199px;"> 
+        <img id="cov4" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/> 
+        <div id="sqText4" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div>      
+      </div>
+
+      <div id="squ5" style="position: absolute; top: 235px; left: 578px;width:273px;height:199px;">
+        <img id="sub_poster_5" src="" style="position: absolute; top:0px; left: 0px;width:273px;height:199px;">  
+        <img id="cov5" src="images/cover_pic_img.png" alt="" style="position: absolute; bottom: -1px; left: 0px;width:273px;height:40px;"/> 
+        <div id="sqText5" style="position:absolute;bottom:0px;left:0px;width:273px;height:40px;line-height:40px;text-align:center;font-size:21px;color:#ffffff;"></div>    
+      </div>
+      <!--页码信息小箭头-->
+      <img id="arr_left" src="" style="position: absolute; top: 441px; left: 355px;">
+      <div style="position: absolute; top: 431px; left: 419px; width: 55px; height: 25px;color: #000000;">  
+        <span id="currPage_con" style="font-size: 29px;"></span>/<span id="totalPage_con" font-size: 21px;></span>
+      </div>
+      <img id="arr_right" src="" style="position: absolute; top: 441px; left: 510px;">
+  </div>
+
+  <!--列表区 浮动弹出层 z-index:100-->
+  <div id="floatTab" style="position: absolute; top: 0px; left: 0px; width: 1280px; height: 720px; background: url(images/bg_shadow.png); z-index: 100;display:none;">
+    <!--箭头-->
+    <img id="floatL" src="" style="position: absolute; top: 335px; left: 68px;width:37px;height:50px;">
+    <img id="floatR" src="" style="position: absolute; top: 335px; left: 1175px;width:37px;height:50px;">
+    <!-- 中间居中自适应图片 -->
+    <div id="cover_bp" style="position: absolute; top: 39px; left: 150px;display:table-cell;vertical-align:middle;text-align:center;*display:block;*font-size:815px;width:988px;height:600px;">
+          <img id="bigPic" src="" alt="" style="display:block;max-width:100%;max-height:100%;min-width:50%;min-height:50%;height:auto;margin:auto;position:absolute;left:0;right:0;top:0;bottom:0;"/>
+    </div>
+    <!-- 游移焦点 -->
+    <div id="ftFocus" style="position:absolute;top:560px;left:100px;width:160px;height:100px;border:4px solid #ffff00;"></div>
+    <!-- 页码 -->
+    <div id="ftPageNum" style="position:absolute;top:615px;left:1167px;width:110px;height:50px;font-size:25px;line-height:50px;color:#ffffff;z-index:101;background:url(images/btn.png);padding-left:9px;">
+      <span id="ftCurrPage"></span>/<span id="ftTotolPage"></span>
+    </div>
+    <div id="ftPicName" style="position:absolute;left:275px;top:17px;width:800px;height:40px;line-height:40px;font-size:30px;color:#ffffff;text-align:center;visibility:hidden;"></div>
+    <!-- 图片索引及 -->
+    <div style="position:absolute;top:560px;left:140px;">
+      <img id="ftPic0" src="" style="position:absolute;top:4px;left:4px;width:160px;height:100px;">
+      <img id="ftPic1" src="" style="position:absolute;top:4px;left:172px;width:160px;height:100px;">
+      <img id="ftPic2" src="" style="position:absolute;top:4px;left:340px;width:160px;height:100px;">
+      <img id="ftPic3" src="" style="position:absolute;top:4px;left:508px;width:160px;height:100px;">
+      <img id="ftPic4" src="" style="position:absolute;top:4px;left:676px;width:160px;height:100px;">
+      <img id="ftPic5" src="" style="position:absolute;top:4px;left:844px;width:160px;height:100px;">
+    </div>
+  </div>
+
+  <!-- 内容区 -->
+  <div id="contentFrame" style="position:absolute;left:330px;top:126px; width:890px; height:471px;display:none;">
+    <div style="position:absolute;left:432px;top:420px;font-size:26px;color:#a3a8aa;">
+      <span id="currentPage">1</span> / <span id="totalPage">3</span>
+    </div>
+    <div style="position:absolute;left:27px;top:427px;font-size:20px;color:#a3a8aa;">请按“返回键”返回上一层</div>
+    <!--列表--> 
+    <div style="position:absolute; left:29px;top:7px; width:870px; height:382px;">
+      <div id="navTitle" style="position:absolute;top:0px; width:860px; font-size:28px; color:#000;height:68px;line-height:68px; text-align:center;">学习先进典型 践行两学一做</div>
+      <div style="position:absolute;top:55px; width:845px; height:1px; background:url(images/line01.png);"></div>
+      <div style="position:absolute;top:60px;left:0px; width:845px;height:326px;overflow:hidden;">
+        <div id="content" style="position:absolute;top:0px;left:0px; width:840px; font-size:22px; color:#000; text-indent:2em; line-height:30px;">
+         </div>
+       </div>
+       <!--按钮-->
+      <div id="btn_con0" style="position:absolute;left:562px;top:404px;width:110px;height:40px;background:url(images/btn02_bg1.png); font-size:24px; color:#f0f0f0; text-align:center;line-height:40px;">上一页</div>
+      <div id="btn_con1" style="position:absolute;left:683px;top:404px;width:110px;height:40px;background:url(images/btn02_bg1.png); font-size:24px; color:#f0f0f0; text-align:center;line-height:40px;">下一页</div>
+      <div id="contentPageFocus" style="position:absolute;left:542px;top:387px;width:158px;height:90px;background:url(images/btn02_f1.png);visibility:hidden;"></div>
+     </div>
+  </div>
+</body>
+</html>

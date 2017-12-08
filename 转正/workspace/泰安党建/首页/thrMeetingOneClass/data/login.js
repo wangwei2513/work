@@ -1,0 +1,1 @@
+{"result":"E0000","msg":{"parentId":85,"areaName":"肥城党支部","areaLevel":2,"parentArea":[{"areaName":"机关党支部","areaLevel":1,"areaId":85}],"placeName":"肥城党支部","areaId":95}}

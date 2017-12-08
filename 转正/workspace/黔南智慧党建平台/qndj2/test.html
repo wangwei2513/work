@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .small {
+            width: 482px;
+            height: 292px;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="images/pic1_1.jpg" class="small" alt="">
+    <button>big</button>
+    <script>
+        var flg = true;
+        var btn = document.getElementsByTagName("button")[0];
+        var img = document.getElementsByClassName("small")[0];
+        btn.onclick = function() {
+            if (flg) {
+                flg = false;
+                img.style.width = img.offsetWidth * 1.1 + "px";
+                img.style.height = img.offsetHeight * 1.1 + "px";
+            } else {
+                flg = true;
+                img.style.width = img.offsetWidth / 1.1 + "px";
+                img.style.height = img.offsetHeight / 1.1 + "px";
+            }
+        }
+    </script>
+
+</body>
+
+</html>

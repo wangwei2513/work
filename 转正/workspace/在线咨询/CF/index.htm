@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>首页</title>
+<script src="js/common.js"></script>
+<script>
+	var menuData = [
+		{name:"法制讲堂",imgUrl:"images/nenu_01.jpg",url:"listVideo/index.htm"},
+		{name:"法律顾问",imgUrl:"images/nenu_02.jpg",url:"flgw/index.htm"},
+		{name:"在线咨询",imgUrl:"images/nenu_03.jpg",url:"onlineConsulting.htm"},
+		{name:"法制宣传",imgUrl:"images/nenu_04.jpg",url:"fzxc/index.htm"},
+	];
+	var menuPos = 0;
+	var menuBox = null;
+	var maxMenuLen = 4;
+
+	function eventHandler(eventObj) {
+		iDebug("[index index.htm]__eventObj.code="+eventObj.code);
+		switch(eventObj.code){
+			case "KEY_UP"://up
+				changeUD(-1);
+				return false;
+				break;
+			case "KEY_DOWN"://down
+				changeUD(1);
+				return false;
+				break;
+			case "KEY_LEFT"://left
+			case "KEY_RIGHT"://right
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+		}
+	}
+
+	function changeUD(_num) {
+		menuBox.changeList(_num);
+	}
+
+	function doSelect() {
+		setGlobalVar("index_menuPos",menuBox.position);
+		window.location.href = menuData[menuBox.position].url+"?backUrl="+window.location.href;
+	}
+
+	function init() {
+		menuPos = getGlobalVar("index_menuPos")?parseInt(getGlobalVar("index_menuPos"),10):0;
+		delGlobalVar("index_menuPos");
+		iDebug("[legal index] init__menuPos="+menuPos);
+		initMenu();
+	}
+
+	function initMenu() {
+		menuBox = new showList(maxMenuLen,menuData.length,menuPos,116,window);
+        menuBox.focusDiv = "menuFocus";
+        menuBox.listHigh = 124;
+        menuBox.focusLoop = true;
+        menuBox.pageLoop = true;
+        menuBox.haveData = function(_list){
+			$("menu" + _list.idPos).style.opacity = 1;
+			$("menu" + _list.idPos).src = menuData[_list.dataPos].imgUrl;
+        };
+        menuBox.notData = function(_list){
+            $("menu" + _list.idPos).style.opacity = 0;
+			$("menu" + _list.idPos).src = "";
+        };
+        menuBox.startShow();
+	}
+</script>
+</head>
+<body background="images/bg.jpg" leftmargin="0" topmargin="0" onLoad="init()">
+	<div style="position:absolute; top:48px; left:76px; width:213px; height:62px;">
+		<img src="images/logo.png" width="213" height="62" />
+	</div>
+	<div style="position:absolute; top:139px; left:71px; width:100px; height:100px;">
+		<img id="menu0" src="images/nenu_01.jpg" width="276" height="113" />
+	</div>
+	<div style="position:absolute; top:263px; left:71px; width:100px; height:100px;">
+		<img id="menu1" src="images/nenu_02.jpg" width="276" height="113" />
+	</div>
+	<div style="position:absolute; top:387px; left:71px; width:100px; height:100px;">
+		<img id="menu2" src="images/nenu_03.jpg" width="276" height="113" />
+	</div>
+	<div style="position:absolute; top:511px; left:71px; width:100px; height:100px;">
+		<img id="menu3" src="images/nenu_04.jpg" width="276" height="113" />
+	</div>
+	<div style="position:absolute; top:139px; left:379px; width:100px; height:100px;">
+		<img src="images/sp_01.jpg" width="831" height="475" />
+	</div>
+	<div style="position:absolute; top:655px; left:67px; width:32px; height:23px;">
+		<img src="images/tips.png" width="32" height="23" />
+	</div>
+	<!-- 焦点 -->
+	<div id="menuFocus" style="position:absolute; top:116px; left:48px; width:321px; height:164px;z-index: 3;">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="36" height="36" background="images/focus_01.png"></td>
+				<td width="249" background="images/focus_02.png"></td>
+				<td width="36" background="images/focus_03.png"></td>
+			</tr>
+			<tr>
+				<td height="92" background="images/focus_04.png"></td>
+				<td></td>
+				<td background="images/focus_05.png"></td>
+			</tr>
+			<tr>
+				<td height="36" background="images/focus_06.png"></td>
+				<td background="images/focus_07.png"></td>
+				<td background="images/focus_08.png"></td>
+			</tr>
+		</table>
+	</div>
+
+	<div style="position:absolute; top:649px; left:108px; width:1103px; height:34px; font-size:22px; color:#f7fcff; line-height:34px;">
+		政府在听取城市总体规划编制情况汇报时强调科学编制总体规划，不断提升城市建设管理水平。
+	</div>
+</body>
+</html>

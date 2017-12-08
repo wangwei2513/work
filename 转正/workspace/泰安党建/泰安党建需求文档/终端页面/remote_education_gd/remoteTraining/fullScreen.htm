@@ -1,0 +1,64 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>视频全屏页面</title>
+<!--<script type="text/javascript" src="../js/evm.js"></script>
+<script type="text/javascript" src="../js/swat3.js"></script>
+<script type="text/javascript" src="../js/ext.platform.js"></script>
+<script type="text/javascript" src="../js/CMediaPlayer.js"></script>-->
+<script type="text/javascript">
+var href = window.location.href;
+var opt =  href.split("??")[1];
+var playUrl = href.split("??")[2];
+console.log("fullScreen.htm----playUrl="+playUrl);
+var muteFlag = false;
+
+document.onkeydown = eventHandler;
+
+function eventHandler(key){
+	var e = key || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	switch (keycode) {
+		case 339:
+		case 340:
+		case 8:
+			exit();
+			window.location.href = "joinTraining.htm?opt="+opt;
+			event.returnValue = false;
+			return false;
+			break;
+		case 77:  //静音键
+			if(muteFlag == false){
+				muteFlag = true;
+				iSTB.player.mute();
+			}else{
+				muteFlag = false;
+				iSTB.player.unmute();
+			}
+			return false;
+			break;
+		default:
+			return true;
+		break;
+	}
+}
+
+function init(){
+	//设置小视频全屏
+	//$MP = CMediaPlayer.newInstance(CPlatform.getBrowserType(), '$MP' );
+	//$MP.play(playUrl);
+	iSTB.player.play(playUrl);
+	iSTB.player.set_video_window(0, 0, 1280, 720);
+	//$MP.windowPos(0, 0, 1280, 720); //设置小视频大小
+}
+
+function exit(){
+	iSTB.player.stop();
+}
+
+</script>
+</head>
+<body bgcolor="transparent"  leftmargin="0" topmargin="0" onload="init()" onunload="exit();" bgcolor="transparent">
+</body>
+</html>

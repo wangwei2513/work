@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>社区舞台-视频播放页</title>
+</head>
+<script language="javascript" src="js/common.js"></script>
+<script language="javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/swat3.js"></script>
+<script type="text/javascript" src="js/ext.platform.js"></script>
+<script type="text/javascript" src="js/CMediaPlayer.js"></script>
+<script>
+var position = 0;
+var playUrl = ""; 
+var duration = 0;
+var elapsed = 0;
+var pfBarShowFlag = true;
+var pfTimeOut = -1;
+var totalVolume = 31;
+var currVolume = 5;
+var volumeShowFlag = false;
+var volumeTimeOut = -1;
+var isStop = false;
+var muteFlag = false;
+var menuData=[];
+
+var file="bsgwt/content.js";
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  	var e = key || event;
+  	var keycode = e.keyCode || e.which || e.charCode;
+  	//快进 34 快退 33 暂停 19
+  	if(pfBarShowFlag==false&&keycode!=13){
+  		clearTimeout(pfTimeOut);
+  		showPlayProcess();
+  		pfTimeOut = setTimeout(function(){
+  			hidePlayProcess();
+  		},8000);
+  		return;
+  	}else{
+  		clearTimeout(pfTimeOut);
+  		pfTimeOut = setTimeout(function(){
+  			hidePlayProcess();
+  		},8000);
+  	}
+  	switch (keycode) {
+  		case 3:
+  		case 37: 
+		    changeVolume(-1);				//音量减
+			return 0;
+			break;
+		case 4:
+		case 39:
+		    changeVolume(1);				//音量加
+			return 0;
+			break;
+		case 339:
+		case 27:
+			if(typeof iSTB != "undefined"){
+				iSTB.browser.gotoSTB("tv");
+			}else{
+				if(backUrl == "")return;
+				window.location.href = "index.htm?position="+position;
+			}
+	  		event.returnValue = false;
+			return false;
+			break;
+		case 33:
+			changePlayProgress(-20);			//快退
+			return 0;
+			break;
+		case 34:
+			changePlayProgress(20);			//快进
+			return 0;
+			break;
+		case 19:
+		case 13:
+			stopAndPlay();
+			return 0;
+			break;
+		case 8:
+		case 340:
+			window.location.href = "index.htm?position="+position;
+			event.returnValue = false;
+			return false;
+			break;
+		case 77:  //静音键
+			if(muteFlag == false){
+				muteFlag = true;
+				document.getElementById("mute_div").style.visibility = "visible";
+				iSTB.player.mute();
+			}else{
+				muteFlag = false;
+				document.getElementById("mute_div").style.visibility = "hidden";
+				iSTB.player.unmute();
+			}
+			return false;
+			break;
+  	}
+}
+
+function init() {
+	initData();
+}
+
+function initData(){
+	var url=requestUrl+file;
+	ajax_js(url,function(responseText){
+		var tempMenu=eval("("+responseText+")");
+		if(typeof(tempMenu)!="undefined" && tempMenu.length!=0){
+			menuData=tempMenu;
+			getFocus();
+  			initName();
+			getPlayURl();
+			openVoid(playUrl);
+		}else{}
+	});
+}
+
+
+function getFocus(){
+	if(window.location.href.indexOf("?")>-1){
+	    position = getUrlParams("position", window.location.href, "&");
+	    position = parseInt(position,10);
+  	}
+}
+
+function initName(){
+	document.getElementById("vodName").innerText = menuData[position].title;
+	if(menuData[position].title.length>11){
+		document.getElementById("vodName").innerHTML = "<marquee style=\"width:230px;\">"+menuData[position].title+"</marquee>";
+	}
+}
+
+function changeVolume(_num){
+	currVolume = iSTB.player.get_volume();
+	if(volumeShowFlag==false){
+		clearTimeout(volumeTimeOut);
+		showVolume();
+		volumeTimeOut = setTimeout(function(){
+			hideVolume();
+		},5000);
+	}else{
+		currVolume = currVolume+_num;
+		if(currVolume<0) currVolume = 0;
+		if(currVolume>totalVolume) currVolume = totalVolume;
+		iSTB.player.set_volume(currVolume);
+		clearTimeout(volumeTimeOut);
+		showVolume();
+		volumeTimeOut = setTimeout(function(){
+			hideVolume();
+		},5000);
+	}	
+}
+
+function showVolume(){
+	for (var i = 1; i < totalVolume+1; i++) {
+		if(i<currVolume+1){
+			document.getElementById("volume_"+i).style.backgroundImage = "url(../common_images/voice_bar2.png)";
+		}else{
+			document.getElementById("volume_"+i).style.backgroundImage = "url(../common_images/voice_bar1.png)";
+		}
+	}
+	document.getElementById("volume").style.visibility = "visible";
+	document.getElementById("volumeValue").innerText = currVolume;
+	volumeShowFlag = true;
+}
+
+function hideVolume(){
+	document.getElementById("volume").style.visibility = "hidden";
+	volumeShowFlag = false;
+}
+
+function getDuration(){
+	duration = parseInt(iSTB.player.get_duration(),10); 
+	document.getElementById("endTime").innerHTML =Math.floor(parseInt(duration,10)/3600)+":"+Math.floor(parseInt(duration,10)%3600/60)+":"+ parseInt(duration,10)%3600%60;
+}
+
+function stopAndPlay(){
+	if(isStop==false){
+		iSTB.player.pause();
+		document.getElementById("stop_div").style.visibility = "visible";
+		isStop = true;
+	}else{
+		iSTB.player.resume();
+		document.getElementById("stop_div").style.visibility = "hidden";
+		isStop = false;
+	}
+}
+
+function playProcess(){
+	elapsed = parseInt(iSTB.player.get_position(),10);
+	if(parseInt(elapsed,10) < 2){
+		elapsed = 1;
+	}
+	else if(parseInt(elapsed,10) > parseInt(duration,10)){
+		elapsed = parseInt(duration,10);
+	}
+	document.getElementById("currTime").innerHTML = Math.floor(parseInt(elapsed,10)/3600)+":"+Math.floor(parseInt(elapsed,10)/60)+":"+ parseInt(elapsed,10)%60;
+	var currProcess = Math.floor(parseInt(elapsed)/parseInt(duration)*940);
+	document.getElementById("bar").style.width = currProcess + "px";
+	document.getElementById("barPos").style.left = currProcess+"px";
+
+	setTimeout(function(){
+		playProcess();
+	},1000);	
+}
+
+function showPlayProcess(){
+	document.getElementById("navBox").style.visibility = "visible";
+	pfBarShowFlag = true;
+}
+
+function changePlayProgress(_num){
+	if(elapsed+_num > duration) {
+		return;
+	}
+	iSTB.player.seek(elapsed+_num);
+}
+
+function hidePlayProcess(){
+	document.getElementById("navBox").style.visibility = "hidden";
+	pfBarShowFlag = false;
+}
+
+function getPlayURl(){
+	playUrl = menuData[position].videoUrl;
+}
+
+window.$LOG = '';
+window.$MP = '';
+window.$PLAT = '';
+try
+
+{
+
+	$LOG = new CLogger( {elem:'eLog'} );
+	$PLAT = CPlatform.newInstance();
+	//$MP = CMediaPlayer.newInstance( CPlatform.getBrowserType());
+	$MP = CMediaPlayer.newInstance( CPlatform.getBrowserType(), '$MP' );
+	/*
+	$MP.onEvent = function( E )
+	{
+		switch( E.msg )
+		{
+			case 'DVB_TUNER_UNLOCK': break;
+			case 'PLAYER_FINISH': $MP.play(); break;
+			default: $LOG.log( 'EVT: ' + E.msga + ', orgMsg=' + E.msgo );
+		}
+	}
+	*/
+
+	$LOG.log( 'Platform: ' + CPlatform.getBrowserType());
+	$LOG.log( 'Browser: ' + $PLAT.versionInfo());
+	$LOG.log( 'MPlayer: ' + $MP.className );
+
+}
+
+catch( E )
+
+{
+
+}
+
+ //开始播放视频方法
+ function openVoid(url){
+	iDebug("playUrl="+url);
+	$MP.play(url);
+	$MP.windowPos(0,0,1280,720); 
+ }
+
+//退出关闭视频方法
+function stopVoid(){
+	try
+	{
+		$MP.stop();
+
+	}
+
+	catch( E ){}
+}
+
+function exit(){
+	stopVoid();
+	iSTB.player.unmute(); //清除静音
+}
+
+
+var playTimeout = -1;
+if(typeof iSTB != "undefined"){
+	iSTB.evt.set_event_callback("eventCallback");
+}
+function eventCallback(type,event_name,event_type,event_value){
+    switch(event_name){
+    	case  "PLAYER_BUFFERING_END":
+    		getDuration();
+    		showPlayProcess();
+			playProcess();
+			pfTimeOut = setTimeout(function(){
+				hidePlayProcess();
+			},8000);
+			break;
+		case "PLAYER_FINISH":
+			window.location.href = "index.htm?itemPos="+itemPos;
+			break;
+	}
+}
+
+
+</script>
+<body leftmargin="0" topmargin="0" onload="init()" onunload="exit()">
+<!--视频播放进度条-->
+<div id="navBox" style="position:absolute; left:0px; top:528px; width:1280px; height:158px;background-image: url(../common_images/pf_bg.png); border: 1px none #000000; visibility:visible;">
+  <!--pf条的内容-->
+  <div style="position:absolute; left:51px; top:57px; width:1177px; height:78px;">
+    <table width="100%" height="80" border="0" cellpadding="0" cellspacing="0" style="font-size:24px; color:#ffffff;">
+      <tr>
+        <td id="currTime" width="12%" height="42" style="text-align:center"></td>
+        <td id="endTime" width="88%"  align="right"></td>
+      </tr>
+      <tr>
+        <td style="font-size:30px; color:#f0f0f0;">视频名称:</td>
+        <td id="vodName"></td>
+      </tr>
+    </table>
+  </div>
+  
+  <div id="pfBar" style="position:absolute; left:159px; top:70px; width:963px; height:16px;">
+    <div id="barPos" style="position:absolute; left:0px; top:-9px; width:33px; height:33px;"><img src="../common_images/dot.png" width="33" height="33" /></div>
+  	<img src="../common_images/bar_010.png" width="9" height="16" /><img id="bar" src="../common_images/bar_020.png" width="0" height="16" /><img src="../common_images/bar_030.png" width="9" height="16" />
+  </div>
+  
+</div>  
+
+<!--音量-->
+<div id="volume" style="position:absolute;background-image:url(../common_images/voice_btm.png); width:972px; height:110px; left:131px; top:450px; visibility:hidden;">
+
+<div id="volume_1" style="position:absolute; width:20px; height:62px; left:101px; top:27px; background-image:url(../common_images/voice_bar1.png);"></div>
+<div id="volume_2" style="position:absolute; width:20px; height:62px; left:121px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_3" style="position:absolute; width:20px; height:62px; left:141px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_4" style="position:absolute; width:20px; height:62px; left:161px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_5" style="position:absolute; width:20px; height:62px; left:181px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_6" style="position:absolute; width:20px; height:62px; left:201px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_7" style="position:absolute; width:20px; height:62px; left:221px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_8" style="position:absolute; width:20px; height:62px; left:241px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_9" style="position:absolute; width:20px; height:62px; left:261px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_10" style="position:absolute; width:20px; height:62px; left:281px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_11" style="position:absolute; width:20px; height:62px; left:301px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_12" style="position:absolute; width:20px; height:62px; left:321px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_13" style="position:absolute; width:20px; height:62px; left:341px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_14" style="position:absolute; width:20px; height:62px; left:361px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_15" style="position:absolute; width:20px; height:62px; left:381px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_16" style="position:absolute; width:20px; height:62px; left:401px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_17" style="position:absolute; width:20px; height:62px; left:421px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_18" style="position:absolute; width:20px; height:62px; left:441px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_19" style="position:absolute; width:20px; height:62px; left:461px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_20" style="position:absolute; width:20px; height:62px; left:481px; top:27px;background-image:url(../common_images/voice_bar1.png); "></div>
+<div id="volume_21" style="position:absolute; width:20px; height:62px; left:501px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_22" style="position:absolute; width:20px; height:62px; left:521px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_23" style="position:absolute; width:20px; height:62px; left:541px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_24" style="position:absolute; width:20px; height:62px; left:561px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_25" style="position:absolute; width:20px; height:62px; left:581px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_26" style="position:absolute; width:20px; height:62px; left:601px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_27" style="position:absolute; width:20px; height:62px; left:621px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_28" style="position:absolute; width:20px; height:62px; left:641px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_29" style="position:absolute; width:20px; height:62px; left:661px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_30" style="position:absolute; width:20px; height:62px; left:681px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div id="volume_31" style="position:absolute; width:20px; height:62px; left:701px; top:27px;background-image:url(../common_images/voice_bar1.png);  "></div>
+<div style="position:absolute; left:749px; top:27px; width:52px; height:62px; line-height:62px; font-size:36px; color:#FFFFFF" id="volumeValue"></div>
+</div>
+<!--暂停键-->
+<div id="stop_div" style="position: absolute; left: 553px; top: 179px; width: 177px; height: 177px; background-image: url(../common_images/player_bigplay.png); visibility: hidden;"></div>
+
+<!--静音图标-->
+<div id="mute_div" style="position: absolute; left: 1068px; top: 41px; width: 69px; height: 70px; background-image: url(../common_images/jingyin.gif); visibility: hidden;"></div>
+
+<div id="test" style="position:absolute; left:159px; top:100px; width:500px; height:400px; background-color:red; font-size:24px; visibility:hidden;">cccccc</div>
+</body>
+</html>

@@ -1,0 +1,403 @@
+body {
+	width: 1280px;
+	height:720px;
+	overflow: hidden;
+}
+#myVirtualKeyboard {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+#myTmpVirtualKeyboard {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 1280px;
+	height:720px;
+	padding-left: 150px;
+	padding-top: 50px;
+	z-index: 88;
+}
+#myVirtualKeyboard #initvirtualkeyboardId{
+	position: absolute;
+	z-index: 888;
+}
+
+#myTmpVirtualKeyboard #initvirtualkeyboardId #tmpDiv {
+	width: 400px;
+	height:60px;
+	border: 1px solid #b3b3b3;
+	background: #FFF;
+	overflow-x: hidden; 
+	overflow-y: auto;
+	font-size: 16px;
+}
+
+#myTmpVirtualKeyboard #__selectBox {
+
+	margin-top: 45px;
+	position: absolute;
+	z-index: 9999;
+}
+
+#myTmpVirtualKeyboard #__selectBox {
+	position: absolute;
+	z-index: 9999;
+}
+
+#myTmpVirtualKeyboard #initvirtualkeyboardId #tmpInputId {
+	position: absolute;
+	width: 500px;
+	height:40px;
+	left:100px;
+	top:120px;
+	font-size: 16px;
+	background: #FFF;
+}
+#myTmpVirtualKeyboard #backgrounddiv{
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 1280px;
+	height:720px;
+	background: #333;
+	opacity:0.95;
+	filter:alpha(opacity=95);
+	-moz-opacity:0.95;
+	-khtml-opacity: 0.95;
+	z-index: 666;
+}
+
+
+#vk_div {
+	width: 650px;
+	height: 194px;
+	left:px;
+	top:47px;
+	border: 1px solid #b3b3b3;
+	background-color: #f2f3f7;
+	z-index: 9999;
+	position: absolute;
+}
+
+#myTmpVirtualKeyboard #vk_div {
+	margin-top: 95px;
+}
+
+#vk_div.capsLK,#vk_div.shift {
+	text-transform: uppercase;
+}
+
+#vk_div.other {
+	text-transform: lowercase;
+}
+
+#vk_div.shift span.rightop {
+	margin-top: 10px;
+	margin-left: 10px;
+	text-align: center;
+	z-index: 999;
+}
+
+#vk_div.novkey span.rightop,#vk_div.novkey span.center {
+	visibility: hidden;
+}
+
+#vk_div.shift span:nth-child(2) {
+	display: none;
+}
+
+#vk_div span:nth-child(1).center {
+	margin-top: 10px;
+	text-align: center;
+}
+
+#vk_div span:nth-child(2).center {
+	margin-top: -5px;;
+	text-align: center;
+}
+
+#vk_div #kb_b00 span:nth-child(2).center {
+	margin-top: 0;
+	text-align: center;
+}
+
+#initvirtualkeyboardId {
+	width: 652px;
+}
+
+#__selectBox {
+	width: 650px;
+	height: 50px;
+	z-index: 9999;
+	display: none;
+	visibility: visible;
+}
+
+#vk_keyboard {
+	width: 646px;
+	height: 190px;
+	margin-left: 2px;
+	margin-top: 2px;
+}
+
+#vk_keyboard div div {
+	display: block;
+	width: 43px;
+	height: 38px;
+	float: left;
+	background: url(button_set.png) 0px 0px;
+}
+
+#vk_keyboard div div.focus {
+	width: 43px;
+	height: 38px;
+	float: left;
+	background: url(button_set.png) 0px -38px;
+}
+
+#vk_keyboard div div.select {
+	width: 43px;
+	height: 38px;
+	float: left;
+	background: url(button_set.png) 0px -76px;
+}
+
+div#vk_0 div#kb_b0e {
+	background: url(button_set.png) -43px -114px;
+}
+
+div#vk_0 div#kb_b0e.focus {
+	background: url(button_set.png) -43px -152px;
+}
+
+div#vk_0 div#kb_b0e.select {
+	background: url(button_set.png) -43px -190px;
+}
+
+div#vk_1 div#kb_b10 {
+	background: url(button_set.png) -243px -114px;
+	width: 57px;
+}
+
+div#vk_1 div#kb_b10.focus {
+	background: url(button_set.png) -243px -152px;
+	width: 57px;
+}
+
+div#vk_1 div#kb_b10.select {
+	background: url(button_set.png) -243px -190px;
+	width: 57px;
+}
+
+div#vk_1 div#kb_b1d {
+	background: url(button_set.png) -329px 0px;
+	width: 72px;
+}
+
+div#vk_1 div#kb_b1d.focus {
+	background: url(button_set.png) -329px -76px;
+	width: 72px;
+}
+
+div#vk_1 div#kb_b1d.select {
+	background: url(button_set.png) -329px -152px;
+	width: 72px;
+}
+
+div#vk_2 div#kb_b20 {
+	background: url(button_set.png) -172px -114px;
+	width: 71px;
+}
+
+div#vk_2 div#kb_b20.focus {
+	background: url(button_set.png) -172px -152px;
+	width: 71px;
+}
+
+div#vk_2 div#kb_b20.select {
+	background: url(button_set.png) -172px -190px;
+	width: 71px;
+}
+
+div#vk_2 div#kb_b2c {
+	background: url(button_set.png) -300px -38px;
+	width: 101px;
+}
+
+div#vk_2 div#kb_b2c.focus {
+	background: url(button_set.png) -300px -114px;
+	width: 101px;
+}
+
+div#vk_2 div#kb_b2c.select {
+	background: url(button_set.png) -300px -190px;
+	width: 101px;
+}
+
+div#vk_3 div#kb_b30,div#vk_3 div#kb_b3b {
+	background: url(button_set.png) -86px -114px;
+	width: 86px;
+}
+
+div#vk_3 div#kb_b30.focus,div#vk_3 div#kb_b3b.focus {
+	background: url(button_set.png) -86px -152px;
+	width: 86px;
+}
+
+div#vk_3 div#kb_b30.select,div#vk_3 div#kb_b3b.select {
+	background: url(button_set.png) -86px -190px;
+	width: 86px;
+}
+
+div#vk_3 div#kb_b3c {
+	background: url(button_set.png) 0px -114px;
+}
+
+div#vk_3 div#kb_b3c.focus {
+	background: url(button_set.png) 0px -152px;
+}
+
+div#vk_3 div#kb_b3c.select {
+	background: url(button_set.png) 0px -190px;
+}
+
+div#vk_4 div#kb_b40,div#vk_4 div#kb_b44 {
+	background: url(button_set.png) -401px -114px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b40.focus,div#vk_4 div#kb_b44.focus {
+	background: url(button_set.png) -401px -152px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b40.select,div#vk_4 div#kb_b44.select {
+	background: url(button_set.png) -401px -190px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b41,div#vk_4 div#kb_b43 {
+	background: url(button_set.png) -401px 0px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b41.focus,div#vk_4 div#kb_b43.focus {
+	background: url(button_set.png) -401px -38px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b41.select,div#vk_4 div#kb_b43.select {
+	background: url(button_set.png) -401px -76px;
+	width: 53px;
+}
+
+div#vk_4 div#kb_b42 {
+	background: url(button_set.png) -43px 0px;
+	width: 257px;
+}
+
+div#vk_4 div#kb_b42.focus {
+	background: url(button_set.png) -43px -38px;
+	width: 257px;
+}
+
+div#vk_4 div#kb_b42.select {
+	background: url(button_set.png) -43px -76px;
+	width: 257px;
+}
+
+div#vk_4 div#kb_b45 {
+	background: url(button_set.png) -454px 0px;
+	width: 102px;
+}
+
+div#vk_4 div#kb_b45.focus {
+	background: url(button_set.png) -454px -38px;
+	width: 102px;
+}
+
+div#vk_4 div#kb_b45.select {
+	background: url(button_set.png) -454px -76px;
+	width: 102px;
+}
+
+div#vk_4 div#kb_b46 {
+	background: url(button_set.png) -454px -114px;
+	width: 71px;
+	margin-left: 3px;
+}
+
+div#vk_4 div#kb_b46.focus {
+	background: url(button_set.png) -454px -152px;
+	width: 71px;
+	margin-left: 3px;
+}
+
+div#vk_4 div#kb_b46.select {
+	background: url(button_set.png) -454px -190px;
+	width: 71px;
+	margin-left: 3px;
+}
+
+div#vk_4 div#kb_b41,div#vk_4 div#kb_b44 {
+	_margin-left: 37px;
+}
+
+table.chineseSelect {
+	width: 636px;
+	left:300px;
+	top:300px;
+	border-collapse: collapse
+}
+
+table.chineseSelect tr {
+	border: 1px solid black;
+}
+
+table.chineseSelect tr td {
+	width: 60px;
+	height: 20px;
+	background: #FFF;
+}
+
+#__selectBox td#selectBoxStart,#__selectBox td#selectBoxEnd {
+	width: 20px;
+	border: 1px solid black;
+}
+
+#vk_keyboard span.rightop {
+	font-size: 14px;
+	text-align: right;
+	display: block;
+	visibility: visible;
+	width: 25px;
+	margin-left: 15px;
+}
+
+#vk_keyboard span#spe0 {
+	margin-left: 10px;
+	padding-top: 8px;
+	height: 8px;
+}
+
+#vk_keyboard span.center {
+	font-size: 20px;
+	display: block;
+	visibility: visible;
+	text-align: center;
+	width: 43px;
+}
+
+#vk_keyboard .line1 div span.charactor,#vk_keyboard .line12 div span.charactor,#vk_keyboard .line13 div span.charactor
+	{
+	width: 40px;
+	height: 30px;
+	line-height: 48px;
+	text-align: center;
+	display: block;
+}
+
+#vk_keyboard span.other {
+	visibility: hidden;
+}

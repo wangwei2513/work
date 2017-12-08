@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>双层模板-图文</title>
+<script src="../js/common.js"></script>
+<script>
+	var listData = [];
+	var listPos = 0;
+	var currPage = 0;
+	var totalPage = 0;
+	var lineHeight = 55;		//每次翻动的高度
+	var pageHeight = 410;		//可见高度
+	var scroll_bar = null;
+	var file = "content.js";
+	var maxWord = 26;			// 标题最多显示的字数
+
+	function eventHandler(eventObj){
+		iDebug("[subDoubleWord content.htm] eventObj.code ===" + eventObj.code);
+	    switch(eventObj.code){
+	        case "KEY_UP":
+	        	changeUD(-1);
+				return false;
+				break;
+	        case "KEY_DOWN":
+	        	changeUD(1);
+				return false;
+				break;
+	        case "KEY_LEFT":
+	        	changeLR(-1);
+				return false;
+				break;
+	        case "KEY_RIGHT":
+	        	changeLR(1);
+				return false;
+				break;
+	        case "KEY_SELECT":
+				doSelect();
+				return false;
+				break;
+	        case "KEY_EXIT":
+	        case "KEY_BACK":
+	        case "KEY_MENU":
+	        	goBack();
+				return false;
+				break;
+		}
+	}
+
+	function goBack() {
+		window.location.href = "index.htm";
+	}
+
+	function changeUD(_num) {
+		totalPage = Math.ceil(($("content").offsetHeight-pageHeight+lineHeight) / lineHeight);
+		scroll_bar.init(totalPage,totalPage, 440, 2);
+		// if(totalPage <= 1||currPage+_num<0||currPage+_num>totalPage-1)return;
+		currPage = (currPage+_num+totalPage)%totalPage;
+		$("content").style.top = -lineHeight*currPage + "px";
+		scroll_bar.scroll(currPage);
+	}
+
+	function changeLR(_num) {
+		if(listPos+_num<0||listPos+_num>listData.length-1)return;
+		currPage = 0;
+		totalPage = 0;
+		$("content").style.top = "0px";
+		listPos += _num;
+		initContent();
+	}
+
+	function init() {
+		// registerKeyEvent();
+		listPos = window.location.href.indexOf("listPos")!=-1?parseInt(getParam("listPos",window.location.href),10):0;
+		getNode();
+		getData();
+	}
+
+	function getNode() {
+		var ajaxObj = new ajaxClass("node.js",function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(data)!=""){
+				$("nodeName").innerHTML = data.name;
+			}
+		},function(_xmlHttp){
+			iDebug("[subDoubleWord content.htm] getNode fail !");
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function getData() {
+		var ajaxObj = new ajaxClass(file,function(_xmlHttp){
+			listData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(listData)!=""){
+				initContent();
+			}
+		},function(_xmlHttp){
+			iDebug("[subDoubleWord content.htm] getData fail !");
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function initContent() {
+		$("title").innerHTML = marqueeStr(listData[listPos].title,maxWord);
+		$("date").innerHTML = listData[listPos].date;
+		$("content").innerHTML = listData[listPos].content;
+		totalPage = Math.ceil(($("content").offsetHeight-pageHeight+lineHeight) / lineHeight);
+		scroll_bar = new ScrollBar("scrollBar", null, window);
+		scroll_bar.init(totalPage,totalPage, 440, 2);
+		scroll_bar.scroll(currPage);
+		$("scrollBar").style.visibility = totalPage>1?"visible":"hidden";
+		$("preArticle").style.visibility = listPos==0?"hidden":"visible";
+		$("nextArticle").style.visibility = listPos==listData.length-1?"hidden":"visible";
+	}
+</script>
+</head>
+<body background="../images/tm_bg.jpg" leftmargin="0" topmargin="0" onLoad="init()">
+	<div style="position:absolute; left:54px; top:26px;">
+		<img src="../images/icon1_04_1.png" width="46" height="44" />
+	</div>
+	<div id="nodeName" style="position: absolute; left:107px; top: 29px; font-size: 35px; color: #fff;"></div>
+	<div id="preArticle" style="position:absolute; left:54px; top:296px; width:24px;height: 134px; font-size:24px; color:#e1b1ad;background: url(../images/icon02_1.png) no-repeat left 100px;">
+		上 一 篇
+	</div>
+	<div id="nextArticle" style="position:absolute; left:1204px; top:296px; width:24px;height: 134px; font-size:24px; color:#e1b1ad;background: url(../images/icon02_2.png) no-repeat left 100px;">
+		下 一 篇
+	</div>
+	<div style="position:absolute; left:103px; top:105px; width:1077px; height:531px; background:url(../images/list_bg3.png);">
+		<div style="position:absolute; left:0px; top:0px; width:100%;height: 508px;">
+			<div id="title" style="position:absolute; left:44px; top:5px; width:988px; font-size:38px; color:#f4f4f4; line-height:60px; "></div>
+			<div id="date" style="position:absolute; left:44px; top:80px; width:988px; font-size:30px; color:#f3f3f3; text-align:right;"></div>
+			<div style="position:absolute; left:44px; top:120px; width:998px; font-size:30px; color:#f3f3f3; line-height:56px;height: 392px; overflow: hidden;">
+				<div id="content" style="position:absolute; left:0px; top:0px; width:100%;"></div>
+			</div>
+		</div>
+		<div id="scrollBar" style="position:absolute; left:1065px; top:2px;width: 10px;height: 87px;background: rgba(255,255,255,0.3);border-radius: 4px;"></div>
+	</div>
+</body>
+</html>

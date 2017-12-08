@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"glch","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"squared","name":"管理策划","navigator":"民营经济之窗>专家队伍>管理策划","newAdd":0,"nodePath":"zxqyjx/zjdw/glch"}

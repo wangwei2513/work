@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"swsh","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.14.30.222:80//application/appcmsFiles/","isManaged":"notManaged","linkUrl":"","listType":"tv_square","name":"赤峰党委中心工作","navigator":"活动集锦>赤峰党委中心工作","newAdd":0,"nodePath":"hdjj/swsh","subNodeFocusCombinedImage":"http://10.14.30.222:80//application/appcmsFiles/"}

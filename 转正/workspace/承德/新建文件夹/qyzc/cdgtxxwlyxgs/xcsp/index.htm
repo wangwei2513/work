@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+</head>
+
+<body  leftmargin="0" topmargin="0">
+    <div style="position:absolute; left:0; top:0; width:1280px; height:720px; ">
+<!--         <div style="position:absolute; left:97px; top:316px;z-index:20;"><img src="images/icon2_01.png" width="33" height="55" /></div>
+        <div style="position:absolute; left:1138px; top:316px;z-index:20;"><img src="images/icon2_02.png" width="33" height="55" /></div> -->
+        <!--        <div style="position:absolute; left:202px; top:27px;"><img id="pic" src="images/pic2_03.jpg" width="722" height="432" /></div> -->
+        <div style="position:absolute; left:0; top:0;"><img src = "images/zzjs.jpg" width="1280" height="720" /></div>
+      <!--   <div style="position:absolute; left:580px;; top:650px;width:150px;height:50px;line-height:50px;font-size:22px;">
+            第<span id="curr">1</span>张/<span id="totle">3</span>张
+        </div> -->
+    </div>
+    <script type="text/javascript " src="js/keyevent.js "></script>
+    <script src="js/common.js "></script>
+    <script>
+        document.onkeydown = eventHandler;
+
+        function eventHandler(e) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            var eventObj = Event.mapping(keycode);
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    // keyUp();
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    // keyDown();
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    keyLeft();
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    keyRight();
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                    window.location.href = "../index.htm";
+                    removeParms();
+                    return false;
+                    break;
+            }
+        }
+        // 变量
+        var ajaxObj = null,
+            dataCurrPage = parseInt(window.location.href.split("?")[1].split("&")[1].split("=")[1]),
+            listPos = parseInt(window.location.href.split("?")[1].split("&")[0].split("=")[1]),
+            listData = [],
+            picNum = 0;
+        // parseInt(window.location.href.split("?")[1].split("=")[1]);
+        // 加载list数据
+        function ajaxLoadListData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            //   "../ " +
+            ajaxObj.url = "content.js";
+            // ajaxObj.url = menuData[menuPos].enName + "/ " + menuPath;
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("( " + _xmlHttp.responseText + ") ");
+                listData = getData;
+
+                initContent();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // initcontent
+        function initContent() {
+            $("pic").src = listData[dataCurrPage * 6 + listPos].albumImages[picNum].imageUrl;
+            changePageNum();
+        }
+        // 左
+        function keyLeft() {
+            if (picNum > 0) {
+                picNum--;
+                initContent();
+            }
+        }
+        // 右
+        function keyRight() {
+            if (picNum < listData[dataCurrPage * 6 + listPos].albumImages.length - 1) {
+                picNum++;
+                initContent();
+            }
+        }
+        // 页码改变
+        function changePageNum() {
+            $("curr").innerText = picNum + 1;
+            $("totle").innerText = listData[dataCurrPage * 6 + listPos].albumImages.length;
+        }
+        // init
+        function init() {
+            ajaxLoadListData();
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+<title>全屏播放页面</title>
+
+<script>
+var videoUrl = "";	//视频播放地址
+var videoName = "";	//视频名称
+document.onkeydown = grabEvent;
+function grabEvent(event){
+
+	var keyval = event.which;
+
+	switch(keyval){	
+		case 27://exit
+			doExit();
+			break;
+		case 8://back
+			doBack();
+			event.returnValue = false;
+			break;	
+		default:
+			return true;
+	}
+	return false;
+}
+
+iSTB.evt.set_event_callback("eventCallback");
+function eventCallback(type,event_name,event_type,event_value){
+	switch(event_name){
+		case  "PLAYER_BUFFERING_END"://5205
+			break;
+		case "PLAYER_FINISH"://5210
+			break;
+	}
+}
+
+function init() {
+  getPara();
+  initData();
+}
+
+function getPara() {
+   var url= window.location.href;
+   if(url.indexOf("?videoUrl=") != -1){
+		videoUrl = url.split("?videoUrl=")[1];
+	}
+}
+
+function initData() {
+	  if(videoUrl == "") {
+		doBack();
+	  } else {
+		openVideo();
+	  }
+}
+
+function doBack() { //返回
+  window.location.href = "index.htm";
+}
+
+function doExit() { //退出
+  doBack();
+}
+
+function openVideo() {
+    iSTB.player.play(videoUrl+"&playtoken=ABCDEFG");
+	iSTB.player.set_video_window(0, 0, 1280, 720);
+}
+
+function closeVideo() {
+    iSTB.player.stop();
+}
+
+function exitPage() {
+    closeVideo();
+}
+</script>
+</head>
+<body bgcolor="transparent"  onload="init()" onunload="exitPage()">
+</body>
+</html>
+

@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"kjdb","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"","name":"课件点播","navigator":"黔南党建2版本>党员教育>课件点播","newAdd":0,"nodePath":"qndj2/dyjy/kjdb","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

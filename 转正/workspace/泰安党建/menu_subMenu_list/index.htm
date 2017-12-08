@@ -1,0 +1,601 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>全部内容</title>
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script src="js/swat3.js"></script>
+<script src="js/ext.platform.js"></script>
+<script src="js/CMediaPlayer.js"></script>
+<script>
+var backUrl = "";
+
+var url = window.location.href;
+var ajaxObj = null;
+var focusArea = 0; // 焦点区域 0：上方菜单栏，1：左侧列表，2：宫格区，3：弹出层
+var rememberFocus = 1; // 用来记住跳转之前的焦点区域
+var menuIdx = 0; // 菜单栏数据索引
+var menuPos = 0; // 菜单栏焦点位置
+var maxMenu = 6; // 显示多少个栏目
+var leftIdx = 0; // 左侧列表数据索引
+var leftPos = 0; // 左侧列表焦点位置
+var maxList = 6; // 最多显示多少条目
+var wordSize = 16;
+var currPage = 0;
+var totalPage = 0;
+var pageSize = 6;
+var listPos = 0; // 宫格焦点位置
+var total = 0;
+var imgIndex = 0; // 图片轮换的索引
+var leftList = []; // 左侧列表数据
+var photoList = []; // 宫格相册
+var videoList = [];
+var appEnName = "xfsq";//应用的enName
+var file = "/list.js";
+var subFile = "/content.js";
+var scroll_bar = null;
+var type = 2; // 0：图文，1：相册 2：视频
+var playUrl = ""; //播放地址
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+	  var e = key || event;
+	  var keycode = e.keyCode || e.which || e.charCode;
+	  switch (keycode) {
+		case 1:   // up
+		case 38:
+			changeUD(-1);
+			return false;
+			break;
+		case 2:   // down
+    	case 40:
+			changeUD(1);
+			return false;
+			break;
+		case 3:   // left
+    	case 37:
+			changeLR(-1);
+			return false;
+			break;
+		case 4:   // right
+    	case 39:
+			changeLR(1);
+			return false;
+			break;
+		case 13:
+			doSelect();
+			return false;
+			break;
+		case 340:
+    	case 8:
+			if (focusArea == 3) {
+				loseFocus();
+				focusArea = 2;
+				imgIndex = 0;
+				getFocus();
+				return false;
+			}
+			if(backUrl == "")return;
+			window.location.href = backUrl;
+			event.returnValue = false;
+			return false;
+			break;
+		case 339:
+		case 27:
+		  if(typeof iSTB != "undefined"){
+			iSTB.browser.gotoSTB("tv");
+		  }else{
+			if(backUrl == "")return;
+			window.location.href = backUrl;  
+		  }
+		  event.returnValue = false;
+		  return false;
+		  break;
+	}
+}
+
+function changeUD(_num) {
+	switch (focusArea) {
+		case 0: // 上方菜单栏
+			if (_num == 1) {
+				focusArea = rememberFocus;
+				getFocus();
+			}
+			break;
+		case 1: // 左侧列表
+			if (leftIdx + _num > leftList.length - 1) return;
+			if (leftIdx + _num < 0) {
+				loseFocus();
+				rememberFocus = focusArea;
+				focusArea = 0;
+				getFocus();
+				return;
+			}
+			/*if (leftIdx == leftList.length - 2 && _num == 1) {
+				$("downArraw").style.display = "none";
+			} else if (leftIdx < leftList.length - maxList + 1 && leftList.length > maxList) {
+				$("downArraw").style.display = "block";
+			}*/
+			if ((leftPos > 0 && _num == -1) || (leftPos < maxList - 1 && _num == 1)) {
+				loseFocus();
+				leftPos += _num;
+				leftIdx += _num;
+				getFocus();
+			} else {
+				leftIdx += _num;
+				fillLeftList(leftIdx - leftPos);
+			}
+			if (type == 2) {
+				playUrl = leftList[leftIdx].videoUrl;
+				iDebug("[xfsq index.html] changeUD playUrl=" + playUrl);
+				openVoid();
+			} else {
+				currPage = 0;
+				listPos = 0;
+				initContent();
+			}
+			break;
+		case 2: // 宫格区
+			loseFocus();
+			if (listPos + _num * 3 < 0 || listPos + _num * 3 > pageSize - 1 || currPage * pageSize + listPos + _num * 3 > total - 1) {
+				currPage += _num;
+				currPage = currPage < 0 ? totalPage - 1 : currPage;
+				currPage = currPage > totalPage - 1 ? 0 : currPage;
+				initContenList();
+				scroll_bar.scroll(currPage);
+				listPos = currPage * pageSize + listPos > total - 1 ? (total % pageSize - 1) : listPos;
+			} else {
+				listPos += _num * 3;
+			}
+			getFocus();
+			break;
+		case 3: // 弹出层
+			break;
+	}
+}
+
+function changeLR(_num) {
+	switch (focusArea) {
+		case 0: // 上方菜单栏
+			if (menuIdx + _num < 0 || menuIdx + _num > menuArray.length - 1) return;
+			menuIdx += _num;
+			if ((menuPos > 0 && _num == -1) || (menuPos < maxMenu - 1 && _num == 1)) {
+				loseFocus();
+				menuPos += _num;
+				getFocus();
+			} else {
+				initMenuList(menuIdx - menuPos);
+			}
+			getContent();
+			break;
+		case 1: // 左侧列表
+			if (type == 2 && _num > 0) {
+				loseFocus();
+				// rememberFocus = focusArea;
+				leftPos = 0;
+				leftIdx = 0;
+				focusArea = 0;
+				changeLR(_num);
+				return;
+			}
+			if (_num == 1 && total > 0 && type != 0) {
+				loseFocus();
+				focusArea = 2;
+				getFocus();
+			}
+			break;
+		case 2: // 宫格区
+			if (listPos + _num > pageSize - 1 || currPage * pageSize + listPos + _num > total - 1) return;
+			loseFocus();
+			if (listPos % 3 == 0 && _num < 0) {
+				focusArea = 1;
+			} else {
+				listPos += _num;
+			}
+			getFocus();
+			break;
+		case 3: // 弹出层
+			imgIndex += _num;
+			imgIndex = imgIndex < 0 ? 0 : imgIndex;
+			imgIndex = imgIndex > total - 1 ? total - 1 : imgIndex;
+			initBigImg();
+			break;
+	}
+}
+
+function $(id){
+	return document.getElementById(id);
+}
+
+function getFocus() {
+	if (focusArea != 0) {
+		$("menu" + menuPos).style.color = "#f8af89";
+		$("menu" + menuPos).style.background = "#bb4304";
+	}
+	switch (focusArea) {
+		case 0: // 上方菜单栏
+			$("menu" + menuPos).style.color = "#f8af89";
+			$("menu" + menuPos).style.background = "#bb4304";
+			break;
+		case 1: // 左侧列表
+			//$("leftListName" + leftPos).style.color = "#ffffff";
+			//$("leftListName" + leftPos).style.fontsize = "26px";
+			$("leftListFocus").style.visibility = "visible";
+			$("leftListFocus").style.top = -2 + leftPos*61 + "px";
+			var name = leftList[leftIdx].title;
+			if (tool.getCharacterLength(name) > wordSize) {
+				$("leftListName" + leftPos).innerHTML = "<marquee width='400'>" + name + "</marquee>";
+			}
+			break;
+		case 2: // 宫格区
+			$("listFocus" + listPos).style.borderColor = "#e28a0d";
+			if (type == 2 && tool.getCharacterLength(videoList[currPage * pageSize + listPos].title) > 28) {
+				$("listName" + listPos).innerHTML = "<marquee width='260'>" + videoList[currPage * pageSize + listPos].title + "</marquee>";
+			}
+			break;
+		case 3: // 弹出层
+			$("popup").style.display = "block";
+			break;
+	}
+}
+
+function loseFocus() {
+	switch (focusArea) {
+		case 0: // 上方菜单栏
+			$("menu" + menuPos).style.color = "#000";
+			$("menu" + menuPos).style.background = "#e5e5e5";
+			break;
+		case 1: // 左侧列表
+			//$("leftListName" + leftPos).style.color = "#62942e";
+			//$("leftListName" + leftPos).style.fontsize = "24px";
+			$("leftListFocus").style.visibility = "hidden";
+			var name = leftList[leftIdx].title;
+			$("leftListName" + leftPos).innerHTML = name;
+			break;
+		case 2: // 宫格区
+			$("listFocus" + listPos).style.borderColor = "transparent";
+			if (type == 2) {
+				$("listName" + listPos).innerHTML = videoList[currPage * pageSize + listPos].title;
+			}
+			break;
+		case 3: // 弹出层
+			$("popup").style.display = "none";
+			break;
+	}
+}
+
+function doSelect() {
+	switch (focusArea) {
+		case 0: // 上方菜单栏
+			break;
+		case 1: // 左侧列表
+			if (type == 1) return;
+			var backURL = "focusArea=" + focusArea + "&menuIdx=" + menuIdx + "&menuPos=" + menuPos + "&leftIdx=" + leftIdx + "&leftPos=" + leftPos;
+			setGlobalParam("xfsqURL", backURL);
+			if (type == 0) {
+				window.location.href = "content.htm?position=" + leftIdx+"&enName="+menuArray[menuIdx].enName;
+			} else if (type == 2) { //视频播放
+				window.location.href = "play.htm?position=" + leftIdx+"&enName="+menuArray[menuIdx].enName+"&appEnName="+appEnName;
+			}
+			break;
+		case 2: // 宫格区
+			if (type == 1) {
+				loseFocus();
+				focusArea = 3;
+				getFocus();
+				initBigImg();
+			} else {
+				var backURL = "focusArea=" + focusArea + "&menuIdx=" + menuIdx + "&menuPos=" + menuPos + "&leftIdx=" + leftIdx + "&leftPos=" + leftPos + "&listPos=" + listPos;
+				setGlobalParam("xfsqURL", backURL);
+				window.location.href = "play.htm?enName=" + menuArray[menuIdx].enName + "&position=" + (listPos + currPage * pageSize);
+			}
+			break;
+		case 3: // 弹出层
+			break;
+	}
+}
+
+// 填入放大图片
+function initBigImg() {
+	$("bigImg").src = photoList[imgIndex];
+	$("leftArraw").src = "../images/iocn01.png";
+	$("rightArraw").src = "../images/iocn02.png";
+	if (imgIndex == 0) {
+		$("leftArraw").src = "../images/iocn01_1.png";
+	}
+	if (imgIndex == total - 1) {
+		$("rightArraw").src = "../images/iocn02_1.png";
+	}
+}
+
+// 初始化菜单栏
+function initMenuList(temp) {
+	temp = typeof temp == "undefined" ? 0 : temp;
+	for (var i = 0; i < maxMenu; i++) {
+		if (menuArray[i + temp]) {
+			$("menu" + i).style.background = "#e5e5e5";
+			$("menu" + i).innerText = menuArray[i + temp].name;
+			if (focusArea == 0 && i == menuPos) getFocus();
+		} else {
+			$("menu" + i).style.background = "transparent";
+			$("menu" + i).innerText = "";
+		}
+	}
+}
+
+// 获取左侧列表
+function getMenuList() {
+	if (ajaxObj == null) {
+		ajaxObj = new AJAX_OBJ();
+	} else {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp) {
+		menuArray = eval('(' + _xmlHttp.responseText + ')');
+		initMenuList(menuIdx - menuPos);
+		getContent();
+	}
+	ajaxObj.failureCallback = function(_xmlHttp) {
+		iDebug("[xfsq index.html]__getMenuList__failureCallback !");
+	}
+	ajaxObj.url = requestUrl +"/"+appEnName+file;
+	iDebug("index.htm getmenulist url="+ajaxObj.url);
+	ajaxObj.requestData();
+}
+
+// 获取文章内容或宫格列表
+function getContent() {
+	if (ajaxObj == null) {
+		ajaxObj = new AJAX_OBJ();
+	} else {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp) {
+		leftList = [];
+		leftList = eval('(' + _xmlHttp.responseText + ')');
+		fillLeftList(leftIdx - leftPos);
+		/*if (leftList.length <= maxList) {
+			$("downArraw").style.display = "none";
+		}*/
+		initContent();
+	}
+	ajaxObj.failureCallback = function(_xmlHttp) {
+		iDebug("[xfsq index.html]__getContent__failureCallback !");
+	}
+	ajaxObj.url = requestUrl +appEnName+"/" + menuArray[menuIdx].enName + subFile;
+	iDebug("index.htm getContent url="+ajaxObj.url);
+	ajaxObj.requestData();
+}
+
+function fillLeftList(temp) {
+	for (var i = 0; i < maxList; i++) {
+		if (leftList[i + temp]) {
+			/*if (menuArray[menuIdx].enName == "syjy") { //党员教育
+				$("leftListName" + i).innerHTML = leftList[i + temp].name;
+			} else {*/
+				$("leftListName" + i).innerHTML = leftList[i + temp].title;
+			//}
+			if (focusArea == 1 && i == leftPos) getFocus();
+		} else {
+			$("leftListName" + i).innerHTML = "";
+		}
+	}
+}
+
+function initContent() {
+	/*if (menuArray[menuIdx].enName == "flcs") { // 法律常识
+		type = 0;
+		$("txtContent").style.display = "block";
+		$("listContent").style.display = "none";
+		$("scrollStaff").style.visibility = "hidden";
+		$("content").innerHTML = leftList[leftIdx].content;
+		if (leftList[leftIdx].albumImageUrls != "") {
+			$("txtImg0").src = leftList[leftIdx].albumImageUrls[0];
+			$("txtImg1").src = leftList[leftIdx].albumImageUrls[1];
+			$("txtImg1").style.visibility = leftList[leftIdx].albumImageUrls.length > 1 ? "visible" : "hidden";
+			$("content").style.top = "262px";
+			$("content").style.height = "166px";
+		} else {
+			$("txtImg0").style.visibility = "hidden";
+			$("txtImg1").style.visibility = "hidden";
+			$("content").style.top = "18px";
+			$("content").style.height = "407px";
+		}
+		$("bgImag").style.background = "url(images/bg.jpg)";
+		exit();
+	} else {
+		$("txtContent").style.display = "none";
+		$("listContent").style.display = "block";
+		if (menuArray[menuIdx].enName == "dyjy" || menuArray[menuIdx].enName == "pfjc") { //党员教育
+			type = 2;
+			$("listContent").style.display = "none";
+			playUrl = leftList[leftIdx].videoUrl;
+			iDebug("[xfsq index.htm]__initContent playUrl=" + playUrl);
+			$("bgImag").style.backgroundImage = "url(images/bg.png)";
+			openVoid();
+		} else {
+			type = 1;
+			photoList = leftList[leftIdx].albumImageUrls;
+			total = photoList.length;
+			totalPage = Math.ceil(total / pageSize);
+			$("bgImag").style.backgroundImage = "url(images/bg.jpg)";
+			exit();
+		}
+		iDebug("[xfsq index.htm]__initContent__type=" + type + ";  total=" + total);
+		initContenList();
+		scroll_bar = new ScrollBar("scrollBar", null, window);
+		scroll_bar.init(totalPage, totalPage, 332, 0);
+		scroll_bar.scroll(currPage);
+		$("currPage").innerHTML = currPage + 1;
+		$("totalPage").innerHTML = totalPage;
+		if (totalPage < 2) {
+			$("scrollStaff").style.visibility = "hidden";
+		} else {
+			$("scrollStaff").style.visibility = "visible";
+		}
+	}
+	if (type == 2) {
+
+	} else {
+
+	}*/
+	type = 2;
+	//$("listContent").style.display = "none";
+	playUrl = leftList[leftIdx].videoUrl;
+	iDebug("[xfsq index.htm]__initContent playUrl=" + playUrl);
+	//$("bgImag").style.backgroundImage = "url(images/bg6.png)";
+	openVoid();
+}
+
+// 填入宫格列表
+function initContenList() {
+	for (var i = 0; i < pageSize; i++) {
+		$("listImg" + i).src = "";
+		$("listName" + i).innerHTML = "";
+		$("list" + i).style.visibility = "hidden";
+		if (type == 1) {
+			if (photoList[currPage * pageSize + i]) {
+				$("list" + i).style.visibility = "visible";
+				$("listImg" + i).src = photoList[currPage * pageSize + i];
+				if (focusArea == 2 && i == listPos) getFocus();
+			}
+		} else {
+			if (videoList[currPage * pageSize + i]) {
+				$("list" + i).style.visibility = "visible";
+				$("listImg" + i).src = videoList[currPage * pageSize + i].entryImageUrl;
+				$("listName" + i).innerHTML = videoList[currPage * pageSize + i].title;
+				if (focusArea == 2 && i == listPos) getFocus();
+			}
+		}
+	}
+}
+
+function init() {
+	showTime();
+	getParams();
+	getMenuList();
+}
+
+function showTime(){
+	var _currTime = formatTime("hh:mm:ss",new Date());
+	var _currDate = formatTime("YYYY/MM/DD",new Date());
+	$("currTime").innerText = _currTime;
+	$("currDate").innerText = _currDate;
+	setTimeout("showTime()",1000);
+}
+
+function getParams() {
+	var backURL = getGlobalParam("xfsqURL");
+	delGlobalParam("xfsqURL");
+	iDebug("[xfsq index.htm]__getParams__backURL=" + backURL);
+	if (backURL != "" && backURL != null) {
+		menuIdx = parseInt(getParam("menuIdx", backURL));
+		menuPos = parseInt(getParam("menuPos", backURL));
+		leftIdx = parseInt(getParam("leftIdx", backURL));
+		leftPos = parseInt(getParam("leftPos", backURL));
+		listPos = getParam("listPos", backURL) ? parseInt(getParam("listPos", backURL)) : 0;
+		focusArea = parseInt(getParam("focusArea", backURL));
+	}
+}
+
+//开始播放视频方法
+function openVoid() {
+	try {
+		$MP.play(playUrl);
+		$MP.windowPos(570, 223, 636, 358);
+	}catch (E) {}
+}
+
+window.$LOG = '';
+window.$MP = '';
+window.$PLAT = '';
+try {
+	$LOG = new CLogger({
+		elem: 'eLog'
+	});
+	$PLAT = CPlatform.newInstance();
+	$MP = CMediaPlayer.newInstance(CPlatform.getBrowserType(), '$MP');
+
+	$LOG.log('[cfsq index.htm]Platform: ' + CPlatform.getBrowserType());
+	$LOG.log('[cfsq index.htm]Browser: ' + $PLAT.versionInfo());
+	$LOG.log('[cfsq index.htm]MPlayer: ' + $MP.className);
+
+} catch (E) {}
+
+function exit() {
+	try {
+		$MP.stop();
+	} catch (E) {}
+}
+</script>
+</head>
+
+<body id="bgImag" background="images/bg6.png" bgcolor="transparent" leftmargin="0" topmargin="0" onload="init()" onunload="exit()">
+	<div style="position:absolute;left:73px;top:32px;"><img src="images/logo.png" width="475" height="67"></div>
+	<div style="position:absolute;left:1079px;top:56px; width:130px; line-height:px; font-size:18px; color:rgba(255,255,255,.6); letter-spacing:2px;line-height:18px;"><span id="currTime" style="font-size:26px;line-height:22px;">&nbsp;</span><br/><span id="currDate">&nbsp;</span></div>
+    
+    <!--底部-->
+	<div style="position:absolute;left:75px;top:662px;width:720px;height:24px;line-height:24px; font-size:24px; color:#faf9f6; background:url(images/notice.png) no-repeat left center; padding-left:36px;"><marquee>尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</marquee></div>
+	<div style="position:absolute;left:903px;top:652px;"><img src="images/tips01.png" width="305" height="40"></div>
+    
+    <!--导航-->
+<div style="position:absolute;left:74px;top:135px; width:1132px; height:53px;">
+    	<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:22px; color:#000; text-align:center;">
+        	<tr>
+           	  <td id="menu0" width="167">&nbsp;</td>
+              <td width="26"></td>
+              <td id="menu1" width="167">&nbsp;</td>
+              <td width="26"></td>
+              <td id="menu2" width="167">&nbsp;</td>
+              <td width="26"></td>
+              <td id="menu3" width="167">&nbsp;</td>
+              <td width="26"></td>
+              <td id="menu4" width="167">&nbsp;</td>
+              <td width="26"></td>
+              <td id="menu5" width="167">&nbsp;</td>
+          </tr>	
+  		</table>
+	</div>
+    
+  	<!--视频窗-->
+<!--<div style="position:absolute;left:570px;top:223px; width:636px; height:358px;">
+    	<img src="images/pic1_1.jpg" width="636" height="358">
+        <div style="position:absolute;left:0px;bottom:0px; width:636px; height:51px; background:rgba(0,0,0,.7);">
+        	<div style="position:absolute;left:19px;top:0px; line-height:51px; font-size:30px; color:#fff;">党建频道</div>
+            <div style="position:absolute;left:450px;top:0px; line-height:51px; font-size:30px; color:#fff;">泰安党建</div>
+            <div style="position:absolute;left:574px;top:0px; line-height:24px; font-size:20px; color:#fff;">19:30<br/>21:30</div>
+        </div>
+    </div>-->
+      
+    <!--左边列表-->
+<div style="position:absolute;left:75px;top:222px; width:472px; height:414px; background:url(images/listR_bg12.png);">
+  <div style="position: absolute; left: 23px; top: 14px; width: 420px; height: 366px;">
+        	<table border="0" cellpadding="0" cellspacing="0" width="420px" height="366px" style="font-size:26px;color:#000; table-layout:fixed;">
+            	<tr height="61">
+                	<td id="leftListName0" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+                <tr height="61">
+                	<td id="leftListName1" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+                <tr height="61">
+                	<td id="leftListName2" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+                <tr height="61">
+                	<td id="leftListName3" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+                <tr height="61">
+                	<td id="leftListName4" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+                <tr height="60">
+                	<td id="leftListName5" style="width:420px; overflow: hidden;text-overflow: ellipsis;white-space: nowrap;">&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    <div id="leftListFocus" style="position: absolute; left: -15px; top: -2px; width: 503px; height: 107px; background: url(images/listL_f2.png); visibility:hidden;"></div>
+</div>
+    
+</body>
+</html>

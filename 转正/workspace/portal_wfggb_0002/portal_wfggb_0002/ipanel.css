@@ -1,0 +1,62 @@
+
+
+#communityName {
+	position: absolute;
+	left:288px;
+	top:35px;
+	width:90px;
+	height:28px;
+	font-size: 22px;
+	line-height:28px;
+	font-weight: bolder;
+	text-align:center;
+	font-family: "sans-serif","SimSun","FangSong","KaiTi";
+	color: #444;
+}
+
+
+/**
+*设置主菜单
+*/
+#mainMenu {
+	position: absolute;
+	left: 186px;
+	top: 87px;
+	width: 900px;
+	height: 116px;
+	overflow:hidden;
+}
+
+#divMainMenu {
+	position:absolute;
+	margin-left:25px;
+	top:0px;
+	height:116px;
+}
+
+#mainMenu div.bg {
+	position: absolute;
+	width: 106px;
+	height: 116px;
+	top: 0px;
+}
+#mainMenu div.font {
+	position: absolute;
+	width: 108px;
+	height: 28px;
+	top:86px;
+	color: #666;
+	font-size: 26px;
+	font-weight:bold;
+	text-align: center;
+}
+
+#mainMenu div.bg img {
+	width: 105px;
+	height: 116px;
+}
+
+/**
+*设置栏目窗口大小
+*/
+

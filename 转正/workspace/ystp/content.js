@@ -1,0 +1,77 @@
+{
+    "question_list": [{
+        "question_id": "17",
+        "question_title": "请问您知道这五年来，本村村干部做过哪些事吗？",
+        "question_theme": "请问您知道这五年来，本村村干部做过哪些事吗？",
+        "question_ifCheck": false,
+        "startTime": "2016-12-07",
+        "endTime": "2018-12-08",
+        "addTime": "2017-04-27",
+        "question_vote": 1,
+        "question_options": [{
+            "option_id": "54",
+            "option_content": "A、修路、修桥等设施",
+            "option_count": "6"
+        }, {
+            "option_id": "55",
+            "option_content": "B、新建或修缮水利设施（如沟渠、水库、堤坝等）",
+            "option_count": "4"
+        }, {
+            "option_id": "55",
+            "option_content": "B、新建或修缮水利设施（如沟渠、水库、堤坝等）",
+            "option_count": "4"
+        }, {
+            "option_id": "55",
+            "option_content": "B、新建或修缮水利设施（如沟渠、水库、堤坝等）",
+            "option_count": "4"
+        }],
+        "question_caVote": 1,
+        "question_type": 0,
+        "question_score": 0,
+        "questionnaireId": 14
+    }, {
+        "question_id": "18",
+        "question_title": "您在xx网站购买数码家电类产品的次数是？",
+        "question_theme": "您在xx网站购买数码家电类产品的次数是？",
+        "question_ifCheck": false,
+        "startTime": "2016-12-07",
+        "endTime": "2018-12-08",
+        "addTime": "2017-04-27",
+        "question_vote": 1,
+        "question_options": [{
+            "option_id": "1",
+            "option_content": "少于5次",
+            "option_count": "6"
+        }, {
+            "option_id": "2",
+            "option_content": "大于5次小于20次",
+            "option_count": "1"
+        }],
+        "question_caVote": 0,
+        "question_type": 0,
+        "question_score": 0,
+        "questionnaireId": 14
+    }, {
+        "question_id": "19",
+        "question_title": "到目前为止，您在xx网站购买数码家电类产品？",
+        "question_theme": "到目前为止，您在xx网站购买数码家电类产品？",
+        "question_ifCheck": false,
+        "startTime": "2016-12-07",
+        "endTime": "2018-12-08",
+        "addTime": "2017-04-27",
+        "question_vote": 1,
+        "question_options": [{
+            "option_id": "59",
+            "option_content": "不到1年",
+            "option_count": "3"
+        }, {
+            "option_id": "60",
+            "option_content": "1年了",
+            "option_count": "1"
+        }],
+        "question_caVote": 1,
+        "question_type": 0,
+        "question_score": 0,
+        "questionnaireId": 14
+    }]
+}

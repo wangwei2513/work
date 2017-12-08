@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"bxkj","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"","name":"必修课件","navigator":"黔南党建2版本>党员教育>必修课件","newAdd":0,"nodePath":"qndj2/dyjy/bxkj","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

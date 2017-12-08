@@ -1,0 +1,632 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>三会一课5</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+  <div style="position:absolute;left:73px;top:32px;"><img src="images/logo.png" width="475" height="67"></div>
+  <div style="position:absolute;left:1079px;top:56px; width:130px; line-height:px; font-size:18px; color:rgba(255,255,255,.6); letter-spacing:2px;line-height:18px;"><span style="font-size:26px;line-height:22px;"><span id="currTime">15:10:30</span></span><br/><span id="currDate">2015/01/13</span></div>
+
+  <!--底部-->
+  <div style="position:absolute;left:75px;top:662px;width:720px;height:24px;line-height:24px; font-size:24px; color:#faf9f6; background:url(images/notice.png) no-repeat left center; padding-left:36px;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+  <div style="position:absolute;left:903px;top:652px;"><img src="images/tips01.png" width="305" height="40"></div>
+
+
+  <div style="position:absolute;left:74px;top:115px; width:344px;">
+    <div style="line-height:44px; font-size:24px; color:#efcebc;">会议时间：</div>
+    <div id="selectTime" style="position:absolute;left:122px;top:0px;width:209px;line-height:44px; background:url(images/kuan_bg1.png);font-size:24px; color:#f8af89; padding-left:13px;">全部<img src="images/arrow01.png" width="16" height="12" style=" position:absolute;left:193px;top:16px;"></div>
+  </div>
+  <!--时间列表焦点-->
+  <!-- <div style="position: absolute; left: 179px; top: 98px; width: 256px; height: 78px; background: url(images/kuan_f1.png);"></div> -->
+
+  <!--时间下拉列表-->
+  <div id="timeList" style="position:absolute; left:195px; top:159px; width:223px; height:204px; background:url(images/icon04.png);background-size:cover; z-index:9;visibility:hidden;">
+    <img id="timeFocus" style="position: absolute; left: -32px; top: -15px; z-index: 99;visibility:hidden;" src="images/focus03.png"
+      width="281" height="78" />
+    <div style="position:absolute; left:15px; top:2px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">全部</div>
+    <div style="position:absolute; left:15px; top:41px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">最近一周</div>
+    <div style="position:absolute; left:15px; top:80px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">近一个月</div>
+    <div style="position:absolute; left:15px; top:119px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89;">近三个月</div>
+    <div style="position:absolute; left:15px; top:158px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">最近一年</div>
+
+  </div>
+
+  <div style="position:absolute;left:447px;top:115px; width:344px;">
+    <div style="line-height:44px; font-size:24px; color:#bb4304;">会议类型：</div>
+    <div id="selectType" style="position:absolute;left:122px;top:0px;width:209px;line-height:44px; background:url(images/kuan_bg1.png);font-size:24px; color:#f8af89; padding-left:13px;">全部<img src="images/arrow01.png" width="16" height="12" style=" position:absolute;left:193px;top:16px;"></div>
+  </div>
+
+  <!--时间列表焦点-->
+  <!-- <div style="position: absolute; left: 179px; top: 98px; width: 256px; height: 78px; background: url(images/kuan_f1.png);"></div> -->
+
+  <!--会议类型下拉列表-->
+  <div id="typeList" style="position:absolute; left:568px; top:159px; width:223px; height:204px; background:url(images/icon04.png);background-size:cover; z-index:9;visibility:hidden;">
+    <img id="typeFocus" style="position: absolute; left: -32px; top: -15px; z-index: 99;visibility:hidden;" src="images/focus03.png"
+      width="281" height="78" />
+    <div style="position:absolute; left:15px; top:2px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">全部</div>
+    <div style="position:absolute; left:15px; top:41px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">支部党员大会</div>
+    <div style="position:absolute; left:15px; top:80px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">支部委员会</div>
+    <div style="position:absolute; left:15px; top:119px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89;">党小组会</div>
+    <div style="position:absolute; left:15px; top:158px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">党课</div>
+
+  </div>
+
+  <div style="position:absolute;left:820px;top:115px; width:344px;">
+    <div style="line-height:44px; font-size:24px; color:#bb4304;">支部：</div>
+    <div id="selectBranch" style="position:absolute;left:76px;top:0px;width:209px;line-height:44px; background:url(images/kuan_bg1.png);font-size:24px; color:#f8af89; padding-left:13px;">全部<img src="images/arrow01.png" width="16" height="12" style=" position:absolute;left:193px;top:16px;"></div>
+  </div>
+
+  <!--支部下拉列表-->
+  <div id="branchList" style="position:absolute; left:895px; top:159px; width:223px; height:278px; background:url(images/icon04.png);background-size:cover; z-index:9;visibility:hidden;">
+    <img id="branchFocus" style="position: absolute; left: -32px; top: -15px; z-index: 99;visibility:hidden;" src="images/focus03.png"
+      width="281" height="78" />
+    <div id="branchType0" style="position:absolute; left:15px; top:2px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; ">全部</div>
+    <div id="branchType1" style="position:absolute; left:15px; top:41px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; "></div>
+    <div id="branchType2" style="position:absolute; left:15px; top:80px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; "></div>
+    <div id="branchType3" style="position:absolute; left:15px; top:119px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89;"></div>
+    <div id="branchType4" style="position:absolute; left:15px; top:158px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; "></div>
+    <div id="branchType5" style="position:absolute; left:15px; top:197px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89;"></div>
+    <div id="branchType6" style="position:absolute; left:15px; top:236px;width:205px;height:39px; line-height:39px;font-size:20px; color:#f8af89; "></div>
+  </div>
+  <!--焦点-->
+  <div id="selectFocus" style="position: absolute; left: 179px; top: 98px; width: 256px;visibility:hidden; height: 78px; background: url(images/kuan_f1.png);"></div>
+
+  <!--分割线-->
+  <div style="position:absolute;left:74px;top:189px;width:1135px; height:444px;">
+    <div style="position:absolute;left:0px;top:70px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+    <div style="position:absolute;left:0px;top:132px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+    <div style="position:absolute;left:0px;top:194px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+    <div style="position:absolute;left:0px;top:256px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+    <div style="position:absolute;left:0px;top:318px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+    <div style="position:absolute;left:0px;top:380px;width:1120px; height:1px; background:url(images/line01.png)"></div>
+  </div>
+
+  <div style="position:absolute;left:74px;top:189px;width:1135px; height:444px; background:url(images/listR_bg5.png);">
+    <table border="0" cellpadding="0" cellspacing="0" width="1109" height="100%" style="font-size:22px; color:#000;">
+      <tr height="70" style="color:#5f1313;">
+        <td width="190" style="padding-left:19px;">发起人</td>
+        <td width="194">会议类型</td>
+        <td width="261">会议时间</td>
+        <td width="462">会议标题</td>
+      </tr>
+      <tr height="62">
+        <td id="branch0" style="padding-left:19px;">新泰党支部</td>
+        <td id="type0">支部党员大会</td>
+        <td id="date0">2017-10-20 09:00</td>
+        <td id="item0">老干部心系发展，热议党的十九大</td>
+      </tr>
+      <tr height="62">
+        <td id="branch1" style="padding-left:19px;">新泰党支部</td>
+        <td id="type1">支部党员大会</td>
+        <td id="date1">2017-10-20 09:00</td>
+        <td id="item1">老干部心系发展，热议党的十九大</td>
+      </tr>
+      <tr height="62">
+        <td id="branch2" style="padding-left:19px;">新泰党支部</td>
+        <td id="type2">支部党员大会</td>
+        <td id="date2">2017-10-20 09:00</td>
+        <td id="item2">老干部心系发展，热议党的十九大</td>
+      </tr>
+      <tr height="62">
+        <td id="branch3" style="padding-left:19px;">新泰党支部</td>
+        <td id="type3">支部党员大会</td>
+        <td id="date3">2017-10-20 09:00</td>
+        <td id="item3">老干部心系发展，热议党的十九大</td>
+      </tr>
+      <tr height="62">
+        <td id="branch4" style="padding-left:19px;">新泰党支部</td>
+        <td id="type4">支部党员大会</td>
+        <td id="date4">2017-10-20 09:00</td>
+        <td id="item4">老干部心系发展，热议党的十九大</td>
+      </tr>
+      <tr height="62">
+        <td id="branch5" style="padding-left:19px;">新泰党支部</td>
+        <td id="type5">支部党员大会</td>
+        <td id="date5">2017-10-20 09:00</td>
+        <td id="item5">老干部心系发展，热议党的十九大</td>
+      </tr>
+    </table>
+    <div id="scrollBar" style="position:absolute;left:1112px;top:12px;width:8px; height:420px;">
+      <div id="scroll" style="position:absolute;left:0;top:0;width:8px; height:122px; background:url(images/page01.png);"></div>
+    </div>
+
+  </div>
+  <div id="message" style="position: absolute; left: 75px; top: 262px; width: 1110px; height: 58px;text-align:center;font-size:22px;line-height:58px;visibility:hidden;">暂无数据</div>
+  <div id="focus" style="position: absolute; left: 51px; top: 303px; width: 1138px; height: 107px; background: url(images/da_f1.png)"></div>
+  <script src="js/common.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+    document.onkeydown = eventHandler;
+
+    function eventHandler(key) {
+      var e = key || event;
+      var keycode = e.keyCode || e.which || e.charCode;
+      switch (keycode) {
+        case 1: // up
+        case 38:
+          changeUD(-1);
+          return false;
+          break;
+        case 2: // down
+        case 40:
+          changeUD(1);
+          return false;
+          break;
+        case 3: // left
+        case 37:
+          changeLR(-1);
+          return false;
+          break;
+        case 4: // right
+        case 39:
+          changeLR(1);
+          return false;
+          break;
+        case 13:
+          doSelect();
+          return false;
+          break;
+        case 27:
+          iSTB.browser.gotoSTB("tv");
+          return false;
+          break;
+        case 8:
+          window.location.href = "../index.htm";
+          return false;
+          break;
+      }
+    }
+    var branchArr = [];
+    var focusArea = 0;
+    var listBox = null;
+    var selectPos = 0;
+    var allData = [];
+    var listData = [];
+    var typeNumList = [0, 4, 5, 6, 7];
+    var focusPos = [{
+        left: "65px",
+        top: "242px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "304px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "366px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "428px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "490px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "552px",
+        width: "1150px",
+        height: "110px"
+      },
+      {
+        left: "65px",
+        top: "614px",
+        width: "1150px",
+        height: "110px"
+      }
+    ];
+    var scrollObj = null;
+    var isTimeShow = false;
+    var isTypeShow = false;
+    var isBranchShow = false;
+    var timePos = 0;
+    var timeNo = 0;
+    var branchPos = 0;
+    var branchNo = 0;
+    var timeType = ["全部", "最近一周", "近一个月", "近三个月", "最近一年"];
+    var branchType = ['全部', '机关党支部', '岱岳党支部', '新泰党支部', '肥城党支部', '宁阳党支部', '东平党支部'];
+    var typeType = ['全部', '视频会议', '远程培训','', '视频交流', '支部党员大会', '支部委员会', '党小组会', '党课'];
+    var type = getUrlParam('type') || 0;
+    var typeNo = 0;
+    var totleData = [];
+
+    function init() {
+      $("selectTime").innerText = timeType[timePos];
+      getData();
+      initTime();
+    }
+
+    function unique(arr) {
+      // 遍历arr，把元素分别放入tmp数组(不存在才放)
+      for (var i in arr) {
+        //该元素在tmp内部不存在才允许追加
+        if (branchType.indexOf(arr[i]) == -1) {
+          branchType.push(arr[i]);
+        }
+      }
+      console.log(branchType)
+      // return branchType;
+
+
+    }
+
+    window.onload = init;
+    // 获取历史会议数据
+    function getData() {
+      listData = [];
+      var url = historyUrl.replace("{timeType}", timePos ? timePos : 5);
+      if (type == 3) {
+        url = url.replace("{type}", '61,62,63,64');
+      } else if (type == 0) {
+        url = url.replace("{type}", '');
+      } else {
+        url = url.replace("{type}", typeNumList[type] ? typeNumList[type] : "");
+      }
+      ajax_js(url, function (responseText) {
+        allData = [];
+        totleData = [];
+        var getData = eval("(" + responseText + ")");
+        if (getData.msg.meetings) {
+          totleData = getData.msg.meetings;
+          console.log(getData)
+          if (typeof (getData) != "undefined") {
+            var _branchData = [];
+            initBranchType()
+            for (var i = 0, len = totleData.length; i < len; ++i) {
+              if (branchPos == 0) {
+                allData.push(totleData[i]);
+              } else {
+                if (totleData[i].mainPlace == branchType[branchPos]) {
+                  allData.push(totleData[i]);
+                }
+              }
+            }
+            listData = allData;
+            if (listData.length == 0) {
+              $("message").style.visibility = "visible";
+            } else {
+              $("message").style.visibility = "hidden";
+              initList();
+              initScroll();
+            }
+          }
+        } else {
+          $("message").style.visibility = "visible";
+        }
+      }, true);
+    }
+    // 渲染支部数据
+    function initBranchType() {
+      for (var i = 0; i < branchType.length; i++) {
+        $("branchType" + i).innerText = branchType[i];
+      }
+    }
+    //数据过滤
+    function filter() {
+      allData = []
+      for (var i = 0, len = totleData.length; i < len; ++i) {
+        if (branchPos == 0) {
+          allData.push(totleData[i]);
+        } else {
+          if (totleData[i].mainPlace == branchType[branchPos]) {
+            allData.push(totleData[i]);
+          }
+        }
+      }
+      //allData = getData.msg;
+      listData = allData;
+      if (listData.length == 0) {
+        $("message").style.visibility = "visible";
+      } else {
+        $("message").style.visibility = "hidden";
+        initList();
+        initScroll();
+      }
+    }
+
+    function initTime() {
+      var date = new Date();
+      var y = date.getFullYear();
+      var m = date.getMonth();
+      var d = date.getDate();
+      var h = date.getHours();
+      var mm = date.getMinutes();
+      var s = date.getSeconds();
+      $("currTime").innerText = addZero(h) + ":" + addZero(mm) + ":" + addZero(s);
+      $("currDate").innerText = y + "/" + addZero(m + 1) + "/" + addZero(d);
+      setTimeout(initTime, 1000);
+    }
+
+    function addZero(_number) {
+      return _number < 10 ? "0" + _number : "" + _number;
+    }
+
+    function initList() {
+      listBox = new showList2D(6, listData.length, 0, 0);
+      listBox.focusObj = focusPos;
+      listBox.focusDiv = "focus";
+      listBox.isLoop = true;
+      listBox.haveData = showList;
+      listBox.noData = clearList;
+      listBox.startShow();
+      setFocus();
+      // $("itemNum").innerText = (listBox.position + 1) + "/" + listData.length;
+    }
+
+    function showList(_list) {
+      if (listData[_list.dataPos].theme) {
+        if (listData[_list.dataPos].theme.length > 21) {
+          $("item" + _list.idPos).innerText = listData[_list.dataPos].theme.substring(0, 20) + '..';
+        } else {
+          $("item" + _list.idPos).innerText = listData[_list.dataPos].theme;
+        }
+      } else {
+        if (listData[_list.dataPos].meetingName.length > 21) {
+          $("item" + _list.idPos).innerText = listData[_list.dataPos].meetingName.substring(0, 20) + '..';
+        } else {
+          $("item" + _list.idPos).innerText = listData[_list.dataPos].meetingName;
+        }
+      }
+
+      if (listData[_list.dataPos].mainPlace.length > 8) {
+        $("branch" + _list.idPos).innerText = listData[_list.dataPos].mainPlace.substring(0, 8) + '..';
+      } else {
+        $("branch" + _list.idPos).innerText = listData[_list.dataPos].mainPlace;
+      }
+      $('date' + _list.idPos).innerText = listData[_list.dataPos].startTime;
+      $('type' + _list.idPos).innerText = typeType[listData[_list.dataPos].meetingType+1];
+    }
+
+    function clearList(_list) {
+      $("item" + _list.idPos).innerText = "";
+      $("date" + _list.idPos).innerText = "";
+      $("branch" + _list.idPos).innerText = "";
+      $("type" + _list.idPos).innerText = "";
+    }
+
+    function initScroll() {
+      scrollObj = new ScrollBar("scrollBar", "scroll");
+      scrollObj.init(listData.length, 1, 300, 0);
+    }
+    // 去除焦点
+    function loseFocus() {
+      if (listData[listBox.position].theme) {
+        if (listData[listBox.position].theme.length > 21 && listData[listBox.position]) {
+          $("item" + listBox.currFocus).innerHTML = listData[listBox.position].theme.substring(0, 20) + '..';
+        }
+      } else {
+        if (listData[listBox.position].meetingName.length > 21 && listData[listBox.position]) {
+          $("item" + listBox.currFocus).innerHTML = listData[listBox.position].meetingName.substring(0, 20) + '..';
+        }
+      }
+
+      if (listData[listBox.position].mainPlace.length > 8 && listData[listBox.position]) {
+        $("branch" + listBox.currFocus).innerHTML = listData[listBox.position].mainPlace.substring(0, 8) + '..';
+      }
+    }
+    // 设置焦点
+    function setFocus() {
+      if (listData[listBox.position].theme) {
+        if (listData[listBox.position].theme.length > 21 && listData[listBox.position]) {
+          $("item" + listBox.currFocus).innerHTML = '<marquee>' + listData[listBox.position].theme + '</marquee>';
+        }
+      }else{
+        if (listData[listBox.position].meetingName.length > 21 && listData[listBox.position]) {
+          $("item" + listBox.currFocus).innerHTML = '<marquee>' + listData[listBox.position].meetingName + '</marquee>';
+        }
+      }
+
+      if (listData[listBox.position].mainPlace.length > 8 && listData[listBox.position]) {
+        $("branch" + listBox.currFocus).innerHTML = '<marquee>' + listData[listBox.position].mainPlace +
+          '</marquee>';
+      }
+    }
+    // 上下
+    function changeUD(num) {
+      if (focusArea === 0) {
+        if (listBox.position === 0 && num === -1) {
+          changeArea(1);
+          // loseFocus()
+        } else {
+          if (listData.length !== 0) {
+            loseFocus();
+            listBox.changeList(num);
+            scrollObj.scroll(listBox.position);
+            setFocus();
+          }
+          // $("itemNum").innerText = (listBox.position + 1) + "/" + listData.length;
+        }
+
+      } else if (focusArea === 1) {
+        if (selectPos == 0) {
+          if (!isTimeShow && num === 1) {
+            changeArea(0);
+            // setFocus()
+          } else if (isTimeShow && num === 1) {
+            changeArea(2);
+          }
+        } else if (selectPos == 1) {
+          if (!isTypeShow && num === 1) {
+            changeArea(0);
+          } else if (isTypeShow && num === 1) {
+            changeArea(3);
+          }
+        } else if (selectPos == 2) {
+          if (!isBranchShow && num === 1) {
+            changeArea(0);
+          } else if (isBranchShow && num === 1) {
+            changeArea(4);
+          }
+        }
+      } else if (focusArea === 2) {
+        timeNo += num;
+        if (timeNo < 0) {
+          timeNo = timeType.length - 1;
+        } else if (timeNo > timeType.length - 1) {
+          timeNo = 0;
+        }
+        $("timeFocus").style.top = (-15 + 39 * timeNo) + "px";
+      } else if (focusArea === 3) {
+        typeNo += num;
+        if (typeNo < 0) {
+          typeNo = 4;
+        } else if (typeNo > 4) {
+          typeNo = 0;
+        }
+        $("typeFocus").style.top = (-15 + 39 * typeNo) + "px";
+      } else if (focusArea === 4) {
+        branchNo += num;
+        if (branchNo < 0) {
+          branchNo = branchType.length - 1;
+        } else if (branchNo > branchType.length - 1) {
+          branchNo = 0;
+        }
+        $("branchFocus").style.top = (-15 + 39 * branchNo) + "px";
+      }
+
+    }
+    // 左右
+    function changeLR(num) {
+      if (focusArea === 1 && !isBranchShow && !isTimeShow && !isTypeShow) {
+        if (num > 0) {
+          if (selectPos < 2) {
+            selectPos++;
+          } else {
+            selectPos = 0;
+          }
+        } else {
+          if (selectPos > 0) {
+            selectPos--;
+          } else {
+            selectPos = 2
+          }
+        }
+        selectChange();
+      }
+    }
+    // 清除列表
+    function clearListData() {
+      for (var i = 0; i < 6; i++) {
+        $("item" + i).innerText = "";
+        $("date" + i).innerText = "";
+        $("branch" + i).innerText = "";
+        $("type" + i).innerText = "";
+      }
+    }
+    // 选择框焦点切换
+    function selectChange() {
+      if (selectPos == 0) {
+        $("selectFocus").style.left = '179px'
+      } else if (selectPos == 1) {
+        $("selectFocus").style.left = '552px'
+      } else if (selectPos == 2) {
+        $("selectFocus").style.left = '879px'
+      }
+    }
+    // 确定键
+    function doSelect() {
+      if (focusArea === 0) {
+        /*会议列表中选中会议*/
+        if (listData.length > 0) {
+          window.location.href = "meeting.htm?idCode=" + listData[listBox.position].idCode;
+        }
+      } else if (focusArea === 1) {
+        if (selectPos === 0) {
+          /*弹出时间列表*/
+          if (isTimeShow) {
+            isTimeShow = false;
+            $("timeList").style.visibility = "hidden";
+          } else {
+            isTimeShow = true;
+            $("timeList").style.visibility = "visible";
+          }
+        } else if (selectPos === 1) {
+          /*弹出会议类型列表*/
+          if (isTypeShow) {
+            isTypeShow = false;
+            $("typeList").style.visibility = "hidden";
+          } else {
+            isTypeShow = true;
+            $("typeList").style.visibility = "visible";
+          }
+        } else if (selectPos === 2) {
+          /*弹出支部列表*/
+          if (isBranchShow) {
+            isBranchShow = false;
+            $("branchList").style.visibility = "hidden";
+          } else {
+            isBranchShow = true;
+            $("branchList").style.visibility = "visible";
+          }
+        }
+      } else if (focusArea === 2) {
+        /*时间列表中选择时间*/
+        timePos = timeNo;
+        $("selectTime").innerText = timeType[timePos];
+
+        changeArea(1);
+        clearListData();
+        getData();
+
+        timeNo = 0;
+        $("timeFocus").style.top = (-15 + 39 * timeNo) + "px";
+      } else if (focusArea === 3) {
+        /*会议类型列表中类型*/
+        type = typeNo;
+        $("selectType").innerText = typeType[typeNumList[type]];
+
+        changeArea(1);
+        clearListData();
+        getData();
+
+        typeNo = 0;
+        $("typeFocus").style.top = (-15 + 39 * typeNo) + "px";
+      } else if (focusArea === 4) {
+        /*支部列表中选择支部*/
+        branchPos = branchNo;
+        $("selectBranch").innerText = branchType[branchPos];
+
+        changeArea(1);
+        clearListData();
+        filter();
+
+        branchNo = 0;
+        $("branchFocus").style.top = (-15 + 39 * branchNo) + "px";
+      }
+    }
+    // 切换焦点区域
+    function changeArea(area) {
+      var pastFocus = ["focus", "selectFocus", "timeFocus", "typeFocus", "branchFocus"][focusArea];
+      var nowFocus = ["focus", "selectFocus", "timeFocus", "typeFocus", "branchFocus"][area];
+      $(pastFocus).style.visibility = "hidden";
+      $(nowFocus).style.visibility = "visible";
+      focusArea = area;
+      if (pastFocus == "timeFocus") {
+        isTimeShow = false;
+        $("timeList").style.visibility = "hidden";
+      } else if (pastFocus == "typeFocus") {
+        isTypeShow = false;
+        $("typeList").style.visibility = "hidden";
+      } else if (pastFocus == "branchFocus") {
+        isBranchShow = false;
+        $("branchList").style.visibility = "hidden";
+      }
+    }
+  </script>
+</body>
+
+</html>

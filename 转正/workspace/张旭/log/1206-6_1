@@ -1,0 +1,248 @@
+﻿hpxmpp_curl_handle_get:67:curl_easy_init() success.
+gen_random_string:53:gen_random_string start.
+gen_random_string:83:gen_random_string exit.
+hpxmpp_curl_get:154:curl get success.
+ low key code:0x7D82FD01
+6 16777219 
+msec:20329
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.105/cjcun/index.htm" )  
+ QUrl( "http://10.191.150.105/cjcun/index.htm" )  -----234234------------------------------------ 
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.105/cjcun/index.htm" )  2 
+slotMainFrameLoadStarted ---------------------------statr load----------------------- 
+progress:10
+stop 
+--->WebBrowser::slotInitJsObjects enter 
+--->WebWidget::slotInitJsObjects enter  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+--->WebWidget::InstallJavaObjects 
+[InstallJavaObjects] out-
+--->WebWidget::slotInitJsObjects exit  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+ low key code:0x7D82FD01
+progress:50
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg totalColumnNum=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=3,subImgArr.length=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=4,subImgArr.length=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=4,subImgArr.length=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=3,subImgArr.length=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalMainPos) = 3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalSubPos) = 0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalAreaPos) = 1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getPos menuPos=3,subFocusPos=0,area=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalMainPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalSubPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalAreaPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>index initMenu pageMenuSize:4 totalColumnNum:4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu menuPos=3,subHTMLReady.length=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu subHTMLReady[3]=undefined
+progress:52
+progress:55
+progress:61
+progress:64
+progress:67
+progress:84
+progress:100
+getCurUrl "http://10.191.150.105/cjcun/index.htm" 
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  generalSubDiv subInfo.pos.length=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=1,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:0,width:303,height:390,_img:poster_src/pop_img4_01.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=2,we=3,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:312,top:0,width:303,height:390,_img:poster_src/pop_img4_02.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=4,we=6,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:624,top:0,width:459,height:390,_img:images/pop_img4_03.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu area=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm ajustSubFocus in... subFocusPos=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  checkVideo menuPos=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  closeSmallVideo in...
+stop 
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  closeSmallVideo out...
+ low key code:0x31CEFD01
+6 16777220 
+msec:1621
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  grabEvent keycode=13
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm doSelect menuPos=3,subFocusPos=0,isVideo=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm doSelect url=http://10.191.150.104:80/app/rzdgcjc/aqjy/cjaq/index.htm
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm savePos menuPos=3,subFocusPos=0,area=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.setItem(portalMainPos) = 3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.setItem(portalSubPos) = 0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.setItem(portalAreaPos) = 1
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/index.htm" )  
+ QUrl( "http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/index.htm" )  -----234234------------------------------------ 
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/index.htm" )  5 
+slotMainFrameLoadStarted ---------------------------statr load----------------------- 
+progress:10
+--->WebBrowser::slotInitJsObjects enter 
+--->WebWidget::slotInitJsObjects enter  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+--->WebWidget::InstallJavaObjects 
+[InstallJavaObjects] out-
+--->WebWidget::slotInitJsObjects exit  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+ low key code:0x31CEFD01
+progress:26
+progress:30
+undefined: JS ERROR: ReferenceError: Can't find variable: browserType
+progress:32
+progress:44
+progress:47
+progress:61
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=1,this.url=content.js
+progress:90
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=2, status=200,this.abortFlag=false,this.url=content.js
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=3, status=200,this.abortFlag=false,this.url=content.js
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=4, status=200,this.abortFlag=false,this.url=content.js
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: -----jsonData-------=[{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":11111,"linkUrl":"","plainTxt":"","shortName":"ceshi","sortValue":11111,"subTitle":"","title":"ceshi","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001147&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5375,"linkUrl":"","plainTxt":"","shortName":"BMS","sortValue":5375,"subTitle":"","title":"北门三","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001147&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5374,"linkUrl":"","plainTxt":"","shortName":"BME","sortValue":5374,"subTitle":"","title":"北门二","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001146&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5373,"linkUrl":"","plainTxt":"","shortName":"XMY","sortValue":5373,"subTitle":"","title":"西门一","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001145&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5372,"linkUrl":"","plainTxt":"","shortName":"XME","sortValue":5372,"subTitle":"","title":"西门二","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001144&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5371,"linkUrl":"","plainTxt":"","shortName":"XYJB","sortValue":5371,"subTitle":"","title":"西沿街北","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001143&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5370,"linkUrl":"","plainTxt":"","shortName":"XMS","sortValue":5370,"subTitle":"","title":"西门四","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001142&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5369,"linkUrl":"","plainTxt":"","shortName":"XMS","sortValue":5369,"subTitle":"","title":"西门三","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001141&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5368,"linkUrl":"","plainTxt":"","shortName":"XYJNE","sortValue":5368,"subTitle":"","title":"西沿街南二","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001140&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5367,"linkUrl":"","plainTxt":"","shortName":"XYJNY","sortValue":5367,"subTitle":"","title":"西沿街南一","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001139&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5366,"linkUrl":"","plainTxt":"","shortName":"BMY","sortValue":5366,"subTitle":"","title":"北门一","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001138&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5365,"linkUrl":"","plainTxt":"","shortName":"ZXDJWX","sortValue":5365,"subTitle":"","title":"中心大街往西","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001137&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5364,"linkUrl":"","plainTxt":"","shortName":"ZXDJWN","sortValue":5364,"subTitle":"","title":"中心大街往南","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001136&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5363,"linkUrl":"","plainTxt":"","shortName":"ZXDJWB","sortValue":5363,"subTitle":"","title":"中心大街往北","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001135&auth=no&accesstoken="},{"albumImages":[],"author":"","content":"","contentImages":[],"date":"","description":"","entryImage":{"entryId":0,"id":0,"imageHeight":0,"imageName":"","imageSize":0,"imageType":"","imageUrl":"http://10.191.150.104:80/appcmsFiles/","imageWidth":0,"position":0,"uniqueName":""},"id":5362,"linkUrl":"","plainTxt":"","shortName":"ZXDJWXN","sortValue":5362,"subTitle":"","title":"中心大街往西南","videoUrl":"http://10.191.150.102:13164/playurl?protocol=http&playtype=live&programid=4202001134&auth=no&accesstoken="}]
+hpxmpp_curl_handle_get:67:curl_easy_init() success.
+gen_random_string:53:gen_random_string start.
+gen_random_string:83:gen_random_string exit.
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=1,this.url=undefined/usermanager/get_access_token
+ NetworkAccessManager :: slotNetworkReplyError  the error is : 5 
+
+ NetworkAccessManager:: slotNetworkReplyError  the error string is : "Operation canceled" 
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=4, status=0,this.abortFlag=true,this.url=undefined/usermanager/get_access_token
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=1,this.url=undefined
+QNetworkReplyImplPrivate::error: Internal problem, this method must only be called once.
+TimerSlot 52 curTsid: 104 curServicdID: 207 
+[GetADInfo]:type=0x1389
+[AD:3]INS_ADV_API_GetAdvDataDir:/app/adv/save/adv/element
+[AD:3]================INS_ADV_API_GetAllDataByType,2406,advtype 5001
+[AD:3]localTime is 2017-12-6 14:12
+[AD:3]====kkkkkkk===========INS_ADV_API_GetAllDataByType,2521
+[AD:3]================INS_ADV_API_GetAllDataByType,2523:no picture your need
+GetADInfo,error:no  pic,type=0x1389
+TimerSlot 58 has reported ad hanning pic now return 
+hpxmpp_curl_get:154:curl get success.
+progress:90
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=2, status=404,this.abortFlag=false,this.url=undefined
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=3, status=404,this.abortFlag=false,this.url=undefined
+ NetworkAccessManager :: slotNetworkReplyError  the error is : 203 
+
+ NetworkAccessManager:: slotNetworkReplyError  the error string is : "Error downloading http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/undefined - server replied: Not Found" 
+<2017-12-06 14:12:36> [istcd] istc_main.c 1852 istc_accept_handler new client connect client_sock = 6
+<2017-12-06 14:12:36> [istcd] istc_main.c 1733 istc_request_dispatch recv class 14
+<2017-12-06 14:12:36> [istcd] istc_main.c 1394 istc_request_class_misc recv cmd 4
+<2017-12-06 14:12:36> [istcd] istc_main.c 1490 istc_request_class_misc send length 20
+<2017-12-06 14:12:36> [istcd] istc_main.c 1852 istc_accept_handler new client connect client_sock = 6
+<2017-12-06 14:12:36> [istcd] istc_main.c 1733 istc_request_dispatch recv class 3
+<2017-12-06 14:12:36> [istcd] istc_main.c 235 istc_request_class_link recv cmd 1
+<2017-12-06 14:12:36> [istcd] istc_main.c 301 istc_request_class_link send length 20
+The qstring is   Error downloading http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/undefined - server replied: Not Found     @@@@@@@@@@@@@@@@@   sg_zhsq_url is Error downloading http://p.mscp.dtv/cloudui/index/index.html- server replied: Not Found  
+
+http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/js/common.js: JS LOG: >>>smile common.js Ajax [xmlHttp] readyState=4, status=404,this.abortFlag=false,this.url=undefined
+progress:100
+getCurUrl "http://10.191.150.104/app/rzdgcjc/aqjy/cjaq/index.htm" 
+hpxmpp_curl_handle_get:67:curl_easy_init() success.
+gen_random_string:53:gen_random_string start.
+gen_random_string:83:gen_random_string exit.
+hpxmpp_curl_get:154:curl get success.
+ low key code:0x31CEFD01
+6 16777220 
+msec:7919
+ low key code:0x31CEFD01
+ low key code:0x7D82FD01
+6 16777219 
+msec:1268
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.105/cjcun/index.htm" )  
+ QUrl( "http://10.191.150.105/cjcun/index.htm" )  -----234234------------------------------------ 
+QWebFrame(0x1521ca0)  QUrl( "http://10.191.150.105/cjcun/index.htm" )  2 
+slotMainFrameLoadStarted ---------------------------statr load----------------------- 
+progress:10
+stop 
+--->WebBrowser::slotInitJsObjects enter 
+--->WebWidget::slotInitJsObjects enter  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+--->WebWidget::InstallJavaObjects 
+[InstallJavaObjects] out-
+--->WebWidget::slotInitJsObjects exit  QWebFrame(0x1521ca0)   CGlueExpand(0x1490488) 
+progress:21
+ low key code:0x7D82FD01
+progress:27
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg totalColumnNum=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=3,subImgArr.length=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=4,subImgArr.length=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=4,subImgArr.length=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subLen=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getAllImg subImg.length=3,subImgArr.length=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalMainPos) = 3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalSubPos) = 0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.getItem(portalAreaPos) = 1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm getPos menuPos=3,subFocusPos=0,area=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalMainPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalSubPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile mySessionStorage.removeItem(portalAreaPos)
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>index initMenu pageMenuSize:4 totalColumnNum:4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu menuPos=3,subHTMLReady.length=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu subHTMLReady[3]=undefined
+progress:30
+progress:100
+getCurUrl "http://10.191.150.105/cjcun/index.htm" 
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  generalSubDiv subInfo.pos.length=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=1,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:0,width:303,height:390,_img:poster_src/pop_img4_01.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=2,we=3,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:312,top:0,width:303,height:390,_img:poster_src/pop_img4_02.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=4,we=6,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:624,top:0,width:459,height:390,_img:images/pop_img4_03.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  showSubMenu area=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm ajustSubFocus in... subFocusPos=0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  checkVideo menuPos=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  closeSmallVideo in...
+stop 
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  closeSmallVideo out...
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  generalSubDiv subInfo.pos.length=3
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=1,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:0,width:303,height:390,_img:poster_src/pop_img1_01.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=2,we=3,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:312,top:0,width:303,height:390,_img:poster_src/pop_img1_02.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,1,1,1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=4,we=6,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:624,top:0,width:459,height:390,_img:images/pop_img1_03.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  generalSubDiv subInfo.pos.length=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=1,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:0,width:303,height:390,_img:poster_src/pop_img2_01.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=2,we=3,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:312,top:0,width:303,height:390,_img:poster_src/pop_img2_02.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=4,we=6,ls=0,le=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:624,top:0,width:459,height:257,_img:poster_src/pop_img2_03.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=4,we=6,ls=2,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:624,top:266,width:459,height:124,_img:poster_src/pop_img2_04.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  generalSubDiv subInfo.pos.length=4
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=1,1,1,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=2,ls=0,le=1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:0,width:459,height:257,_img:poster_src/pop_img3_01.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=3,we=4,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:468,top:0,width:303,height:390,_img:poster_src/pop_img3_02.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,0,1,1,0,0,0,0,0,1,1,0,0,0,0,0,1,1
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=5,we=6,ls=0,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:780,top:0,width:303,height:390,_img:images/pop_img3_03.jpg
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawSkeleton in _drawMap=0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0
+hpxmpp_curl_handle_get:67:curl_easy_init() success.
+gen_random_string:53:gen_random_string start.
+http://10.191.150.105/cjcun/js/main.js: JS LOG:gen_random_string:83:gen_random_string exit.
+ >>>smile_portal index.htm  drawSkeleton out squareInfo:ws=0,we=2,ls=2,le=2
+http://10.191.150.105/cjcun/js/main.js: JS LOG: >>>smile_portal index.htm  drawUnit left:0,top:266,width:459,height:124,_img:poster_src/pop_img3_04.jpg
+TimerSlot 52 curTsid: 104 curServicdID: 207 
+[GetADInfo]:type=0x1389
+[AD:3]INS_ADV_API_GetAdvDataDir:/app/adv/save/adv/element
+[AD:3]================INS_ADV_API_GetAllDataByType,2406,advtype 5001
+[AD:3]localTime is 2017-12-6 14:12
+[AD:3]====kkkkkkk===========INS_ADV_API_GetAllDataByType,2521
+[AD:3]================INS_ADV_API_GetAllDataByType,2523:no picture your need
+GetADInfo,error:no  pic,type=0x1389
+TimerSlot 58 has reported ad hanning pic now return 
+hpxmpp_curl_get:154:curl get success.

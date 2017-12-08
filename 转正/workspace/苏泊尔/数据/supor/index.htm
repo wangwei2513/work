@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<meta name="page-view-size" content="1280*720">
+<title></title>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
+var menuAjaxPath = "menu.js";
+var offsetValue = 40; 
+var focusArea = 1;			// 0视频窗口 1列表
+var ajaxObj = null;
+var menuPos = 0;
+
+document.onkeydown = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(keycode) {
+    var e = keycode || event;
+    var keycode = e.keyCode || e.which || e.charCode;
+    switch (keycode) {
+    	case 1:
+    	case 38:
+			if(focusArea == 1) {
+				blurFocus();
+				focusArea = 0;
+				$("listFocus").style.visibility = "hidden";
+				getFocus()	
+			}
+			return false;
+			break;
+		case 2:
+		case 40:
+			if(focusArea == 0) {
+				blurFocus();
+				focusArea = 1;
+				$("listFocus").style.visibility = "visible";
+				getFocus()	
+			}
+			return false;
+			break;
+		case 3:
+		case 37:
+			if(focusArea == 1) {
+				changeMenu(-1);
+			}
+			return false;
+			break;
+		case 4:
+		case 39:
+			if(focusArea == 1) {
+				changeMenu(1);
+			}
+			return false;
+			break;
+		case 13:
+			if(focusArea == 1) {
+				doSelect();
+			}else{//打开固定视频
+				var str='{"id":"33","name":"startAppPlay","packageName":"com.ipanel.join.homed.shaoxing","className":"com.ipanel.join.topway.homed.vod.VideoPlayerActivity","videoId":"100008079","videoName":"","videoType":"2","seriesId":"","seriesIdx":"1","playerUser":1}';
+        		Android.JSONCall(str);  
+			}
+			return false;
+			break;
+		case 8:
+		case 27:
+		case 340:
+		    setGlobalVar("ycyzMenuPos","");
+			break;
+	}
+}
+
+function doSelect() {
+  setGlobalVar("ycyzMenuPos",menuPos + "");
+  filePath = menuData[menuPos].nodePath;          //分类文件夹的名称
+  if(filePath.indexOf("/") > -1){
+    var tempArr = filePath.split("/");
+    filePath = tempArr[tempArr.length - 1];
+  }
+  window.location.href = filePath + "/index.htm";
+}
+
+function changeMenu(_num) {
+	if(menuPos + _num < 0) return ;
+	if(menuPos + _num >= 5) return ;
+	blurFocus();
+	menuPos += _num;
+	getFocus();
+}
+
+function getFocus() {
+	if(focusArea == 0){
+		$("focus").style.visibility = "visible";
+	}else{
+		$("menu"+menuPos).style.color = "#ff9600";	
+		$("listFocus").style.left = 69+menuPos*230+"px";
+	}
+}
+
+function blurFocus() {
+	if(focusArea == 0){
+		$("focus").style.visibility = "hidden";
+	}else{
+		$("menu"+menuPos).style.color = "#000000";	
+	}
+}
+
+function initList() {
+	for(var i = 0;i < 5;i++){
+		$("menu"+i).innerText = menuData[i].name;	
+	}	
+}
+
+function ajaxLoadMenuData() { 
+	if (ajaxObj != null) { ajaxObj.requestAbort(); }
+	ajaxObj = new AjaxClass(); 
+	ajaxObj.frame = window; 
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+	 var jsonData = eval('(' + _xmlHttp.responseText + ')'); 
+		if(typeof(jsonData) != "undefined" && jsonData.length > 0) { 
+			menuData = jsonData; 
+			initList();
+			getFocus();	
+		}
+	}
+	ajaxObj.failureCallback = function(_xmlHttp, _params) { }; 
+	ajaxObj.url =menuAjaxPath;
+	ajaxObj.requestData();
+}
+
+function getParams() {
+	var mPos = getGlobalVar("ycyzMenuPos");
+	if(mPos != "" && mPos != "NaN" && mPos != null){
+		menuPos = parseInt(mPos,10);
+	}
+} 
+
+function init() {
+	getParams();
+	ajaxLoadMenuData();
+	// $("content").style.top = -offsetValue*currPage+"px";
+	// setTimeout(function(){
+	// 	totalPage = Math.floor($("content").offsetHeight/offsetValue)+1-parseInt(pageContent/offsetValue,10);
+	// },200);
+}
+
+window.onload = init; 
+</script>
+</head>
+<body background="images/nr_bg.jpg" leftmargin="0" topmargin="0">
+<div style="position:absolute; top:45px; left:899px; width:316px; height:31px; font-size:30px; font-weight:600;text-align:right;">一村一站</div>
+<div style="position: absolute; top: 45px; left: 359px; width: 327px; height: 31px; font-size: 24px;">斗门镇荷湖村<span style="color:#7e191e; font-weight:bold;">欢迎您！</span></div>
+<div style="position:absolute; top:119px; left:77px; width:100px; height:100px;"><img src="images/pop_img1_01.jpg" width="656" height="369" />
+  <div style="position:absolute; top:180px; left:312px; width:47px; height:47px;"><img src="images/play.png" width="47" height="47" /></div>
+</div>
+<div id="focus" style="position:absolute; top:114px; left:72px; width:666px; height:379px; border:#F00 solid 5px; visibility:hidden;">
+</div>
+<div id="content" style="position:absolute; top:118px; left:755px; width:439px; height:361px; font-size:28px; line-height:35px;">
+<marquee direction="up" width="439" height="361" scrollamount="3">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;水乡绍兴，有“全国文明村”斗门镇荷湖村世居北大门，位于国家级绍兴袍江经济开发区，与柯桥区马鞍镇国庆村毗邻，东邻杭甬高速公路绍兴三江道口，水陆交通畅通便捷，地理位置得天独厚。全村总面积2.3平方公里，下辖荷湖、湖里头、祝家庄三个自然村，共10个村民小组，现有农户560户，人口1958人。
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;近年来，全村围绕“发展新经济、营造新环境、培育新农民、建设新荷湖、共享新成果”的基本思路，通过“抓党建强队伍、抓经济增实力、抓文化富精神、抓民主促和谐、抓整治美环境”，坚持以人为本，大力推进社会主义新农村建设，先后获得全国文明村、全国民主法治村、省“五好”基层党组织等荣誉称号。
+</marquee></div>
+<div id="listFocus" style="position:absolute; top:516px; left:-269px; width:280px; height:121px; background-image: url(images/focus00.png);"></div>
+<div style="position:absolute; top:541px; left:71px; width:1150px; height:65px;">
+  <table width="100%" border="0" cellspacing="0" cellpadding="0" style="line-height:66px; text-align:center; font-size:36px;">
+    <tr>
+      <td id="menu0" width="230" >便民服务</td>
+      <td id="menu1" width="230" >村情概况</td>
+      <td id="menu2" width="230" >基层党建</td>
+      <td id="menu3" width="230" >三务公开</td>
+      <td id="menu4" width="230" >信息动态</td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

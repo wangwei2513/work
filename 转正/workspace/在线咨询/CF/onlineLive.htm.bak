@@ -1,0 +1,467 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>在线直播</title>
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script src="js/accoutMan.js"></script>
+<script src="js/mediaPlayer.js"></script>
+<script>
+	var focusArea = 0;		// 0：列表，1：视频窗口
+	var listData = [];
+	var listPos = 0;
+	var listBox = null;
+	var maxLen = 4;
+	var maxWordSize = 11;
+	var stateArr = ["直播中".fontcolor("#00e852"),"未开始".fontcolor("#d7dc8a"),"已预约".fontcolor("#00b0f9")];
+	var isFullScreen = false;
+	var httpInstance = null;
+	var playUrl = "";		// 播放地址
+	var orderTipFlag = false;//预约播放提示框显示标识
+	var countDownTimer = -1; //倒计时计时器
+	var orderTipBtnPos = 0;	//预约提示框按钮焦点
+	var videoID = "";
+
+	function eventHandler(eventObj) {
+		iDebug("[onlineConsulting.htm]__eventObj.code="+eventObj.code);
+		switch(eventObj.code){
+			case "KEY_UP"://up
+				changeUD(-1);
+				return false;
+				break;
+			case "KEY_DOWN"://down
+				changeUD(1);
+				return false;
+				break;
+			case "KEY_LEFT"://left
+				changeLR(-1);
+				return false;
+				break;
+			case "KEY_RIGHT"://right
+				changeLR(1);
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				goBack();
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+			case "MSG_MEDIA_URL_VALID"://媒体源路径有效
+				httpInstance.play();
+				return false;
+				break;
+            case "MSG_MEDIA_PLAY_SUCCESS"://开始播放成功
+				return false;
+                break;
+            case "MSG_BACKGROUND_VIDEO_PLAY_SUCCESS"://播放背景视频成功
+				return false;
+                break;
+		}
+	}
+
+	function goBack() {
+		if(orderTipFlag){
+			hideOrderTip();
+		}else if(isFullScreen){
+			isFullScreen = false;
+			playVideo();
+			$("listDiv").style.display = "block";
+			$("guideInfo").innerHTML = "「确定」键全屏播放";
+			$("guideInfo").style.fontSize = "20px";
+		}else{
+			window.location.href = "onlineConsulting.htm";
+		}
+	}
+
+	function changeUD(_num) {
+		if(isFullScreen)return;
+		if(focusArea == 0){
+			loseFocus();
+			listBox.changeList(_num);
+			onFocus();
+			if(listData[listBox.position].state == 0){
+				getLiveDetail();
+			}else{
+				closeVideo();
+			}
+		}
+	}
+
+	function changeLR(_num) {
+		if(orderTipFlag){
+			changeOrderTipBtn(_num);
+			return;
+		}
+		if(focusArea == 0&&_num < 0){
+			loseFocus();
+			focusArea = 1;
+			onFocus();
+		}else if(focusArea == 1&&_num > 0){
+			focusArea = 0;
+			onFocus();
+			$("focus").style.left = "705px";
+			$("focus").style.width = "527px";
+			$("focus").style.height = "162px";
+			$("focus").style.top = 120 + listBox.focusPos*122 + "px";
+		}
+	}
+
+	function changeOrderTipBtn(_num) {
+		loseFocus();
+		orderTipBtnPos = (orderTipBtnPos+_num+2)%2;
+		onFocus();
+	}
+
+	function onFocus() {
+		if(orderTipFlag){
+			$("orderTipBtn" + orderTipBtnPos).style.backgroundImage = "url()";
+			$("tipBtnFocus").style.left = 5 + 197*orderTipBtnPos + "px";
+		}else if(focusArea == 0){
+			$("question" + listBox.focusPos).innerHTML = marqueeStr(listData[listBox.position].question,maxWordSize);
+			videoID = listData[listBox.position].id;
+			if(listData[listBox.position].state == 0){
+				$("notBegain").style.visibility = "hidden";
+				$("rangeTime").innerHTML = "09小时40分20秒";
+			}else{
+				$("notBegain").style.visibility = "visible";
+			}
+		}else{
+			$("focus").style.top = "117px";
+			$("focus").style.left = "53px";
+			$("focus").style.width = "689px";
+			$("focus").style.height = "535px";
+		}
+	}
+
+	function loseFocus() {
+		if(orderTipFlag){
+			$("orderTipBtn" + orderTipBtnPos).style.backgroundImage = "url(images/btn1.png)";
+		}else if(focusArea == 0){
+			$("question" + listBox.focusPos).innerHTML = getStrChineseLen(listData[listBox.position].question,maxWordSize);
+		}
+	}
+
+	function doSelect() {
+		if(orderTipFlag){//预约播放提示框
+			clearTimeout(countDownTimer);
+			hideOrderTip();
+			if(orderTipBtnPos == 0){
+				videoID = listData[2].id;
+				getLiveDetail();
+			}
+		}else if(!isFullScreen&&listData[listBox.position].state==0){
+			isFullScreen = true;
+			$("listDiv").style.display = "none";
+			$("guideInfo").innerHTML = "「返回」键退出全屏";
+			$("guideInfo").style.fontSize = "24px";
+			playVideo();
+			setTimeout(function(){
+				orderTipFlag = true;
+				$("orderTip").style.visibility = "visible";
+				closeOrderTip(10);
+			},5000);
+		}
+	}
+
+	// 预约提示框关闭倒计时
+	function closeOrderTip(time) {
+		$("countDown").innerHTML = time+"秒后自动关闭";
+		time --;
+		if(time < 0){
+			hideOrderTip();
+		}else{
+			countDownTimer = setTimeout("closeOrderTip("+time+")",1000);
+		}
+	}
+
+	// 隐藏预约提示框
+	function hideOrderTip() {
+		loseFocus();
+		orderTipBtnPos = 0;
+		onFocus();
+		clearTimeout(countDownTimer);
+		orderTipFlag = false;
+		$("orderTip").style.visibility = "hidden";
+	}
+
+	function init() {
+		// closeVideo();
+		getLiveList();
+	}
+
+	// 获取直播列表
+	function getLiveList() {
+		var url = ajaxUrls.liveList;
+		if(DEBUG == 0){
+			// url = url.replace("{1}",accessToken);
+		}
+		var ajaxObj = new ajaxClass(url,function(_xmlHttp){
+			listData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(listData)!=""){
+				initList();
+			}
+		},function(_xmlHttp){
+			iDebug("[onlineLive.htm] getLiveList fail !");
+		});
+		ajaxObj.requestData();
+	}
+
+	function initList() {
+		var date = new Date();
+		var currDate = date.Format("yyyyMMdd");
+		var time = "";
+		listBox = new showList(maxLen,listData.length,listPos,121,window);
+        listBox.focusDiv = "focus";
+        listBox.listHigh = 122;
+        listBox.focusLoop = true;
+        listBox.pageLoop = true;
+        listBox.haveData = function(_list){
+			$("avatar" + _list.idPos).style.opacity = 1;
+			$("avatar" + _list.idPos).src = listData[_list.dataPos].imgUrl;
+			$("question" + _list.idPos).innerHTML = getStrChineseLen(listData[_list.dataPos].question,maxWordSize);
+			$("state" + _list.idPos).innerHTML = stateArr[listData[_list.dataPos].state];
+			time = listData[_list.dataPos].time.split(" ")[0].replace(/[^0-9]+/g,"");
+			if(parseInt(time,10)==parseInt(currDate,10)){
+				time = "今天"+listData[_list.dataPos].time.split(" ")[1];
+			}else{
+				time = listData[_list.dataPos].time;
+			}
+			$("info" + _list.idPos).innerHTML = "时间："+time+"</br>直播医生："+listData[_list.dataPos].lawyer;
+        };
+        listBox.notData = function(_list){
+            $("avatar" + _list.idPos).style.opacity = 0;
+			$("avatar" + _list.idPos).src = "";
+			$("question" + _list.idPos).innerHTML = "";
+			$("state" + _list.idPos).innerHTML = "";
+			$("info" + _list.idPos).innerHTML = "";
+        };
+        listBox.startShow();
+        onFocus();
+        checkAccoutLogin("getLiveDetail");
+	}
+
+	function getLiveDetail() {
+		var url = ajaxUrls.liveDetail;
+		iDebug("[onlineLive.htm]---getLiveDetail() videoID="+videoID);
+		// if(DEBUG == 0){
+			url = url.replace("{1}",accessToken).replace("{2}",videoID);
+		// }
+		var ajaxObj = new ajaxClass(url,function(_xmlHttp){
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data.ret == 0){
+				if(data.demand_url)playUrl = getPlayUrlByType(data.demand_url ,"http://");
+				if(playUrl) playUrl += "?protocol=http";
+				iDebug("[onlineLive.htm]---getLiveDetail()---playUrl="+playUrl);	
+				if(playUrl){//支持http和rtsp直播
+					var play_token = data.play_token;
+					iDebug("[onlineLive.htm]---getLiveDetail()---play_token="+play_token);
+					play_token = play_token?play_token:"ABCDEFGHIGK";
+					if(playUrl.indexOf("?")>=0){//兼容url中已存在参数时的处理
+						playUrl += "&playtype=demand&accesstoken="+accessToken+"&programid="+videoID+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}else{
+						playUrl += "?playtype=demand&accesstoken="+accessToken+"&programid="+videoID+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					}
+					iDebug("[onlineLive.htm]---getLiveDetail()---playUrl1="+playUrl+"| isFullScreen="+isFullScreen);
+					
+					if(httpInstance == null){
+						newInstance();
+					}
+					if(!isFullScreen)playVideo();
+					httpInstance.setSource(playUrl);
+				}
+			}else{
+				iDebug("[onlineLive.htm] getLiveDetail--ret="+data.ret+";msg:"+data.ret_msg);
+			}
+		},function(_xmlHttp){
+			iDebug("[onlineLive.htm] getLiveDetail fail !");
+		});
+		ajaxObj.requestData();
+	}
+
+	function playVideo() {
+		if(isFullScreen){//全屏播放
+			httpInstance.setMode(1);
+		}else{
+			httpInstance.setMode(0);
+			httpInstance.setPosition(76,140,643,484);
+		}
+	}
+
+	function newInstance(){
+		httpInstance = new PlayObj();
+		httpInstance.init();
+		httpInstance.bindID();
+	}
+
+	function closeVideo(){
+		httpInstance.stop(0);
+		httpInstance.close();
+		httpInstance = null;
+	}
+</script>
+</head>
+<body bgcolor="transparent" leftmargin="0" topmargin="0" onLoad="init()" onunload="closeVideo()">
+	<div id="listDiv" style="position: absolute;left: 0;top: 0;width: 1280px;height: 720px;background: url(images/bg2.png);">
+		<div style="position:absolute; top:48px; left:76px; width:189px; height:48px;z-index: 2;">
+			<img src="images/logo_03.png" width="189" height="48" />
+			<div style="position:absolute; top:8px; left:195px; width:229px; height:36px; font-size:30px; color:#a0a5ba;">|在线直播</div>
+		</div>
+		<div id="notBegain" style="position:absolute; top:140px; left:76px; width:100px; height:100px;">
+			<div style="position:absolute; top:325px; left:100px; width:475px; height:84px; text-align:center; font-size:25px; text-align:center; line-height:36px; color:#88a0c7;">
+				直播暂未开始<br />距直播时间还有
+				<span id="rangeTime" style="color:#ffa800;"></span>
+		  	</div>
+			<img src="images/tck.png" width="643" height="484" />
+			<div style="position:absolute; top:181px; left:190px; width:276px; height:128px; background-image: url(images/icon00.png);"></div>
+		</div>
+		<div style="position:absolute; top:140px; left:740px; width:461px; height:490px; background-image: url(images/line.png);">
+			<div style="position:absolute; top:15px; left:0px; width:466px; height:91px;">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="23%" rowspan="2">
+							<img id="avatar0" src="images/pop_img3_01.jpg" width="85" height="85" />
+						</td>
+						<td id="question0" width="62%" height="32" style="font-size:24px; color:#f6f9ff;">
+							儿童普通感冒应该怎么办？
+						</td>
+						<td id="state0" width="15%" style="font-size:18px;">直播中</td>
+					</tr>
+					<tr>
+						<td id="info0" colspan="2" style="font-size:18px; line-height:26px; color:#cad3e9;">
+							时间: 今天08:00-09:30
+							<br />
+							儿科主任: 谭熊
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div style="position:absolute; top:137px; left:0px; width:466px; height:91px;">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="23%" rowspan="2">
+							<img id="avatar1" src="images/pop_img3_01.jpg" width="85" height="85" />
+						</td>
+						<td id="question1" width="62%" height="32" style="font-size:24px; color:#f6f9ff;">
+							老人突然晕倒应该怎么办？
+						</td>
+						<td id="state1" width="15%" style="font-size:18px;">未开始</td>
+					</tr>
+					<tr>
+						<td id="info1" colspan="2" style="font-size:18px; line-height:26px; color:#cad3e9;">
+							时间: 今天08:00-09:30
+							<br />
+							外科主任:孙一熊
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div style="position:absolute; top:259px; left:0px; width:466px; height:91px;">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="23%" rowspan="2">
+							<img id="avatar2" src="images/pop_img3_01.jpg" width="85" height="85" />
+						</td>
+						<td id="question2" width="62%" height="32" style="font-size:24px; color:#f6f9ff;">
+							高血压患者平时需要注意事项？
+						</td>
+						<td id="state2" width="15%" style="font-size:18px; color:#d7dc8a">未开始</td>
+					</tr>
+					<tr>
+						<td id="info2" colspan="2" style="font-size:18px; line-height:26px; color:#cad3e9;">
+							时间: 今天08:00-09:30
+							<br />
+							直播律师: 李熊
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div style="position:absolute; top:381px; left:0px; width:466px; height:91px;">
+				<table width="100%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td width="23%" rowspan="2">
+							<img id="avatar3" src="images/pop_img3_01.jpg" width="85" height="85" />
+						</td>
+						<td id="question3" width="62%" height="32" style="font-size:24px; color:#f6f9ff;">
+							心脏病患者需要注意事项？
+						</td>
+						<td id="state3" width="15%" style="font-size:18px; color:#d7dc8a">未开始</td>
+					</tr>
+					<tr>
+						<td id="info3" colspan="2" style="font-size:18px; line-height:26px; color:#cad3e9;">
+							时间: 今天08:00-09:30
+							<br />
+							直播律师: 谭熊
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<!-- 焦点 视频窗口(689px,535px,53px,117px) -->
+		<div id="focus" style="position:absolute; top:120px; left:705px; width:527px; height:162px; ">
+			<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="36" height="36" background="images/focus_01.png"></td>
+					<td background="images/focus_02.png"></td>
+					<td width="36" background="images/focus_03.png"></td>
+				</tr>
+				<tr>
+					<td background="images/focus_04.png"></td>
+					<td></td>
+					<td background="images/focus_05.png"></td>
+				</tr>
+				<tr>
+					<td height="36" background="images/focus_06.png"></td>
+					<td background="images/focus_07.png"></td>
+					<td background="images/focus_08.png"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="guideInfo" style="position:absolute; top:638px; right:84px; height:26px; font-size:20px; color:#f6f9ff;">「确定」键全屏播放</div>
+
+	<!-- 预约提示 -->
+	<div id="orderTip" style="position:absolute; top:447px; left:817px; width:416px; height:240px; background-image: url(images/tck_bg1.png); visibility: hidden;">
+		<div style="position:absolute; top:23px; left:26px; width:366px; height:130px; font-size:26px; color:#ffffff; line-height:36px;">
+			您预约的法律直播还有5分钟
+			<br />
+			开始，是否前往？
+			<br />
+			<span id="countDown" style="font-size:20px; color:#ffad38;">
+				10秒后自动关闭
+			</span>
+		</div>
+		<div id="orderTipBtn0" style="position:absolute; top:165px; left:28px; width:164px; height:54px; font-size:26px; color:#ffffff; line-height:54px; text-align:center;">立即前往</div>
+		<div id="orderTipBtn1" style="position:absolute; top:165px; left:225px; width:164px; height:54px; background-image: url(images/btn1.png); font-size:26px; color:#ffffff; line-height:54px; text-align:center;">取消</div>
+		<div id="tipBtnFocus" style="position:absolute; top:142px; left:5px; width:212px; height:105px;">
+			<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td width="36" height="36" background="images/focus_01.png"></td>
+					<td background="images/focus_02.png"></td>
+					<td width="36" background="images/focus_03.png"></td>
+				</tr>
+				<tr>
+					<td background="images/focus_04.png"></td>
+					<td></td>
+					<td background="images/focus_05.png"></td>
+				</tr>
+				<tr>
+					<td height="36" background="images/focus_06.png"></td>
+					<td background="images/focus_07.png"></td>
+					<td background="images/focus_08.png"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<!-- <div id="text" style="position: absolute;left: 100px;top: 100px;background: rgba(255,255,255,0.7);color: #000;font-size: 30px;text-align: center;width: 700px;height: 500px;"></div> -->
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+	"blurImageUrl": "",
+	"clickable": 1,
+	"enName": "cslm",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "managed",
+	"linkUrl": "ddsfdf",
+	"listType": "list",
+	"name": "多应用",
+	"navigator": "²âÊÔÅÅÐò>²âÊÔÀ¸Ä¿",
+	"newAdd": 0,
+	"nodePath": "cspx/cslm"
+}

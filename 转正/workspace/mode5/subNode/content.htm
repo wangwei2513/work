@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<meta name="page-view-size" content="1280*720"/>
+<title>社区资讯内容页</title>
+
+<script src="../js/common.js"></script>
+<script src="../js/config.js"></script>
+
+<script type="text/javascript">
+
+var itemPos = 0;
+var subPos = 0;
+
+var currPage = 0;
+var totalPage = 0;
+var pageContent = 182; //可见区域的高度
+
+var file="sqzx/data/";
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+    var e = key || event;
+    var keycode = e.keyCode || e.which || e.charCode;
+    switch (keycode) {
+    case 1:   // up
+    case 38:
+		upAndDown(-1);
+		return false;
+		break;
+    case 2:   // down
+    case 40:
+		upAndDown(1);
+		return false;
+		break;
+    case 13:
+		//doSelect();
+		return false;
+		break;
+    case 8:
+    case 340:
+		// window.location.href = "index.htm?itemPos="+itemPos;
+		window.location.href = "sqzx.htm?itemPos="+itemPos+"&subPos="+subPos;
+		return false;
+		break;
+    case 27: //菜单键
+		window.location.href = "../../portal/index.htm";
+		return false;
+		break;
+    }
+}
+
+function init(){
+    getItemPos();
+    getMenuData();
+}
+
+function getItemPos(){
+	if(window.location.href.indexOf("?")>0){
+		itemPos = getUrlParams("itemPos", window.location.href, "&");
+		itemPos = parseInt(itemPos,10);
+
+		debugInfo("subPos="+subPos);
+	}else{
+		itemPos = 0;
+	}
+
+	if(window.location.href.indexOf("subPos")>-1){
+		subPos = getUrlParams("subPos", window.location.href, "&");
+		subPos = parseInt(subPos,10);
+	}else{
+		subPos = 0;
+	}
+}
+function getMenuData(){
+        var url=requestUrl+file+"sqzx/list.js";
+        debugInfo("bmfw---getMenuData---url=="+url);
+        ajax_js(url,function(responseText){
+            var tempData=eval("("+responseText+")");
+            debugInfo("bmfw.htm---getMenuData---responseText=="+responseText);
+            if(typeof(tempData)!="undefined" && tempData!=""){
+                noDataFlag=false;
+                menuData=tempData[itemPos];
+                getData();
+            }else{
+                noDataFlag=true;
+            }
+        });
+}
+function getData(){
+	var url=requestUrl+file+menuData.nodePath+"/content.js";
+	debugInfo("bmfw-content-getData()---url="+url);
+	ajax_js(url,function(responseText){
+		debugInfo("ajax_f");
+		var tempData=eval("("+responseText+")");
+		debugInfo("bmfw-content-getData()---responseText="+responseText);
+		if(typeof(tempData)!="undefined" && tempData!=null){
+			noDataFlag=false;
+			listData=tempData[subPos];
+			debugInfo("listData="+listData);
+			initTitle();
+			initCotent();
+		}else{
+			noDataFlag=true;
+		}
+	});
+}
+function initTitle(){
+	if(noDataFlag)return;
+	$("title").innerHTML = listData.title;
+	debugInfo("bmfw_title="+listData.title);
+	if(getStrChineseLength(listData.title)>27){
+		$("title").innerHTML = "<marquee style=\"width:580px;\">"+listData.title+"</marquee>";
+	}
+}
+function initCotent(){
+	if(noDataFlag)return;
+    $("content").innerHTML = listData.content;
+    $("content").style.marginTop = -pageContent*currPage+"px";
+	setTimeout(function(){
+		 totalPage = Math.floor($("content").offsetHeight/pageContent)+1;
+		 var divHeight = Math.floor($("content").offsetHeight);
+
+		debugInfo("totalPage=="+totalPage+"------divHeight=="+divHeight);
+	},1000);
+
+}
+
+function upAndDown(_num){
+
+	if(noDataFlag)return;
+	if(currPage==0&&_num<0 || currPage==totalPage-1&&_num>0)
+	return;
+	currPage = currPage+_num;
+	if(pageContent*currPage < $("content").offsetHeight){
+		$("content").style.marginTop = -pageContent*currPage+"px";
+	}
+	
+	
+}
+</script>
+</head>
+
+<body background="../images/bg9.jpg" topmargin="0" bottommargin="0" onLoad="init()">
+<!-- logo -->
+<div style="width:150px; height:37px; position:absolute; left:80px; top:38px; font-size:36px;">社区资讯</div>
+<!-- 内容 -->
+<div style="position:absolute; left:82px; top:114px; width:1123px; height:513px;">
+    <!-- 背景图片-->
+    <div style="position:absolute; left:0px; top:0px; width:1123px; height:513px;"><img src="../images/bg_01.png" width="1123" height="513"></div>
+
+    <!-- <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 64px;"><img src="../images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 173px;"><img src="../images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 281px;"><img src="../images/line_block.png" width="1092" height="54"></div>
+    <div style="width: 1092px; height: 54px; position: absolute; left: 14px; top: 389px;"><img src="../images/line_block.png" width="1092" height="54"></div>
+	-->
+    <div style="position:absolute; left:32px; top:13px; width:1052px; height:432px; font-size:24px; color:#4b4c4c; line-height:54px;">
+        <div id="title" style="text-align:center; color:#000000; font-size:30px;"></div>
+        <div id="contentDIV" style="position:absolute; height:390px; text-indent:48px; overflow: hidden;">
+            <div id="content" style="left:16px; width: 1052px; margin-top:0px"></div>
+        </div>
+    </div>
+</div>
+<!-- 底部信息 -->
+<div style="position:absolute; left:684px; top:648px; width:513px; height:48px;"><img src="../images/bottom.png" width="513" height="48"></div>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>影视专题</title>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+<script type="text/javascript">
+var menuDataUrl = "menu.js";
+var navTitleAjaxPath = "node.js";
+var ajaxObj = null;
+var menuData = [];
+var menuBox = null;
+var imgData = [];
+var menuSize = 10;
+var startPos = 0; //左侧目录焦点的起始位置
+var focusArea = 0; //focusArea 0：左侧菜单栏，1右侧菜单栏
+var totalPage = 0; 
+var currentPage = 0;
+var rightPos = 0;
+var subPos = 0;
+var pageNum = 4;
+
+var backUrl = "main://index.html?page=video_page&switchPageModel=1"; //返回地址
+
+var posArr = [
+	[340,101,910,348],
+	[359,437,292,173],
+	[646,437,292,173],
+	[933,437,292,173],
+]
+var focusInfo = [ 
+	{"up":-1,"right":-1,"down":1,"left":-1,posInfo:{"left":340,"top":101,"width":910,"height":348}},
+	{"up":0,"right":2,"down":-1,"left":-1,posInfo:{"left":359,"top":437,"width":292,"height":173}},
+	{"up":0,"right":3,"down":-1,"left":1,posInfo:{"left":646,"top":437,"width":292,"height":173}},
+	{"up":0,"right":-1,"down":-1,"left":2,posInfo:{"left":933,"top":437,"width":292,"height":173}}
+];
+var nodeAjaxObj = null;
+var navStr = "";
+	function getTitleData() {
+  if(nodeAjaxObj != null){
+    nodeAjaxObj.requestAbort();
+  }
+  nodeAjaxObj = new AjaxClass();
+  nodeAjaxObj.frame = window;
+  nodeAjaxObj.charset = "utf-8";
+  nodeAjaxObj.successCallback = function(_xmlHttp, _params) {
+    var jsonData = eval('(' + _xmlHttp.responseText + ')');
+    if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+     navStr = jsonData;
+    }
+  };
+  nodeAjaxObj.failureCallback = function(_xmlHttp, _params) {};
+  nodeAjaxObj.url = "node.js";
+  nodeAjaxObj.requestData();
+}
+var listType = "";
+ navStr = navStr.replace(/ > /g,">");
+ var msg = "";
+	function getTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr + ">" + msg;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	
+	function getBackTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  	var e = key || event;
+  	var keycode = e.keyCode || e.which || e.charCode;
+  	switch (keycode) {
+    	case 87:   // up
+    	case 38:
+      		changeUD(-1);
+      		return false;
+      		break;
+    	case 83:   // down
+    	case 40:
+     		changeUD(1);
+      		return false;
+      		break;
+    	case 65:   // left
+    	case 37:
+      		changeLR(-1);
+      		return false;
+      		break;
+    	case 68:   // right
+    	case 39:
+      		changeLR(1);
+      		return false;
+      		break;
+    	case 13:
+	 		doSelect();
+      		return false;
+      		break;
+    	case 8:
+      		goBack();
+      		event.returnValue = false;
+      		return false;
+      		break;
+    	case 27:
+      		iSTB.browser.gotoSTB("tv");
+      		event.returnValue = false;
+      		return false;
+     	 	break;
+  }
+}
+
+function changeUD(_num) {
+	if(focusArea == 0){
+		menuBox.changeList(_num);	
+	}else{
+		if(_num < 0){
+			if(focusInfo[subPos].up < 0){
+				changPage(_num);
+			}else{
+				subPos = focusInfo[subPos].up;
+			}
+		}else{
+			if(focusInfo[subPos].down < 0){
+				changPage(_num);
+			}else if(currentPage * pageNum + subPos < imgData.length - 1){
+				subPos = focusInfo[subPos].down;
+			}
+		}
+	}
+	clearFoucs();
+	showFocus();
+}
+
+function changeLR(_num){
+	if(focusArea == 0){
+		focusArea = 1;	
+	}else{
+		if(_num < 0){
+			if(focusInfo[subPos].left < 0){
+				focusArea = 0;
+			}else{
+				subPos = focusInfo[subPos].left;
+			}
+		}else{
+			if(focusInfo[subPos].right < 0){
+				changPage(_num);
+			}else if(currentPage * pageNum + subPos < imgData.length - 1){
+				subPos = focusInfo[subPos].right;
+			}
+		}
+	}
+	clearFoucs();
+	showFocus();
+}
+
+function changPage(_num){
+	totalPage = Math.ceil(imgData.length/pageNum);
+	if(_num > 0 && currentPage < totalPage - 1){
+		currentPage++;
+		subPos = 0;	
+	}else if(_num < 0 && currentPage > 0){
+		currentPage--;
+		subPos = 1;
+	}
+	initPoster();
+	clearFoucs();
+	showFocus();
+}
+
+function doSelect() {
+	if (focusArea == 0) {
+		var currObj = menuData[menuBox.position];
+		mySessionStorage.setItem("ZSfoodMenuPos",menuBox.position);
+	}else {
+		var currObj = imgData[currentPage * pageNum + subPos];
+		mySessionStorage.setItem("ZSfoodMenuPos",currentPage * pageNum + subPos);
+	}
+	mySessionStorage.setItem("ZSfoodFocusArea",focusArea);
+	if(currObj.clickable == 1){
+		
+		if(currObj.linkUrl!=""){
+			msg = currObj.name;
+			listType = "视频";
+			getTitleData();
+			window.location.href = currObj.linkUrl+"?backUrl="+window.location.href;
+		}else if(currObj.enName!=""){
+			msg = currObj.name;
+			listType = "文字";
+			getTitleData();
+			window.location.href = currObj.enName  + "/index.htm";	
+		}
+	}
+}
+
+function goBack() {	
+	var navStrArr = navStr.split(">")
+	navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+	// this.navStr = this.navStr.substr(0,this.navStr.lastIndexOf(">"));
+	mySessionStorage.setItem("navigator",navStr);
+	// this.backFlag = 1;
+	navStr = mySessionStorage.getItem('navigator');
+	navStr = navStr.replace(/ > /g,">");
+	listType = "栏目";
+	getBackTitleData();
+	mySessionStorage.removeItem("ZSfoodMenuPos");
+	mySessionStorage.removeItem("ZSfoodFocusArea");
+	window.location.href = backUrl;
+}
+
+function init() {
+	getParams();
+	getMenuData();
+	listType = "栏目";
+	getBackTitleData();			
+	
+}
+listType = "栏目";
+getBackTitleData();
+function getParams() {
+	var tmpPara = mySessionStorage.getItem("ZSfoodFocusArea");
+	if(tmpPara != ""){
+		focusArea = parseInt(tmpPara,10);
+	} 
+	tmpPara = mySessionStorage.getItem("ZSfoodMenuPos");
+	if(tmpPara != ""){
+		tmpPara = parseInt(tmpPara,10);	
+		if (focusArea == 0) {
+			startPos = tmpPara;
+		}else{
+			currentPage = Math.floor(tmpPara / pageNum);
+			subPos = tmpPara % pageNum;
+		}
+	} 	
+}
+
+/**
+ * 获取menu.js中的数据，分别保存在menuData和imgData中。
+ * @return {} 
+ */
+function getMenuData() {
+	if(ajaxObj != null){
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "utf-8";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+			for (var i = 0,len = jsonData.length; i < len; i++) {
+				if(jsonData[i].focusImageUrl != ""){
+					imgData.push(jsonData[i]);	
+				}else if(jsonData[i].name != ""){	
+					menuData.push(jsonData[i]);
+				}
+			}
+			ajaxNavTitle();
+			initMenuData();
+			initPoster();
+			clearFoucs();
+			showFocus();
+		}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {	
+	};
+	ajaxObj.url = menuDataUrl;
+	ajaxObj.requestData();
+}
+
+function ajaxNavTitle(){
+	ajaxObj = null;
+	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "utf-8";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(typeof(jsonData) != "undefined"){
+			if(jsonData.navigator!=""){
+				$("navTitle").innerText = jsonData.navigator;
+				title = jsonData.navigator;
+			}
+		}else{}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {};
+	ajaxObj.url = navTitleAjaxPath;
+	ajaxObj.requestData();
+}
+
+function initMenuData(){
+	menuBox = new showList(10,menuData.length,startPos,-15,window);
+	menuBox.focusDiv = "menuFocus";	//焦点id
+	menuBox.listHigh = 48;	//列表中每个行的高度
+	menuBox.focusLoop = false;//是否循环切换
+	menuBox.pageLoop = true;//是否循环翻页
+	menuBox.haveData = function(List){//显示一行数据
+	   $("item_"+List.idPos).innerHTML = subStr(menuData[List.dataPos].name,10,"...");
+	};
+	menuBox.notData = function(List){   //清空一行数据
+	   $("item_"+List.idPos).innerHTML = "";
+	};
+	menuBox.startShow(); //开始显示列表信息
+}
+
+function initPoster(){
+	for(var i = 0; i < 4; i++){
+		if(currentPage * pageNum + i < imgData.length){
+			$("poster_" + i).src = imgData[currentPage * pageNum + i].focusImageUrl;
+		}else{
+			$("poster_" + i).src = "images/global_tm.gif";
+		}		
+	}
+}
+
+function clearFoucs(){
+	for (var i = 0; i < menuSize && Math.floor(menuBox.position/menuSize) * menuSize + i < menuData.length; i++) {
+		$("item_"+i).style.color = "#d2dce6";
+		$("item_"+i).innerHTML = subStr(menuData[Math.floor(menuBox.position/menuSize) * menuSize + i].name,10,"...");
+	}
+	$("menuFocus").style.visibility = "hidden";	
+	$("posterFocus").style.visibility = "hidden";
+}
+
+function showFocus(){
+	if(focusArea == 0){
+		$("menuFocus").style.visibility = "visible";
+		$("item_"+(menuBox.position%menuSize)).style.color = "#F39800";
+		if(menuData[menuBox.position].name.length>5){
+   	 		$("item_"+(menuBox.position%menuSize)).innerHTML = "<marquee style=\"width:165px;\">"+menuData[menuBox.position].name+"</marquee>";
+  		}
+	}else{
+		$("posterFocus").style.visibility = "visible";
+		$("posterFocus").style.left = posArr[subPos][0] + "px";
+		$("posterFocus").style.top = posArr[subPos][1] + "px";
+		$("posterFocus").style.width = posArr[subPos][2] + "px";
+		$("posterFocus").style.height = posArr[subPos][3] + "px";
+	}
+}
+</script>
+</head>
+<body style="background:url(images/bg_02.jpg) no-repeat;" onload="init()">
+	<!--标题信息-->
+	<div id="navTitle" style="position:absolute;left:85px;top:25px;color:#d2dce6;font-size:20px;"></div>
+	<img src="images/line_02.png" style="position:absolute;left:0px;top:55px;"/>
+	<!--左侧列表-->
+	<div style="position:absolute;left:83px;top:117px;background:url(images/border_left.png);width:256px;height:483px;color:#d2dce6;font-size:22px;text-align:center;">
+		<table border="0" cellpadding="0" cellspacing="0" width="256">
+			<tr>
+				<td id="item_0" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_1" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_2" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_3" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_4" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_5" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_6" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_7" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_8" height="48px"></td>
+			</tr>
+			<tr>
+				<td id="item_9" height="48px"></td>
+			</tr>
+	  </table>
+	  <!--焦点-->
+	  <img id="menuFocus" src="images/focus_border.png" style="position: absolute; left: 8px; top: -15px;visibility: hidden;"/>
+	</div>
+	<!--右侧信息-->
+	<div style="position:absolute;left:368px;top:117px;"><img id="poster_0" width="852px" height="313px"/></div>
+	<div style="position:absolute;left:368px;top:448px;"><img id="poster_1" width="272px" height="151px"/></div> 
+	<div style="position:absolute;left:655px;top:448px;"><img id="poster_2" width="272px" height="151px"/></div>
+	<div style="position:absolute;left:944px;top:448px;"><img id="poster_3" width="272px" height="151px"/></div> 
+	<!--焦点-->
+	<img id="posterFocus" src="images/focus_border_04.png" style="position: absolute; left: 340px; top: 101px; width: 910px; height: 348px;visibility: hidden;"/>
+	<!--底部信息-->
+	<!-- <div style="position:absolute;left:116px;top:654px;background:url(images/bottom_border.png);width:94px;height:34px;">
+		<img src="images/icon_01.png"/>
+	</div>
+	<div style="position:absolute;left:296px;top:654px;background:url(images/bottom_border.png);width:94px;height:34px;">
+		<img src="images/icon_02.png"/>
+	</div>
+	<div style="position:absolute;left:501px;top:654px;background:url(images/bottom_border.png);width:94px;height:34px;">
+		<img src="images/icon_03.png"/>
+	</div>
+	<span style="position:absolute;left:700px;top:661px;color:#d2dce6;font-size:20px;">书画高清频道即将上线，名家书画，推荐给广大爱好书</span>
+	<img src="images/icon_04.png" style="position:absolute;left:1190px;top:660px;"/> -->
+</body>
+</html>

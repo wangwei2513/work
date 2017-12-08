@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+
+</head>
+
+<body background="images/inner_bg.jpg" leftmargin="0" topmargin="0" onload="init()">
+    <div style="position:absolute;left:170px;top:65px;color:#fff;font-size:36px;">
+        在线调查
+    </div>
+    <!--title-->
+    <!-- <img src="images/menu_wjdc.png" width="256" height="90" style="position:absolute; left:102px; top:67px;" /> -->
+
+    <!--时间-->
+    <div style="position:absolute; left:959px; top:70px; width:249px; height:44px;display: none;">
+        <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0" style="color:#fff;">
+            <tr>
+                <td width="100" align="right">
+                    <span id="weekDiv" style="font-size:20px;"></span>
+                    <br />
+                    <span id="dateDiv" style="font-size:18px;"></span>
+                </td>
+                <td width="30" align="center">
+                    <!-- <img src="images/div_line.png" width="2" height="36" /> -->
+                </td>
+                <td id="timeDiv" style="font-size:44px; color:#d9e9ed; ">19:30</td>
+            </tr>
+        </table>
+    </div>
+
+    <div style="position:absolute; left:103px; top:150px; width: 858px; height: 445px;">
+        <table width="100%" height="425" border="0" cellspacing="0" cellpadding="0" style=" color:#fff; font-size:30px;">
+            <tr>
+                <td width="858" height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle0" style="float:left"></span>
+                    <span id="listTime0" style="float:right">2015-07-08</span>
+                </td>
+            </tr>
+            <tr>
+                <td height="5"></td>
+            </tr>
+            <tr>
+                <td height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle1" style="float:left"></span>
+                    <span id="listTime1" style="float:right"></span>
+                </td>
+            </tr>
+            <tr>
+                <td height="5"></td>
+            </tr>
+            <tr>
+                <td height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle2" style="float:left"></span>
+                    <span id="listTime2" style="float:right"></span>
+                </td>
+            </tr>
+            <tr>
+                <td height="5"></td>
+            </tr>
+            <tr>
+                <td height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle3" style="float:left"></span>
+                    <span id="listTime3" style="float:right"></span>
+                </td>
+            </tr>
+            <tr>
+                <td height="5"></td>
+            </tr>
+            <tr>
+                <td height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle4" style="float:left"></span>
+                    <span id="listTime4" style="float:right"></span>
+                </td>
+            </tr>
+            <tr>
+                <td height="5"></td>
+            </tr>
+            <tr>
+                <td height="70" style="background:url(images/item_bg.png) no-repeat; padding-left:20px; padding-right:20px;">
+                    <span id="listTitle5" style="float:left"></span>
+                    <span id="listTime5" style="float:right"></span>
+                </td>
+            </tr>
+        </table>
+
+        <!--角标
+<img src="images/b_new.png" width="60" height="60" style="position:absolute; left:796px; top:0px;" />
+		-->
+        <!--焦点-->
+        <div id="focus" style="position:absolute; left:-17px; top:-16px; width:896px; height:108px; background:url(images/item_focus01.png) no-repeat; "></div>
+    </div>
+
+    <!--右侧海报-->
+    <img src="images/QA_poster.jpg" width="212" height="445" style="position:absolute; left:969px; top:150px;" />
+
+    <!--页码-->
+    <div id="pageNum" style="position:absolute; left:100px; top:638px; width:200px; height:30px; font-size:30px; color:#fff; "></div>
+
+    <div id="pupBox" style="position:absolute;top:195px;left:409px;width:462px; height:330px;background-image:url(images/alertImg.png); visibility:hidden;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:28px; position:absolute; top:101px; left:27px; color:#FFFFFF; line-height:85px; width: 403px; height: 165px;">
+            <tr align="center">
+                <td id="msg">&nbsp;</td>
+            </tr>
+            <tr align="center">
+                <td>
+                    <img src="images/sure1.png" width="150" height="47"></td>
+            </tr>
+        </table>
+    </div>
+    <div style="position:absolute;left:596px;top:619px; width:588px; height:67px; ">
+        <div id="prev" style="position:absolute;left:0;top:15px; width:100px; height:37px; background:#ccc; font-size:16px;border-radius:5px; line-height:37px;text-align:center">上一页</div>
+        <div id="next" style="position:absolute;left:120px;top:15px; width:100px; height:37px; background:#ccc; font-size:16px;border-radius:5px; line-height:37px;text-align:center">下一页</div>
+        <div style="position:absolute;left:300px;top:0; width:51px; height:67px; ">
+            <img id="imgIcon0" src="images/btn0_01.png" alt="">
+        </div>
+        <div style="position:absolute;left:400px;top:0; width:51px; height:67px; ">
+            <img id="imgIcon1" src="images/btn0_02.png" alt="">
+        </div>
+        <div style="position:absolute;left:500px;top:0; width:51px; height:67px; ">
+            <img id="imgIcon2" src="images/btn0_03.png" alt="">
+        </div>
+
+    </div>
+    <script type="text/javascript" src="js/global.js"></script>
+
+    <script type="text/javascript">
+        var dataArr = [];
+        var pageMax = 6;
+        var menuBox = null;
+        var scrollObj = null;
+        var listAjaxObj = null;
+        var currPage = 0;
+        var totalPage = 0;
+        var pos = 0;
+        var topPos = 0;
+
+        var focusArea = 0;
+        var listMovePos = 0;
+        var iconPos = 0;
+        var basicUrl = "http://172.18.254.197:8080/";
+        var queryAll = "http://10.7.27.220:8090/votesManager/getQuestionnaires.action"; //不带参数，获取所有问卷
+        var queryAll = "node.js"
+
+        function eventHandler(eventObj, type) {
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    if (dataArr.length == 0) return;
+                    changeUD(-1);
+                    return 0;
+                    break;
+                case "KEY_DOWN":
+                    if (dataArr.length == 0) return;
+                    changeUD(1);
+                    return 0;
+                    break;
+                case "KEY_SELECT":
+                    if (dataArr.length == 0) return;
+                    doSelect();
+                    return 0;
+                    break;
+                case "KEY_LEFT":
+                    changeLR(-1);
+                    return 0;
+                    break;
+                case "KEY_RIGHT":
+                    changeLR(1);
+                    return 0;
+                    break;
+                case "KEY_PAGE_UP":
+                    if (dataArr.length == 0) return;
+                    changePage(-1);
+                    return 0;
+                    break;
+                case "KEY_PAGE_DOWN":
+                    if (dataArr.length == 0) return;
+                    changePage(1);
+                    return 0;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                case "KEY_HOMEPAGE":
+                    gotoPortal();
+                    event.returnValue = false;
+                    return false;
+                    break;
+                    /*case "KEY_RED":
+                        window.location.href = "http://172.18.254.30/jfb_HD/index.html";//政风行风url
+                        return 0;
+                        break;*/
+                default:
+                    return 1;
+                    break;
+            }
+        }
+
+        function prev() {
+            pos = 5;
+            currPage--;
+            initList();
+        }
+
+        function next() {
+            pos = 0;
+            currPage++;
+            initList();
+        }
+        /*
+         * 上下切换焦点
+         * */
+
+        function changeUD(num) {
+            if (focusArea == 0) {
+                if (dataArr.length > 6) {
+                    if (pos < 5 && num > 0 && currPage < totalPage - 1) {
+                        pos++;
+                        focusMove();
+                    } else if (pos == 5 && num > 0) {
+                        focusArea = 1;
+                        iconMove();
+                    } else if (num < 0 && pos > 0) {
+
+                        pos--;
+                        focusMove();
+                    }
+                    // else if (num < 0 && pos == 0 && currPage != 0) {
+                    //     pos = 5;
+                    //     currPage--;
+                    //     initList();
+                    // } 
+                    else if (pos < dataArr.length - currPage * 6 - 1 && num > 0 && currPage == totalPage - 1) {
+                        pos++;
+                        focusMove();
+                    } else if (currPage * 6 + pos == dataArr.length - 1 && num > 0) {
+                        iconMove();
+                        focusArea = 1;
+                    }
+                } else {
+                    if (pos < dataArr.length - 1 && num > 0) {
+                        pos++;
+                        focusMove();
+                    } else if (pos = dataArr.length - 1 && num > 0) {
+                        iconMove();
+                        focusArea = 1;
+                    } else if (num < 0 && pos > 0) {
+                        pos--;
+                        focusMove();
+                    }
+                }
+            } else if (focusArea == 1 && num < 0) {
+                focusArea = 0;
+                emptyIcon()
+            }
+        }
+
+
+
+        function changeLR(num) {
+            if (focusArea == 1) {
+                if (num > 0 && iconPos == 4) {
+                    iconPos = 0;
+                    iconMove();
+                } else if (num > 0 && iconPos < 4) {
+                    iconPos++;
+                    iconMove();
+                } else if (num < 0 && iconPos == 0) {
+                    iconPos = 4
+                    iconMove()
+                } else if (iconPos > 0 && num < 0) {
+                    iconPos--;
+                    iconMove()
+                }
+            }
+
+        }
+
+        function iconMove() {
+            emptyIcon();
+            if (iconPos == 0) {
+                $("prev").style.background = "red";
+            } else if (iconPos == 1) {
+                $("next").style.background = "red";
+            } else {
+                $("imgIcon" + (iconPos - 2)).src = "images/btn1_0" + (iconPos - 1) + ".png"
+            }
+
+        }
+
+        function emptyIcon() {
+            for (var i = 0; i < 3; i++) {
+                $("imgIcon" + i).src = "images/btn0_0" + (i + 1) + ".png"
+
+            }
+            $("prev").style.background = "#ccc";
+            $("next").style.background = "#ccc";
+        }
+        /*
+         * 翻页
+         * */
+        function changePage(_num) {
+            menuBox.changePage(_num); //翻页
+            /*if(scrollObj) scrollObj.scroll(menuBox.position);*/
+            currPage = Math.ceil((menuBox.position + 1) / pageMax);
+            initPageNum();
+        }
+
+        function doSelect() {
+            if (focusArea == 0) {
+                window.location.href = "content.htm";
+                setParms();
+            } else {
+                if (iconPos == 0) {
+                    if (currPage > 0) {
+                        prev();
+                    }
+                } else if (iconPos == 1) {
+                    if (currPage < totalPage - 1) {
+                        next();
+                    }
+
+                } else if (iconPos == 2) {
+                    window.location.href = "http://10.7.27.220/zhsqPortal/index.htm"
+                } else if (iconPos == 4) {
+                    window.location.href = "http://10.7.27.220/zhsqPortal/index.htm"
+                }
+            }
+
+            //window.location.href = "content.htm?topicId="+dataArr[menuBox.position].id+"&position="+menuBox.position;	
+
+        }
+
+
+        function init() {
+            getParms();
+            showTime();
+            clearMenu();
+            getListData();
+        }
+
+
+        /*function getParms(){
+            var tempPos = RequestUrl(window.location.href,"position");
+            if(tempPos!=""){
+                pos = parseInt(tempPos,10);
+            }
+        }*/
+
+        function setParms() {
+            setGlobalVar("quesId", dataArr[(currPage * 6) + pos].id);
+            setGlobalVar("menuPos", (currPage * 6) + pos);
+        }
+
+        function getParms() {
+            pos = getGlobalVar("menuPos") ? parseInt(getGlobalVar("menuPos")) : 0;
+            console.log("加载pos=" + pos)
+
+        }
+
+        var weekArr = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+
+        function showTime() {
+            var d = new Date();
+            var year = d.getFullYear().toString();
+            var month = (d.getMonth() + 1).toString();
+            var day = d.getDate().toString();
+            var week = weekArr[d.getDay()];
+            var hour = d.getHours().toString();
+            var minute = d.getMinutes().toString();
+            var second = d.getSeconds().toString();
+            if (month.length < 2) month = "0" + month;
+            if (day.length < 2) day = "0" + day;
+            if (hour.length < 2) hour = "0" + hour;
+            if (minute.length < 2) minute = "0" + minute;
+            if (second.length < 2) second = "0" + second;
+
+            $("weekDiv").innerText = week;
+            $("dateDiv").innerText = year + "." + month + "." + day;
+            $("timeDiv").innerText = hour + ":" + minute + ":" + second;
+            setTimeout("showTime();", 1000);
+        }
+
+        function clearMenu() {
+            for (var i = 0; i < pageMax; i++) {
+                $("listTitle" + i).innerText = "";
+                $("listTime" + i).innerText = "";
+            }
+        }
+
+        function getListData() {
+            if (listAjaxObj == null) {
+                listAjaxObj = new ajaxClass();
+                //测试去掉注释
+                //listAjaxObj.charset = "gbk";
+            } else {
+                listAjaxObj.requestAbort();
+            }
+            listAjaxObj.charset = "utf-8";
+            listAjaxObj.url = queryAll;
+            console.log(listAjaxObj.url)
+                //listAjaxObj.url = basicUrl + "VoteSys_foshan/getTopicList?categoryId=1";
+
+            // showPup(1,"正在请求列表数据...",false,false);
+            listAjaxObj.successCallback = function(_xmlHttp) {
+                var tmp = eval("(" + _xmlHttp.responseText + ")");
+                if (tmp != null) {
+                    hidePup();
+                    dataArr = tmp;
+                    totalPage = dataArr.length == 0 ? 1 : Math.ceil(dataArr.length / pageMax);
+                    initList();
+                } else {
+                    showPup(1, "请求到的列表为空", true, false);
+                }
+            };
+            listAjaxObj.failureCallback = function(_xmlHttp) {
+                showPup(1, "请求列表数据失败", true, false);
+            }
+            listAjaxObj.requestData();
+        }
+
+        totalPage = Math.ceil(dataArr.length / pageMax);
+
+        function initList() {
+            emptyList();
+            if (pos > 6) {
+                currPage = Math.floor(pos / 6);
+                pos = pos % 6
+            }
+            if (dataArr.length == 0) return;
+            if (dataArr.length - (currPage * 6) > 6) {
+                for (var i = 0; i < 6; i++) {
+                    $("listTitle" + i).innerText = dataArr[currPage * 6 + i].name;
+                }
+            } else {
+                for (var i = 0; i < dataArr.length - (currPage * 6); i++) {
+                    $("listTitle" + i).innerText = dataArr[i].name;
+
+                }
+            }
+            focusMove();
+            initPageNum();
+        }
+
+        function emptyList() {
+            for (var i = 0; i < 6; i++) {
+                $("listTitle" + i).innerText = "";
+            }
+        }
+
+        function initPageNum() {
+            $("pageNum").innerText = "第" + (currPage + 1) + "/" + totalPage + "页";
+
+        }
+
+        function focusMove(num) {
+            $("focus").style.top = -16 + pos * 75 + "px";
+        }
+        /*显示弹出框，flag:0,弹出框需要交互  1::弹出框不需要交互 2:有一个交互按钮的弹出框*/
+        var pupTimeout = -1;
+        var pupShow = -1;
+
+        function showPup(_flag, _text, _autoHide, _backFlag) {
+            pupShow = _flag;
+            $("msg").innerText = _text;
+            $("pupBox").style.visibility = "visible";
+            clearTimeout(pupTimeout);
+            if (_autoHide) {
+                pupTimeout = setTimeout(function() {
+                    hidePup();
+                }, 5000);
+            }
+        }
+
+        function hidePup() {
+            pupShow = -1;
+            $("pupBox").style.visibility = "hidden";
+            $("msg").innerText = "";
+        }
+    </script>
+</body>
+
+</html>

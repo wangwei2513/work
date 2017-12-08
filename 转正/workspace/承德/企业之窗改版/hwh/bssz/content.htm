@@ -1,0 +1,185 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>播放页</title>
+</head>
+<script language="javascript" src="../js/common.js"></script>
+<script language="javascript" src="../js/accoutMan.js"></script>
+<script language="javascript" src="../js/mediaPlayer.js"></script>
+<script>
+	var dataAjaxPath = "content.js";
+	var itemPos = 0;
+	var videoUrl = "";
+	var playUrl = ""; 
+	var duration = 0; 
+	var muteFlag = false;		//静音标识
+	var mp = null;
+
+	var listData = [];
+
+	function eventHandler(eventObj){
+		iDebug("content.htm--eventHandler--keycode="+eventObj.code);
+	  	switch (eventObj.code) {
+			case "KEY_EXIT":
+	        	if(typeof $G!="undefined"){
+	        		$G.gotoPortal($G.config.webUiUrl);
+	        	}else if(typeof gotoPortal!="undefined"){
+	        		gotoPortal();
+	        	}
+				return false;
+				break;
+			case "KEY_BACK":
+				goBack();
+				return false;
+				break;
+			case "KEY_MUTE":  //静音键
+				if(muteFlag == false){
+					muteFlag = true;
+					$("mute_div").style.visibility = "visible";
+					if(navigator.appName.indexOf("iPanel")==-1) iSTB.player.mute();
+					else if(navigator.appName.indexOf("iPanel")!=-1) AudioSetting.mute();
+				}else{
+					muteFlag = false;
+					$("mute_div").style.visibility = "false";
+					if(navigator.appName.indexOf("iPanel")==-1) iSTB.player.unmute();
+					else if(navigator.appName.indexOf("iPanel")!=-1) AudioSetting.unMute();
+				}				
+				return false;
+				break;
+			case "MSG_MEDIA_URL_VALID":			
+				iDebug("play.htm------13001");
+				mp.play();
+				return false;
+				break;
+			case "MSG_MEDIA_URL_INVALID":
+				iDebug("index.htm----eventHandler--13002");
+				break;
+			case "MSG_MEDIA_PLAY_SUCCESS":
+				iDebug("index.htm--eventHandler----13003");
+				return false;
+				break;
+			case "MSG_MEDIA_PLAY_FAILED":
+				iDebug("index.htm---eventHandler---13004");
+				return false;
+				break;				
+	  	}
+	}
+
+	function goBack(){
+		window.location.href = "index.htm";
+	}
+
+	function init() {	
+		newPlayer();
+		videoUrl = getParam("videoUrl",window.location.href);
+		listPos = getParam("listPos",window.location.href);
+		iDebug("hwh play.htm videoUrl="+videoUrl+" | listPos="+listPos);
+		if(isNaN(videoUrl)){
+			ajaxLoadData();
+		}else{//id
+			checkAccoutLogin("getVideoDetail");
+		}		
+	}
+
+	function ajaxLoadData(){
+		var ajaxObj = new ajaxClass();
+		ajaxObj.charset = "gbk";
+		ajaxObj.successCallback = function(_xmlHttp, _params) {
+			listData = eval('(' + _xmlHttp.responseText + ')');
+			playUrl = listData[listPos].videoUrl;
+			iDebug(">>>paly.htm ajaxLoadData videoUrl="+videoUrl);
+			openVod(playUrl);
+		};
+		ajaxObj.failureCallback = function(_xmlHttp, _params) {
+			iDebug(">>>paly.htm ajaxLoadData failureCallback ！");
+		};
+		ajaxObj.url = dataAjaxPath;
+		ajaxObj.requestData();
+	}
+
+	// 根据id获取视频详情
+	function getVideoDetail() {
+		var url = videoDetailUrl.replace("{1}",accessToken).replace("{2}",videoUrl);
+		iDebug("[imgText play.htm]--getVideoDetail---url="+url);
+		var ajaxObj = new ajaxClass(url,function(_xmlHttp){
+			// iDebug("[imgText play.htm]responseText="+_xmlHttp.responseText)
+			var data = eval('('+_xmlHttp.responseText+')');
+			if(data.ret == 0){
+				playUrl = "";
+				// var playUrl = getPlayUrlByType(data.demand_url ,"http://");
+				playUrl = prePlayUrl + "?protocol=http";
+				iDebug("[imgText play.htm]---getVideoDetail---playUrl="+playUrl);	
+				if(playUrl){//支持http和rtsp直播
+					var play_token = data.play_token;
+					iDebug("[imgText play.htm]---getVideoDetail---play_token="+play_token);
+					play_token = play_token?play_token:"ABCDEFGHIGK";
+					if(playUrl.indexOf("?")>=0){//兼容url中已存在参数时的处理
+						playUrl += "&";
+					}else{
+						playUrl += "?";
+					}
+					playUrl += "playtype=demand&accesstoken="+accessToken+"&programid="+videoUrl+"&playtoken="+play_token+"&verifycode="+loginCardId;
+					duration = parseInt(data.duration,10);
+					// seekUrl = data.iframe_url;
+					// iDebug("[imgText play.htm]---getVideoDetail seekUrl="+seekUrl);
+					iDebug("[imgText play.htm]---getVideoDetail---playUrl1="+playUrl+"; | duration="+duration);
+					// $("videoName").innerHTML = marqueeStr(data.video_name?data.video_name:"暂无",maxWord,"375px");
+					// $("duration").innerHTML = countTime(duration);
+					openVod(playUrl);
+				}
+			}else{
+				iDebug("[imgText play.htm]--getVideoDetail--data.ret="+data.ret+";msg:"+data.ret_msg);
+			}
+		},function(_xmlHttp){
+			iDebug("[imgText play.htm]--getVideoDetail--fail !");
+		});
+		ajaxObj.requestData();
+	}
+
+	function openVod(url){
+		iDebug(">>>openVod url=" + url);
+		mp.setMode(0);
+		mp.setPosition(0,0,1280,720);
+		mp.setSource(playUrl);
+		if(typeof iPanel!='undefined'){
+			mp.play();
+		}
+	}
+
+	function newPlayer() {
+		mp = new PlayObj();
+		mp.init();
+		mp.bindID();
+	}
+
+	function exit(){
+		mp.stop(0);
+		mp.close();
+		mp = null;
+	}
+
+	var playTimeout = -1;
+	if(typeof iSTB != "undefined"){
+		iSTB.evt.set_event_callback("eventCallback");
+	}
+
+	function eventCallback(type,event_name,event_type,event_value){
+	    switch(event_name){
+	    	case "PLAYER_BUFFERING_END":
+				break;
+			case "PLAYER_FINISH":
+				break;
+		}
+	}
+</script>
+
+<body leftmargin="0" topmargin="0" onload="init()" onunload="exit()" bgcolor="transparent" onHide="exit();">
+	<!-- 静音图标 -->
+	<div id="mute_div" style="position: absolute; left: 1068px; top: 41px; width: 69px; height: 70px; background-image: url(../images/jingyin.gif); visibility: hidden;"></div>
+
+	<div id="logDebug" style="position: absolute;left: 20px;top: 20px;width: 1200px;height: 680px;background: rgba(0,0,0,0.7);color: #fff;font-size: 20px;z-index: 10;visibility: hidden;">
+		<div id="logTxt" style="position: absolute;width: 100%;left: 10px;bottom: 0;"></div>
+	</div>
+</body>
+</html>

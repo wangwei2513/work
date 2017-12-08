@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?> 
+<config> 
+	<appname>问卷调查（阳泉）</appname>
+	<version>1.0.2</version> 
+	<index>index.htm</index>
+	<language>chinese</language> 
+	<platform>advance</platform> 
+	<author>ipanel</author> 
+	<copyright>ipanel</copyright>
+	<operator>ipanel</operator>
+	<type>1</type>
+	<sqlname>db.sql</sqlname>
+	<htmlfile>html;baseImg</htmlfile>
+	<backgroundfile>itime_weapons.war</backgroundfile>
+	<desc>时下热点问题，不吐不快，快来参与投票吧</desc> 
+	<posterlist> 
+		<dir>baseImg</dir> 
+		<poster> 
+			<postersize>117x142</postersize> 
+			<postername>117x142.jpg</postername>
+		</poster> 
+		<poster> 
+			<postersize>142x172</postersize> 
+			<postername>142x172.jpg</postername>
+		</poster> 
+		<poster> 
+			<postersize>163x198</postersize> 
+			<postername>163x198.jpg</postername>
+		</poster> 
+		<poster> 
+			<postersize>163x406</postersize> 
+			<postername>163x406.jpg</postername> 
+		</poster> 
+		<poster> 
+			<postersize>246x138</postersize> 
+			<postername>246x138.jpg</postername> 
+		</poster> 
+		<poster> 
+			<postersize>374x214</postersize> 
+			<postername>374x214.jpg</postername> 
+		</poster> 
+	</posterlist> 
+</config>

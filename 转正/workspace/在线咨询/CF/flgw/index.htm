@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>法律顾问</title>
+<script src="js/common.js"></script>
+<script>
+	var listData = [];
+	var listPos = 0;
+	var currPage = 0;
+	var totalPage = 0;
+	var pageSize = 7;
+	var maxWordSize = 34;
+	var file = "content.js";
+	var enName = "fzjt";
+	var prePageUrl = "";	//上一页地址
+
+	function eventHandler(eventObj) {
+		iDebug("[list&word index.htm]__eventObj.code="+eventObj.code);
+		switch(eventObj.code){
+			case "KEY_UP"://up
+				changeUD(-1);
+				return false;
+				break;
+			case "KEY_DOWN"://down
+				changeUD(1);
+				return false;
+				break;
+			case "KEY_LEFT"://left
+			case "KEY_RIGHT"://right
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				goBack();
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+		}
+	}
+
+	function goBack() {
+		delGlobalVar(enName+"_backUrl");
+		window.location.href = prePageUrl;
+	}
+
+	function changeUD(_num) {
+		if(listPos+currPage*pageSize+_num<0||listPos+currPage*pageSize+_num>listData.length-1)return;
+		loseFocus();
+		if(listPos+_num<0||listPos+_num>pageSize-1){
+			changePage(_num);
+		}else{
+			listPos += _num;
+			onFocus();
+		}
+	}
+
+	function changePage(_num) {
+		if(totalPage < 2)return;
+		currPage += _num;
+		listPos = 0;
+		initList();
+	}
+
+	function onFocus() {
+		$("list"+listPos+"_0").innerHTML = marqueeStr("·"+listData[listPos+currPage*pageSize].title,maxWordSize,"890px");
+		$("listFocus").style.top = 140 + listPos*62 + "px";
+	}
+
+	function loseFocus() {
+		$("list"+listPos+"_0").innerHTML = getStrChineseLen("·"+listData[listPos+currPage*pageSize].title,maxWordSize);
+	}
+
+	function doSelect() {
+		setGlobalVar("adviserBack","listPos="+listPos+"&currPage="+currPage);
+		window.location.href = "content.htm?position="+(listPos+currPage*pageSize);
+	}
+
+	function init() {
+		var backUrl = checkStrNull(getGlobalVar("adviserBack"));
+		if(backUrl!=""){
+			listPos = parseInt(getParam("listPos",backUrl),10);
+			currPage = parseInt(getParam("currPage",backUrl),10);
+		}
+		delGlobalVar("adviserBack");
+		iDebug("[legalAdviser.htm] init__listPos="+listPos+"  currPage="+currPage);
+		getNode();
+		getData();
+	}
+
+	function getNode() {
+		var ajaxObj = new ajaxClass("node.js",function(_xmlHttp){
+			var jsonData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(jsonData)!=""){
+				enName = jsonData.enName;
+				prePageUrl = checkStrNull(getGlobalVar(enName+"_backUrl"));
+				if(prePageUrl!=""){
+
+				}else if(window.location.href.indexOf("?")>-1){
+					prePageUrl = window.location.href.split("backUrl=")[1];
+					setGlobalVar(enName+"_backUrl",prePageUrl);
+				}else{
+					prePageUrl = "../index.htm";
+				}
+				iDebug("[list&word index.htm] enName="+enName+"|  prePageUrl="+prePageUrl);
+				$("logoImg").src = jsonData.focusImageUrl;
+			}
+		},function(_xmlHttp){
+			iDebug('[list&word index.htm] getData fail !');
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function getData() {
+		var ajaxObj = new ajaxClass(file,function(_xmlHttp){
+			listData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(listData)!=""){
+				totalPage = Math.ceil(listData.length/pageSize);
+				iDebug("[list&word index.htm] getData totalPage="+totalPage);
+				initList();
+			}
+		},function(_xmlHttp){
+			iDebug('[list&word index.htm] getData fail !');
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function initList() {
+		$("currPage").innerHTML = (currPage+1)+'<span style="font-size:22px; color:#0a4269;">/'+totalPage+'</span>';
+		for(var i=0;i<pageSize;i++){
+			if(listData[i+currPage*pageSize]){
+				$("list"+i+"_0").innerHTML = getStrChineseLen("·"+listData[i+currPage*pageSize].title,maxWordSize);
+				$("list"+i+"_1").innerHTML = listData[i+currPage*pageSize].date.split(" ")[0];
+			}else{
+				$("list"+i+"_0").innerHTML = "&nbsp;";
+				$("list"+i+"_1").innerHTML = "&nbsp;";
+			}
+		}
+		onFocus();
+	}
+</script>
+</head>
+<body background="images/tm_bg.jpg" leftmargin="0" topmargin="0" onLoad="init()">
+	<div style="position:absolute; top:48px; left:76px; width:189px; height:48px;">
+		<img id="logoImg" src="images/logo.png" width="189" height="48" />
+	</div>
+	<div style="position:absolute; top:139px; left:71px; width:1140px; height:473px; background-image: url(images/tck.png);">
+		<div style="position:absolute; top:22px; left:38px; width:1059px; height:100px;">
+			<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:26px; color:#ffffff; line-height:62px;">
+				<tr>
+					<td id="list0_0" width="898"></td>
+					<td id="list0_1"></td>
+				</tr>
+				<tr>
+					<td id="list1_0"></td>
+					<td id="list1_1"></td>
+				</tr>
+				<tr>
+					<td id="list2_0"></td>
+					<td id="list2_1"></td>
+				</tr>
+				<tr>
+					<td id="list3_0"></td>
+					<td id="list3_1"></td>
+				</tr>
+				<tr>
+					<td id="list4_0"></td>
+					<td id="list4_1"></td>
+				</tr>
+				<tr>
+					<td id="list5_0"></td>
+					<td id="list5_1"></td>
+				</tr>
+				<tr>
+					<td id="list6_0"></td>
+					<td id="list6_1"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="currPage" style="position:absolute; top:632px; left:73px; width:100px; height:37px; font-size:30px; color:#ffffff;">1<span style="font-size:22px; color:#0a4269;">/1</span>
+	</div>
+	<div id="listFocus" style="position:absolute; top:140px; left:87px; width:1103px; height:107px;">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="36" height="36" background="images/focus_01.png"></td>
+				<td width="1031" background="images/focus_02.png"></td>
+				<td width="36" background="images/focus_03.png"></td>
+			</tr>
+			<tr>
+				<td height="35" background="images/focus_04.png"></td>
+				<td></td>
+				<td background="images/focus_05.png"></td>
+			</tr>
+			<tr>
+				<td height="36" background="images/focus_06.png"></td>
+				<td background="images/focus_07.png"></td>
+				<td background="images/focus_08.png"></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+	"blurImageUrl": "",
+	"clickable": 1,
+	"enName": "dgqys",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "squared",
+	"name": "东港区演示",
+	"navigator": "东港区14框平台>东港区演示",
+	"newAdd": 0,
+	"nodePath": "dgq14kpt/dgqys"
+}

@@ -1,0 +1,35 @@
+﻿{
+"data":[{
+					"Name":"聘请导游",
+					"Category":57,
+					"Url":"http://10.177.64.2/hotel_vod/admin.php?app=admin&index=app&act=section-private-sign",
+					"ID":193,
+					"Hotel":39,
+					"Icon":""
+				},
+				{
+					"Name":"景点购票",
+					"Category":57,
+					"Url":"http://10.177.64.2/hotel_vod/admin.php?app=admin&index=app&act=section-private-sign",
+					"ID":194,
+					"Hotel":39,
+					"Icon":""
+				},
+				{
+					"Name":"旅游报名",
+					"Category":57,
+					"Url":"http://10.177.64.2/hotel_vod/admin.php?app=admin&index=app&act=section-private-sign",
+					"ID":195,
+					"Hotel":39,
+					"Icon":""
+				},
+				{
+					"Name":"机票预订",
+					"Category":57,
+					"Url":"http://10.177.64.2/hotel_vod/admin.php?app=admin&index=app&act=section-private-sign",
+					"ID":196,
+					"Hotel":39,
+					"Icon":""
+				}
+		]
+}

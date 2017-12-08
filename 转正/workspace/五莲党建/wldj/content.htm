@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <style>
+        *{
+            padding:0px;
+            margin:0px;
+        }
+        p{line-height:30px !important;}
+        p span{line-height:30px !important;}
+        body{background:url(images/bg.jpg);}
+    </style>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript">
+        var index = new Index();  //初始化工具函数
+        ajaxObj = null,
+                contentData = [],   //content数据
+                haveBackUrl = false,    //是否有返回url
+                contentDataUrl = "content.js",
+                navTitleAjaxPath = "node.js",
+                backUrl = "index.htm",
+                focusPos = 0, // 0:上一页 ，1：下一页
+                contentPos = 0,
+                dataIndex = 0,
+                pageNum = 0,
+                bdObj = null,
+                btnStyle = [{   //btn样式
+                    "focus":"images/prev_0.png",
+                    "blur" :"images/prev_1.png"
+                },{
+                    "focus":"images/next_0.png",
+                    "blur" :"images/next_1.png"
+                }];
+        /*
+         * 工具函数
+         * */
+        function Index() {
+            /*
+             * 左右切换
+             * */
+            this.changeLR = function (_num) {
+                if(focusPos){
+                    focusPos = 0;
+                    $("perv").src = btnStyle[0].focus;
+                    $("next").src = btnStyle[1].blur;
+                }else{
+                    focusPos = 1;
+                    $("perv").src = btnStyle[0].blur;
+                    $("next").src = btnStyle[1].focus;
+                }
+            };
+            /*
+             * enter
+             * */
+            this.doSelect = function () {
+                if(focusPos){
+                    contentPos = (contentPos + 1 + pageNum) % pageNum;
+                }else{
+                    contentPos = (contentPos - 1 + pageNum) % pageNum;
+                }
+                $("content").style.top = (0-450*contentPos) + "px";
+                $("pgIdx").innerText = contentPos+1;
+                if(contentData[dataIndex].albumImages.length>0){
+                    bdObj.src = contentData[dataIndex].albumImages[contentPos%contentData[dataIndex].albumImages.length].imageUrl ;
+                }
+            };
+            /*
+             * 获取Navdata
+             * */
+            this.getNavData = function () {
+                sendAjax(navTitleAjaxPath,null,function(data){
+                    navData = eval('('+data+')');
+                });
+                this.initNav();
+            };
+            /*
+             * 获取content数据
+             * */
+            this.getContentData = function () {
+                sendAjax(contentDataUrl,null,function(data){
+                    contentData = eval('('+data+')');
+                });
+                this.initContent(0);
+            };
+            /*
+             * 渲染content
+             * */
+            this.initContent = function (){
+                bdObj = document.getElementById("bgImg");
+                if(contentData.length != 0){
+                    if(contentData[dataIndex].albumImages.length>0){
+                        $("contentTitle").innerText = contentData[dataIndex].title;
+                        $("content").innerHTML = contentData[dataIndex].content;
+                        pageNum = Math.ceil($("content").clientHeight / 450) || 1;
+                        $("pgNum").innerText = pageNum;
+                        bdObj.src =  contentData[dataIndex].albumImages[0].imageUrl ;
+                    }
+                    else {
+                        bdObj.style.display = "none";
+                        $("contentBox").style.left = "120px";
+                        $("contentBox").style.width = "1040px";
+                        $("contentTitle").style.width = "1040px";
+                        $("contentDiv").style.width = "1040px";
+                        $("contentTitle").innerText = contentData[dataIndex].title;
+                        $("content").innerHTML = contentData[dataIndex].content;
+                        pageNum = Math.ceil($("content").clientHeight / 450) || 1;
+                        $("pgNum").innerText = pageNum;
+                    }
+                }
+            };
+            /*
+             * 渲染Nav
+             * */
+            this.initNav = function (){
+                $("navTitle").innerText = navData.navigator;
+            };
+            /*
+             * 返回
+             * */
+            this.goBack = function (){
+                window.location.href = backUrl;
+            };
+        }
+        /*
+         * 初始化页面
+         * */
+        function init(){
+            var url = window.location.href;
+            dataIndex = parseInt(url.split("=")[1] || 0);
+            index.getNavData();
+            index.getContentData();
+        }
+        document.onkeydown = eventHandler;
+        function eventHandler(key){
+            var e = key || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 87:
+                case 38:
+                    return false;
+                    break;
+                case 83:
+                case 40:
+                    return false;
+                    break;
+                case 65:
+                case 37:
+                    index.changeLR(-1);
+                    return false;
+                    break;
+                case 68:
+                case 39:
+                    index.changeLR(1);
+                    return false;
+                    break;
+                case 13:
+                    index.doSelect();
+                    return false;
+                    break;
+                case 8:
+                    index.goBack();
+                    return false;
+                    break;
+                case 27:
+                    iSTB.browser.gotoSTB("tv");
+                    event.returnValue = false;
+                    return false;
+                    break;
+
+            }
+        }
+    </script>
+</head>
+<body onload="init()">
+<!--标题信息-->
+<img src="" width="500" height="500" id="bgImg" style="z-index:-1;position:absolute;top:90px;left:20px;"/>
+<div id="navTitle" style="position:absolute;left:85px;top:25px;font-size:20px;"></div>
+<div id="contentBox" style="position:absolute;width:700px;height:550px;top:50px;left:550px;">
+    <h1 id="contentTitle" style="width:700px;text-align:center;"></h1>
+    <div id="contentDiv" style="font-size:18px;position:absolute;width:700px;height:450px;margin-top:40px;overflow:hidden;">
+        <div id="content" style="position:absolute;top:0px;line-height:25px;"></div>
+    </div>
+</div>
+<div style="position:absolute;left: 780px;top:600px;font-size:25px;height:41px;line-height:41px;">
+    <span id="pgIdx">1</span> /
+    <span id="pgNum">1</span>
+</div>
+<div style="position: absolute;left: 900px;top:600px;">
+    <img id="perv" src="images/prev_0.png">
+    <img id="next" src="images/next_1.png">
+</div>
+</body>
+</html>

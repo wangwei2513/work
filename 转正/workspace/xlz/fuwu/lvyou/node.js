@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"lvyou","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495596495183180947.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"招聘信息","navigator":"南朗镇>服务>招聘信息","newAdd":0,"nodePath":"xlz/fuwu/lvyou"}

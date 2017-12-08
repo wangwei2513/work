@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>测试</title>
+</head>
+<script type="text/javascript" src = "sockjs.min.js"></script>
+<script>
+
+var timer = -1;
+var heartbeat_timer = -1;
+var last_health = -1;
+var health_timeout = 3000;
+var clientSocket = null;
+var debug = (getBrowserType() == "Inspur")?1:0;
+var wsUrl =  ["ws://192.168.1.208:8050/PartyMemberEduBackoffice/websocket?placeMaster=8538002125006924","ws://10.191.85.208:8050/PartyMemberEduBackoffice/websocket?placeMaster=8538002125006924"][debug];
+
+
+window.onload = function(){
+	initClientSocket();
+	checkSocketStatus();
+}
+
+function checkSocketStatus(){
+	iDebug(">>>zhaoql:checkSocketSatus--clientSocket="+clientSocket);
+	if(clientSocket!= null){
+		iDebug(">>>zhaoql:checkSocketStatus--status="+clientSocket.readyState);
+		if(clientSocket.readyState >=2 ){
+			initClientSocket();
+		}
+	}
+	clearTimeout(timer);
+	timer = setTimeout(function(){
+		checkSocketStatus();
+	},3000);
+}
+
+function initClientSocket(){
+	if(window.WebSocket){
+		iDebug(">>>zhaoql:liveMeeting--initClientSocket--wsUrl="+wsUrl);
+		clientSocket = new WebSocket(wsUrl);
+		iDebug(">>>zhaoql:liveMeeting--webSocket="+clientSocket);
+		iDebug(">>>zhaoql:liveMeeting--status="+clientSocket.readyState);
+		clientSocket.onopen = function(){
+			iDebug(">>>zhaoql:liveMeeting--socket--open--"+clientSocket.readyState);
+			heartbeat_timer = setInterval(function(){keepAlive(clientSocket)}, 1000);
+		};
+		clientSocket.onmessage = function(evt){
+			iDebug(">>>zhaoql:liveMeeting--socket--onmessage"+clientSocket.readyState);
+			iDebug(">>>zhaoql:liveMeeting--socketEventHandler--result="+evt.data);
+			if(evt.data!=""){
+				var time = new Date();
+				last_health = time.getTime();
+				var response = eval("("+evt.data+")");
+				socketEventHandler(response);
+			}
+		};
+		clientSocket.onclose = function(){
+			iDebug(">>>zhaoql:liveMeeting--socket--onclose"+clientSocket.readyState);
+			clearInterval(heartbeat_timer);
+		};
+		clientSocket.onerror = function(){
+			iDebug(">>>zhaoql:liveMeeting--socket--onerror"+clientSocket.readyState);
+			clearInterval(heartbeat_timer);
+		}
+	}
+}
+
+function socketEventHandler(response){
+	if(typeof response.result!="undefined"){
+		iDebug(">>>zhaoql:liveMeeting--socketEventHandler--result="+response.result);
+		switch(response.result){
+			case "WE0001":break;
+			case "WE0002":break;
+			case "WE0003":break;
+			case "WE0004":
+				/*focusObj.notice.hide();
+				showTips("管理员结束了会议，正在返回!");
+				stopTimer();
+				iStartRecord = false;
+				status = -1;
+				removeAll();
+				//exit();
+				clearTimeout(timer);
+				timer = setTimeout(function(){	
+					window.location.href = "../index.htm";
+				},200);	*/
+			break;
+			case "WE0005":
+			break;
+		}
+	}
+}
+
+
+function keepAlive(ws){
+	var time = new Date();
+	if(last_health != -1 && (time.getTime() - last_health > health_timeout ) ){
+			//ws.close();
+	}
+	else{
+		if(ws.bufferedAmount == 0 ){
+			var text = "8538002125006924-12";
+			iDebug(">>>zhaoql:liveMeeting--text="+text);
+			ws.send(text);
+		}
+	}
+}
+
+function iDebug(_str){
+	divDebug(_str); return;
+	if(navigator.appName.indexOf("iPanel")>-1){
+		iPanel.debug(_str);
+	}else if(navigator.appName.indexOf("Netscape")>-1 || navigator.appName.indexOf("Google")>-1){
+		console.log(_str);
+	}else if(navigator.appName.indexOf("Opera")>-1){
+		opera.postError(_str);
+	}else{
+		
+	}
+}
+
+function getBrowserType(){
+	var ua = navigator.userAgent.toLowerCase();
+	return /ipanel/.test(ua) ? "iPanel":/enrich/.test(ua) ? "EVM": /wobox/.test(ua) ? "Inspur": window.ActiveXObject ? "IE": document.getBoxObjectFor || /firefox/.test(ua) ? "FireFox": window.openDatabase && !/chrome/.test(ua) ? "Safari": /opr/.test(ua) ? "Opera": window.MessageEvent && !document.getBoxObjectFor ? "Chrome":"";
+}
+
+function divDebug(_str){
+	var debugObj = document.getElementById("test");
+	if(typeof debugObj!="undefined" && debugObj!=null){
+		debugObj.style.visibility = "visible";
+		debugObj.innerHTML+=_str+"</br>";
+	}
+}
+
+</script>
+<body>
+<div style="position: absolute; width: 1280px; height: 720px; background-color: #F00; visibility: visible; word-wrap: break-word; top: 91px; left: 96px;" id="test"></div>
+</body>
+</html>

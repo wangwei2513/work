@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"bbq","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495613726738620691.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山市南朗镇飞舞青春乒乓球活动","navigator":"南朗镇>活动>中山市南朗镇飞舞青春乒乓球活动","newAdd":0,"nodePath":"xlz/huodong/bbq"}

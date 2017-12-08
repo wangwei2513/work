@@ -1,0 +1,266 @@
+DataCollection.js<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+<title>食在中山</title>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+<script type="text/javascript">
+var menuDataUrl = "menu.js";
+var navTitleAjaxPath = "node.js";
+var ajaxObj = null;
+var menuData = [];	
+var menuPos = 0;
+var haveBackUrl = false;
+var title = "";
+var nodeAjaxObj = null;
+var navStr = "";
+	function getTitleData() {
+  if(nodeAjaxObj != null){
+    nodeAjaxObj.requestAbort();
+  }
+  nodeAjaxObj = new AjaxClass();
+  nodeAjaxObj.frame = window;
+  nodeAjaxObj.charset = "utf-8";
+  nodeAjaxObj.successCallback = function(_xmlHttp, _params) {
+    var jsonData = eval('(' + _xmlHttp.responseText + ')');
+    if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+     navStr = jsonData;
+    }
+  };
+  nodeAjaxObj.failureCallback = function(_xmlHttp, _params) {};
+  nodeAjaxObj.url = "node.js";
+  nodeAjaxObj.requestData();
+}
+var listType = "";
+ navStr = navStr.replace(/ > /g,">");
+ var msg = "";
+	
+	function getTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getInitData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+document.onkeydown = eventHandler;
+function eventHandler(key){
+  	var e = key || event;
+  	var keycode = e.keyCode || e.which || e.charCode;
+  	switch (keycode) {
+    	case 87:   // up
+    	case 38:
+      		changeFocus("up");
+      		return false;
+      		break;
+    	case 83:   // down
+    	case 40:
+     		changeFocus("down");
+      		return false;
+      		break;
+    	case 65:   // left
+    	case 37:
+      		changeFocus("left");
+      		return false;
+      		break;
+    	case 68:   // right
+    	case 39:
+      		changeFocus("right");
+      		return false;
+      		break;
+    	case 13:
+	 		doSelect();
+      		return false;
+      		break;
+    	case 8:
+      		goBack();
+      		event.returnValue = false;
+      		return false;
+      		break;
+    	case 27:
+      		iSTB.browser.gotoSTB("tv");
+      		event.returnValue = false;
+      		return false;
+     	 	break;
+
+  	}
+}
+
+function changeFocus(_flag){
+	var newPos = focusInfo[menuPos][_flag];
+	if(newPos != -1){
+		menuPos = newPos;
+	}
+	showFocus();
+}
+
+function showFocus(){
+	var posInfo = focusInfo[menuPos].posInfo;
+	$("focusDiv").style.left = posInfo.left + "px";	
+	$("focusDiv").style.top = posInfo.top + "px";
+	$("focusDiv").style.width = posInfo.width + "px";
+	$("focusDiv").style.height = posInfo.height + "px";
+}
+
+function doSelect(){
+	if(typeof menuData == "undefined" || menuData.length<=0)return;
+	var currObj = menuData[menuPos];
+	if(currObj.clickable == 1){
+		mySessionStorage.setItem("ZSfoodMenuPos",menuPos);
+		if(currObj.linkUrl!=""){
+			msg = currObj.name;
+				listType = "视频";
+				getTitleData();
+			window.location.href = currObj.linkUrl+"?backUrl="+window.location.href;
+		}else if(currObj.enName!=""){
+			msg = currObj.name;
+				listType = "栏目";
+				getTitleData();
+			window.location.href = currObj.enName  + "/index.htm";	
+		}
+	}
+}
+
+function goBack(){
+	mySessionStorage.removeItem("ZSfoodMenuPos");
+	listType = "首页";
+			getBackTitleData();
+	window.location.href = "main://index.html";
+}
+
+function init(){
+	getPara();
+	getMenuData();
+	listType = "栏目";
+				getInitData();
+}
+
+function getPara(){
+	var tmpPara = mySessionStorage.getItem("ZSfoodMenuPos");	
+	if(tmpPara != ""){
+		menuPos = parseInt(tmpPara,10);
+	} 
+	if(menuPos>focusInfo.length-1){
+		menuPos = 0;
+	}	
+}
+
+function getMenuData() {
+	if(ajaxObj != null){
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "utf-8";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(typeof(jsonData) != "undefined" && jsonData.length > 0){
+			for (var i = 0,len = jsonData.length; i < len; i++) {
+				menuData = jsonData;
+			}
+			iDebug(menuData);
+			initMenuData();
+			showFocus();
+			ajaxNavTitle();
+			checkBackUrl();
+		}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		ajaxNavTitle();
+		checkBackUrl();
+	};
+	ajaxObj.url = menuDataUrl;
+	ajaxObj.requestData();
+}
+
+function ajaxNavTitle(){
+	ajaxObj = null;
+	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "utf-8";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		var jsonData = eval('(' + _xmlHttp.responseText + ')');
+		if(typeof(jsonData) != "undefined"){
+			if(jsonData.navigator!=""){
+				$("navTitle").innerText = jsonData.navigator;
+				title = jsonData.navigator;
+			}
+		}else{}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {};
+	ajaxObj.url = navTitleAjaxPath;
+	ajaxObj.requestData();
+}
+
+function checkBackUrl(){
+	ajaxObj  = null;
+	if (ajaxObj != null) {
+		ajaxObj.requestAbort();
+	}
+	ajaxObj = new AjaxClass();
+	ajaxObj.frame = window;
+	ajaxObj.charset = "gbk";
+	ajaxObj.successCallback = function(_xmlHttp, _params) {
+		if(_xmlHttp.responseText == ""){
+			haveBackUrl = false;
+		}else{
+			haveBackUrl = true;
+		}
+	};
+	ajaxObj.failureCallback = function(_xmlHttp, _params) {
+		haveBackUrl = false;
+	};
+	ajaxObj.url = backUrl;
+	ajaxObj.requestData();
+}
+
+function initMenuData(){
+	$("name").innerText = menuData[0].name;
+	for(var i = 0; i < 6; i++){
+		$("image_" + i).src = menuData[i].focusImageUrl;
+	}
+	$("focusDiv").style.visibility = "visible";
+}
+
+</script>
+</head>
+<body style="background:url(images/bg.jpg) no-repeat;" onload="init()">
+	<!--标题信息-->
+	<div id="navTitle" style="position:absolute;left:85px;top:25px;color:#d2dce6;font-size:20px;"></div>
+	<img src="images/line_03.png" style="position:absolute;left:0px;top:55px;"/>
+	<!--列表-->
+	<div style="position:absolute;left:83px;top:110px;width:893px;height:314px;color:#d2dce6;font-size:20px;">
+		<img id="image_0" src="" style="width: 893px; height: 314px;">
+		<div id="name" style="position:absolute;left:853px;top:0px;background:url(images/border_picImg.png);width:30px;height:214px;padding-top:100px;padding-left:10px;"> 
+		</div>
+	</div>
+	<div style="position:absolute;left:1001px;top:110px;"><img id="image_1" style="width:210px; height: 314px;" src=""/></div>
+	<div style="position:absolute;left:82px;top:460px;"><img id="image_2" style="width:266px; height: 148px;" src=""/></div>
+	<div style="position:absolute;left:370px;top:460px;"><img id="image_3" style="width: 266px; height: 148px;" src=""/></div>
+	<div style="position:absolute;left:658px;top:460px;"><img id="image_4" style="width: 266px; height: 148px;" src=""/></div>
+	<div style="position:absolute;left:946px;top:460px;"><img id="image_5" style="width: 266px; height: 148px;" src=""/></div>
+	<!-- 焦点 -->
+	<img id="focusDiv" src="images/focus_border_02.png" style="position:absolute;left:65px;top:92px;visibility: hidden;"/>
+	<!--底部信息-->
+	<div style="position:absolute;left:0px;top:647px;background:url(images/bg_bottom.png);width:1280px;height:74px;">	
+	</div>
+	<!-- <span id="marqueeDiv" style="position:absolute;left:380px;top:661px;color:#d2dce6;font-size:20px;">	人气爆棚的美食是不是一定很难烹调?其实不一定哦!今天为大家带来一些人气爆棚的美食的
+	</span>
+	<img src="images/icon_04.png" style="position:absolute;left:1190px;top:660px;"/> -->
+</body>
+</html>

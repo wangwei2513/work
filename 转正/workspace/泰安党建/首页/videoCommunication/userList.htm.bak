@@ -1,0 +1,436 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>视频交流2</title>
+</head>
+<script type="text/javascript" src="js/ajax.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+<script type="text/javascript" src="js/showList.js"></script>
+<script>
+	var menuPos= 0;
+	var defaultPos = 0;
+	var submitFlag = false;
+	var areaArr = [];
+	var listArr = [];
+	var showTipsTimeout = -1;
+	var loginArea = "";
+	var token = ""; //登陆homed之后获取的token值
+  var deviceId = ""; //登陆homed之后获取的deviceId值
+	var submitParms = {
+            "joinMeetingName": "",
+            "placeMaster": cardNo,
+            "type": 3,
+            "secondAreaIds": ""
+        };
+	 var parmsObj = { //泰安版本
+	          "deviceno": cardNo,
+	          "devicetype": 1,
+	          "account": userName,
+	          "accounttype": 1,
+	          "pwd": userPwd,
+	          "accesstoken": "",
+	      };      
+	function eventHandler(eventObj) {
+            var keycode = eventObj.code;
+            console.log(keycode)
+            switch (keycode) {
+            case "KEY_UP":
+                changeUD(-1);
+                return EVENT.STOP;
+                break;
+            case "KEY_DOWN":
+                changeUD(1);
+                return EVENT.STOP;
+                break;
+            case "KEY_LEFT":
+                changeLR( - 1);
+                return EVENT.STOP;
+                break;
+            case "KEY_RIGHT":
+                changeLR(1);
+                return EVENT.STOP;
+                break;
+            case "KEY_SELECT":
+                doSelect();
+                return EVENT.STOP;
+                break;
+            case "KEY_PAGE_UP":
+
+                return EVENT.STOP;
+                break;
+            case "KEY_PAGE_DOWN":
+
+                return EVENT.STOP;
+                break;
+
+            case "KEY_BACK":
+                         
+                return EVENT.STOP;
+                break;    
+            case "KEY_HOMEPAGE":
+			          
+            default:
+                return EVENT.DOWN;
+                break;
+            }
+        }
+        function init(){
+        	showcurrTime();
+        	getAreaInfoByCA();
+        	}
+        function getAreaInfoByCA() {
+            if (token != "" && 　deviceId != "") {
+                /*document.body.style.display = "block";
+		              goBackFlag = false;
+		              initFocus();*/
+            } else {
+                var url = queryLoginPlaceUrl;
+                if (!isGet) {
+                    url = url.replace("{0}", parmsObj.deviceno);
+                }
+                iDebug(">>>zhaoql:index--getAreaInfoByCA--url=" + url);
+                ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    onSuccess: function(responseText) {
+                        iDebug(">>>zhaoql:getAreaInfoByCA--responseText=" + responseText);
+                        var res = eval('(' + responseText + ')');
+                        if (typeof res != "undefined" && res.result == "E0000") {
+                            var tempObj = res.msg;
+                            if (typeof tempObj != "undefined" && typeof(tempObj.areaLevel) != "undefined" && (tempObj.areaLevel) != "") {
+                                loginArea = tempObj.placeName;
+                                iDebug(">>>zhaoql:index--getAreaInfoByCA--loginArea=" + loginArea);
+                                if (loginArea != "") {
+                                    getUserList();
+                                }
+                            }
+                        } else {
+                            showTips("error:" + tempObj.msg);
+                        }
+                    },
+                    onError: function() {
+                        iDebug(">>>zhaoql:index--getAreaInfoByCA--request->error");
+                    }
+                });
+            }
+        }
+
+        function getUserList() {
+            var url = getUseInfo;
+            if (!isGet) {
+                url = url.replace("{0}", parmsObj.deviceno).replace("{1}", parmsObj.devicetype);
+            }
+            iDebug(">>>zhaoql:index--getUserList--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    var res = eval('(' + responseText + ')');
+                    var userArr = res.user_list;
+                    if (res.ret == "0" && userArr && userArr.length > 0) {
+                        parmsObj.account = userArr[0].user_id;
+                        parmsObj.pwd = parmsObj.accesstoken == "" ? userPwd: "";
+                        iDebug(">>>zhaoql:index--getUserList--userId=" + parmsObj.account + "|password=" + parmsObj.pwd + "|token=" + parmsObj.accesstoken);
+                        userLogin();
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:index--getUserList fail");
+                }
+            });
+        }
+
+        function userLogin() {
+            var url = homedLogin;
+            if (!isGet) {
+                url = url.replace("{0}", parmsObj.deviceno).replace("{1}", parmsObj.devicetype).replace("{2}", parmsObj.accounttype).replace("{3}", parmsObj.account).replace("{4}", parmsObj.pwd).replace("{5}", parmsObj.accesstoken);
+            }
+            iDebug(">>>zhaoql:sphy--index--userLogin--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    var tempObj = eval("(" + responseText + ")");
+                    if (typeof(tempObj) == "undefined" || tempObj.ret != "0") { //未匹配
+                        goBackFlag = true;
+                        showTips("CA与党组织不匹配,请查询CA卡号!");
+                    } else if (tempObj.ret == "0") { // 匹配成功:昵称与选择的区域做对比
+                        //if(tempObj.nick_name == loginArea){
+                        if (parmsObj.accesstoken == "") {
+                            iDebug(">>>sphy--index--checkLogin--loginToken=" + tempObj.access_token + "|deviceid=" + tempObj.device_id);
+                            setGlobalParms({
+                                "sphy_loginToken": tempObj.access_token,
+                                "sphy_deviceId": tempObj.device_id
+                            });
+                            getAreaInfo();
+                        } else {
+                            showTips("error:" + tempObj.msg);
+                        }
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:index--getAreaInfoByCA--request->error");
+                    goBackFlag = true;
+                    showTips("请求出错!");
+                }
+            });
+        }	
+        function doSelect(){
+        	if(submitFlag){
+        		for (var i = 0; i < 6; i++) {
+                  if ($("menu" + i).checked) {
+                      listArr.push($("menu" + i).areaId);
+                  }
+              }
+              //iDebug("doSelect -- timetype = "+$("menu").checked);
+              getThemes();
+        		}else{
+        			loseAllcheck();
+        	    setCheck(menuPos);
+        			}
+        	}	
+        function changeUD(_num){
+          setMenu(_num,"UD");
+        	}	
+        function changeLR(_num){
+          setMenu(_num,"LR");
+        	}	
+        var ThemesId = ""; 	
+        function getThemes(){
+        	var url = queryThemesUrl;
+        	if (!isGet) {
+                    url = url.replace("{0}", submitParms.placeMaster).replace("{1}", 3);
+                }
+            iDebug(">>>zhaoql:index--getThemes--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    iDebug(">>>zhaoql:getAreaInfo--responseText=" + responseText);
+                    var tempObj = eval('(' + responseText + ')');
+                    if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                    	  ThemesId = tempObj.msg.notices[0].id;
+                        submitMeetingPlaceInfo();
+                    } else {
+                        showTips("error:" + tempObj.msg);
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:getThemes--request->error");
+                }
+            });
+        	}	
+        	function getAreaInfo() {
+            var url = areaQueryUrl;
+            iDebug(">>>zhaoql:index--getAreaInfo--url=" + url);
+            ajax({
+                url: url,
+                type: "GET",
+                dataType: "json",
+                onSuccess: function(responseText) {
+                    iDebug(">>>zhaoql:getAreaInfo--responseText=" + responseText);
+                    var tempObj = eval('(' + responseText + ')');
+                    if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                        menuData = tempObj.msg;
+                        for (var i = 0,
+                        len = menuData.length; i < len; i++) {
+                            var obj = {
+                                "id": "",
+                                "name": "",
+                                "areaLevel": "",
+                                "children": []
+                            }
+                            
+                                obj.id = menuData[i].id;
+                                obj.name = menuData[i].areaName;
+                                iDebug("---->>name="+obj.name);
+                                obj.areaLevel = menuData[i].areaLevel;
+                                areaArr.push(obj);
+                           
+                        }
+                        initArea();
+                        iDebug(">>>zhaoql:getAreaInfo-len=" + menuData.length);
+                    } else {
+                        showTips("error:" + tempObj.msg);
+                    }
+                },
+                onError: function() {
+                    iDebug(">>>zhaoql:getAreaInfoByCa--request->error");
+                }
+            });
+        }	
+        function submitMeetingPlaceInfo() {
+            iDebug(">>>zhaoql:submitMeetingPlaceInfo--listArr=" + listArr.toString());
+            if (typeof listArr == "undefined" || listArr.length <= 0) {
+                showTips("未选择任何会场!");
+            } else {
+                var url = creatSubMeetingPlaceUrl;
+                if (!isGet) {
+                    url = url.replace("{0}", submitParms.joinMeetingName).replace("{1}", submitParms.placeMaster).replace("{2}", submitParms.type).replace("{3}", listArr.join(",")).replace("{4}",ThemesId);
+                }
+                iDebug(">>>zhaoql--submitMeetingPlaceInfo--url=" + url);
+                ajax({
+                    url: url,
+                    type: "GET",
+                    dataType: "json",
+                    onSuccess: function(responseText) {
+                        iDebug(">>>zhaoql:submitMeetingPlaceInfo--responseText=" + responseText);
+                        var tempObj = eval('(' + responseText + ')');
+                        if (typeof tempObj != "undefined" && tempObj.result == "E0000") {
+                            iDebug(">>>zhaoql--submitingPlaceInfo--identifyCode=" + tempObj.msg);
+                            setGlobalParms({
+                                "sphy_identifyCode": tempObj.msg,
+                                "sphy_areaIds": listArr
+                            });
+                            window.location.href = "living.htm";
+                        } else {
+                            showTips("error:" + tempObj.msg);
+                        }
+                    },
+                    onError: function() {
+                        iDebug(">>>zhaoql:submitMeetingPlaceInfo--request->error");
+                    }
+                });
+            }
+        }
+        function initArea() {
+            for (var i = 0; i < 6; i++) {
+            	if(areaArr[i].name==loginArea){
+            		defaultPos = i;
+            		setCheck(i);
+            		}
+                $("menu" + i).innerHTML = '<span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>'+areaArr[i].name;
+                $("menu" + i).areaId = areaArr[i].id;
+            }
+        }
+        function setMenu(_num,_flag){
+        	//$("menu"+menuPos).style.background = "#e5e5e5";
+        	//$("menu"+menuPos).style.color = "#000000";
+        	var num = 0
+        	if(_flag == "UD"){
+        		if(_num<0&&submitFlag){
+        			submitFlag = false;
+        			$("btn0").style.visibility = "hidden";
+        			$("userFocus").style.visibility = "visible";
+        			return;
+        			}
+        		num = _num*3;
+        		menuPos+=num;
+        		}else{
+        			num = _num;
+        			menuPos+=num;
+        			}
+        	if(menuPos>5||menuPos<0||menuPos == defaultPos){
+        		if(menuPos>5){
+        			$("btn0").style.visibility = "visible";
+        			$("userFocus").style.visibility = "hidden";
+        			submitFlag = true;
+        			}
+        		menuPos-=num;
+        		}	
+        	//$("menu"+menuPos).style.background = "#bb4304";
+        	//$("menu"+menuPos).style.color = "#f8af89";
+        	$("userFocus").style.top = Math.floor(menuPos/3)*124+122+"px"; 	
+        	$("userFocus").style.left = parseInt(menuPos%3)*351+36+"px";
+        	}	
+        function loseAllcheck(){
+        	for(var i=0;i<6;i++){
+        		$("menu"+i).style.background = "#e5e5e5";
+        	  $("menu"+i).style.color = "#000000";
+        		$("menu"+i).checked = false;
+        		}
+        	}	
+        function setCheck(_i){
+        	$("menu"+_i).style.background = "#bb4304";
+        	$("menu"+_i).style.color = "#f8af89";
+          $("menu"+_i).checked = true;
+          $("menu"+defaultPos).style.background = "#bb4304";
+        	$("menu"+defaultPos).style.color = "#f8af89";
+          //$("menu"+defaultPos).checked = true;
+        	}	
+        	function showTips(__str) {
+            $("tip_div").style.visibility = "visible";
+            $("tip_cont").innerText = __str;
+            showTipFlag = false;
+            clearTimeout(showTipsTimeout);
+            showTipsTimeout = setTimeout(function() {
+                $("tip_div").style.visibility = "hidden";
+                showTipFlag = true;
+            },
+            2000);
+        }
+        var timer = null;
+        function showcurrTime(){
+        	clearTimeout(timer);
+        	var currDate = new Date();
+        	$("time").innerHTML = currDate.Format("hh:mm:ss");
+        	$("day").innerHTML = currDate.Format("yyyy/MM/dd");
+        	timer = setInterval(function(){showcurrTime();},1000)
+        	}
+</script>
+<body background="bg.jpg" leftmargin="0" topmargin="0" onload="init();">
+	<div style="position:absolute;left:73px;top:32px;"><img src="logo.png" width="475" height="67"></div>
+ <div style="position:absolute;left:1079px;top:56px; width:130px; line-height:px; font-size:18px; color:rgba(255,255,255,.6); letter-spacing:2px;line-height:18px;">
+            <span id="time" style="font-size:26px;line-height:22px;">
+                15:10:30
+            </span>
+            <br/>
+            <span id="day">2015/01/13</span>
+        </div>    
+    <!--底部-->
+	<div style="position:absolute;left:75px;top:662px;width:720px;height:24px;line-height:24px; font-size:24px; color:#faf9f6; background:url(notice.png) no-repeat left center; padding-left:36px;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+	<div style="position:absolute;left:903px;top:652px;"><img src="tips01.png" width="305" height="40"></div>
+    
+    <!--栏目-->
+<div style="position:absolute;left:72px;top:135px; width:1134px; height:482px; background:url(listR_bg9.png);">
+    	<div style="position:absolute;left:483px;top:33px;"><img src="title01.png" width="168" height="29"></div>
+  <div style="position:absolute;left:59px;top:136px;width:1018px; height:179px;">
+        	<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:22px; color:#000; text-align:center;">
+            	<tr height="62">
+                	<td width="316" id="menu0" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>机关党支部</td>
+                    <td width="35"></td>
+                    <td width="316" id="menu1" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>岱岳党支部</td>
+                    <td width="35"></td>
+                    <td width="316" id="menu2" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>新泰党支部</td>
+                </tr>
+                <tr height="62"><td colspan="5"></td></tr>
+                <tr height="62">
+               	  <td id="menu3" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>机关党支部</td>
+                    <td ></td>
+                    <td id="menu4" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>岱岳党支部</td>
+                    <td ></td>
+                    <td id="menu5" style="background:#e5e5e5;" checked="false"><span style="display:inline-block;background:url(icon00.png) no-repeat left center; width:81px; height:31px;">&nbsp;</span>新泰党支部</td>
+                </tr>
+            </table>
+        </div>
+        <!--按钮-->
+  <div style="position:absolute;left:493px;top:401px; width:148px; height:52px; background:url(btn1_ct.png); line-height:52px; font-size:24px; color:#fff; text-align:center;">发起交流</div>
+  <div id="btn0" style="position: absolute; left: 476px; top: 385px; width: 180px; height: 84px; background: url(btn1_f2.png); visibility: hidden"></div>
+    <div id="userFocus" style="position: absolute; left: 36px; top: 122px; width: 362px; height: 104px; background: url(jiaoliu_f1.png);"></div>
+     <!--div id="defaultFocus" style="position: absolute; left: 36px; top: 122px; width: 362px; height: 104px; background: url(jiaoliu_f1.png);"></div-->
+    </div>
+    <!--提示-->
+        <div id="tip_div" style="position:absolute; left:365px; top:153px; width:560px; height:360px; background:url(tck_bg.png) center no-repeat; visibility:hidden;">
+            <table align="center" width="500" height="340" border="0" cellspacing="0"
+            cellpadding="0" style="font-size:28px; color:#FFFFFF;">
+                <tr>
+                    <td height="60" align="center">
+                        温馨提示
+                    </td>
+                </tr>
+                <tr>
+                    <td height="150" align="center" style="font-size:25px;" id="tip_cont">
+                    </td>
+                </tr>
+            </table>
+        </div>
+    
+</body>
+</html>

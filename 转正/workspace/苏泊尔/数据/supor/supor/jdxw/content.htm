@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+
+    <!--logo、标题-->
+    <div style="position:absolute; left:50px; top:36px; width:266px; height:43px;"><img src="images/logo_sl.png" width="266" height="43" /></div>
+    <div style="position:absolute; left:343px; top:36px; width:auto; height:43px; font-size:24px; color:#000000; line-height:43px;">公告栏</div>
+
+
+    <!--内容-->
+    <div style="position:absolute; left:53px; top:90px; width:813px; height:540px; background:url(images/btm_bg0.png) no-repeat left top;">
+
+        <!--分割线-->
+        <div style="position:absolute; left:8px; top:73px; width:728px; height:1px; background:url(images/line_bg0.png);"></div>
+
+        <!--内容列表-->
+        <div style="position:absolute; left:28px; top:9px; width:700px; height:520px;">
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:24px; color:#000000; line-height:57px;">
+                <tr>
+                    <td id="title" height="65" style="font-size:26px; line-height:65px;">双龙社区扑克牌比赛报名通知</td>
+                </tr>
+                <tr>
+                    <div id="contentBox" style="position:absolute;left:-5px;top:65px;overflow:hidden; width:735px; height:446px; line-height:54px; font-size:26px; color:#666; text-indent:2em;">
+                        <div id="content" style="position:absolute;left:0;top:0; width:735px;">
+                            <p>4月14日，德城区人民政府与德州学院举行战略合作签约仪式，双方签订战略合作框架协议。德州学院党委书记刘文烈，党委委员、副校长巩建闽，区委书记巩洪波，区委副书记、区长王洪林出席签约仪式。</p>
+                            <p>刘文烈指出，德州学院将以此次签约为新起点，进一步密切与德城区战略合作关系，在文化创新、人才培养、科学研究、成果转化、服务社会等方面，打造特色，提升质量，建立长期稳定的产学研合作关系。</p>
+                            <p>巩洪波在致辞中说，德城区始终坚持“科技是第一生产力，人才是第一资源”发展理念，认真落实人才政策“黄金30条”，大力实施“5111”人才计划，积极引进高端人才，不断集</p>
+                        </div>
+                    </div>
+                </tr>
+            </table>
+        </div>
+
+        <!--页码-->
+        <div id="scrollBar" style="position:absolute; left:757px; top:29px; width:30px; height:483px; background:url(images/pageSliderBtm.png) no-repeat left top;">
+            <div id="scroll" style="position:absolute; left:0px; top:30px; width:30px; height:90px; background:url(images/pageSliderBar.png); font-size:22px; color:#ffffff; text-align:center; padding-top:8px;"><span id="currPage">1</span><br/>/<br/><span id="totlePage">13</span></div>
+        </div>
+
+    </div>
+
+
+    <!--海报-->
+    <div style="position:absolute; left:880px; top:99px; width:340px; height:522px;"><img src="images/poster_img0.jpg" width="340" height="522" /></div>
+    <div style="position:absolute; left:1085px; top:98px; width:140px; height:128px;"><img src="images/mark_slsq.png" width="140" height="128" /></div>
+
+    <!--滚动字幕-->
+    <div style="position:absolute; left:100px; top:645px; width:1120px; height:40px; font-size:20px; color:#6d6d6d; line-height:40px;">
+        <marquee>明天会有大到小雨请相关部门做好相关安排工作引导做好相关安排工作。</marquee>
+    </div>
+    <script src="js/common.js"></script>
+    <script>
+        function grabKeyEvent(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    keyUp();
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    keyDown()
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+                    keyLeft();
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+                    keyRight();
+                    return false;
+                    break;
+                case 13: //ok
+                    // doSelect();
+                    break;
+                case 8:
+                    // goBack();
+                    window.location.href = 'index.htm';
+                    return false;
+                    break;
+                case 27:
+                case 32:
+                case 340:
+                case 640:
+                    window.location.href = 'index.htm';
+                    return false;
+                    break;
+            }
+        }
+        document.onkeydown = grabKeyEvent;
+        document.onsystemevent = grabKeyEvent;
+        var ajaxObj = null,
+            contentData = [],
+            currPage = 0,
+            totlePage = 0,
+            listPos = getGlobalParms("listPos") ? parseInt(getGlobalParms("listPos")) : 0;
+        // 加载content数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "content.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                contentData = getData;
+                initContent();
+            }
+            ajaxObj.failureCallback = function () {
+
+            }
+            ajaxObj.requestData();
+        }
+        // initContent
+        function initContent() {
+            $("content").innerHTML = contentData[listPos].content;
+            $("title").innerText = contentData[listPos].title;
+            totlePage = Math.ceil($("content").offsetHeight / $("content").parentNode.offsetHeight)
+            $("totlePage").innerText = totlePage;
+            initScroll('scroll', 'scrollBar', totlePage);
+        }
+        /*初始化滚动条*/
+        function initScroll(scrollBar, scroll, length) {
+            scrollObj = new ScrollBar(scrollBar, scroll);
+            scrollObj.init(length, 1, 360, 0);
+        }
+        // 上
+        function keyUp() {
+            if (currPage <= totlePage - 1 && currPage > 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = $("content").offsetTop + 454 + "px"
+            } else if (currPage === 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = "0px"
+            }
+        }
+        // 下
+        function keyDown() {
+            totleLen = $("content").offsetHeight;
+            if (totlePage > 2 && currPage < totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(currPage * 418) + "px"
+            } else if (totlePage > 2 && currPage == totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 418) + "px"
+            } else if (totlePage == 2 && currPage < 1) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 418) + "px"
+            }
+        }
+        // init
+        function init() {
+            ajaxLoadContentData();
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>

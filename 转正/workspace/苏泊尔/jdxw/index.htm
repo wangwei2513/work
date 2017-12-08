@@ -1,0 +1,368 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+    <meta name="page-view-size" content="1280*720">
+    <title>无标题文档</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+    <div style=" position:absolute; left:71px; top:62px;"><img src="images/logo.png" width="247" height="30" /></div>
+    <div id="node" style=" position:absolute; left:339px; top:64px; font-size:28px; color:#00baff;">基地新闻</div>
+
+    <div style=" position:absolute; left:1191px; top:138px; width:50px; text-align: right; font-size:20px; color:#576984;">
+        <span id="curr" style=" color:#fff;">2</span>/<span id="totleLen">8</span>
+    </div>
+    <div id="scrollBar" style=" position:absolute; left:1211px; top:167px;width:8px;height:477px;background:#999;border-radius:8px;">
+        <div id="scroll" style=" position:absolute; left:0; top:0;width:8px;"><img src="images/icon1_01.png" width="8" height="116" /></div>
+    </div>
+    <div style=" position:absolute; left:70px; top:170px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img0" src="" width="360" height="203" /></div>
+        <div id="title0" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon0" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+    <div style=" position:absolute; left:452px; top:170px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img1" src="" width="360" height="203" /></div>
+        <div id="title1" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon1" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+    <div style=" position:absolute; left:834px; top:170px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img2" src="" width="360" height="203" /></div>
+        <div id="title2" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon2" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+
+    <div style=" position:absolute; left:70px; top:426px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img3" src="" width="360" height="203" /></div>
+        <div id="title3" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon3" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+    <div style=" position:absolute; left:452px; top:426px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img4" src="" width="360" height="203" /></div>
+        <div id="title4" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon4" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+    <div style=" position:absolute; left:834px; top:426px;">
+        <div style=" position:absolute; left:0px; top:0px;"><img id="img5" src="" width="360" height="203" /></div>
+        <div id="title5" style=" position:absolute; left:0px; top:149px; width:360px; height:54px; line-height:54px; background:url(images/icon1_03.png);text-align:center; font-size:26px; color:#ccc; text-indent:0.25em;">绍兴国际马拉松赛</div>
+        <div id="focusIcon5" style=" position:absolute; left:142px; top:55px;"><img src="images/icon1_02.png" width="84" height="81" /></div>
+    </div>
+    <div id="focus" style=" position:absolute; left:48px; top:148px;"><img src="images/focus02.png" width="408" height="249" /></div>
+    <script src="js/common.js"></script>
+    <script>
+        function grabKeyEvent(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    keyUp();
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    keyDown()
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+                    keyLeft();
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+                    keyRight();
+                    return false;
+                    break;
+                case 13: //ok
+                    doSelect();
+                    break;
+                case 8:
+                case 27:
+                case 32:
+                case 340:
+                case 640:
+                    goBack();
+                    return false;
+                    break;
+            }
+        }
+        document.onkeydown = grabKeyEvent;
+        document.onsystemevent = grabKeyEvent;
+        var slaveAddr = ["http://slave.homed.me:13160", "http://172.26.6.32:13160"][1];
+        var access_token = navigator.appName.indexOf("iPanel") != -1 ? iPanel.ioctlRead("accessToken") :
+            "TOKEN50001002";
+        var ajaxObj = null,
+            vodPlayAddr = "http://172.16.242.42/application/newPlay/vodPlay.htm",
+            menuData = [],
+            contentData = [],
+            currPage = 0,
+            totlePage = 0,
+            label = '2680',
+            smallPic = '246x138',
+            pos = getGlobalParms("listPos") ? parseInt(getGlobalParms("listPos")) : 0;
+        // 加载node数据
+        function ajaxLoadNodeData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "node.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                nodeData = getData;
+                initNode();
+                getList();
+            }
+            ajaxObj.failureCallback = function () {}
+            ajaxObj.requestData();
+        }
+
+        function getList() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.charset = "utf-8";
+            ajaxObj.frequency = 1000;
+            ajaxObj.requestTimes = 1;
+            ajaxObj.successCallback = function (_xmlHttp, _params) {
+                var jsonData = _xmlHttp.responseText;
+                var result_data = eval("(" + jsonData + ")");
+                contentData = result_data.list;
+                totlePage = Math.ceil(contentData.length / 6);
+                if (contentData) {
+                    initList();
+                }
+            };
+            ajaxObj.failureCallback = function (_xmlHttp, _params) {};
+            //修改字段名称
+            ajaxObj.url = [slaveAddr + "/homed/program/get_list?accesstoken=" + access_token + "&label=" + label +
+                "&pageidx=" + 1 + "&pagenum=" + 20 + "&depth=2", "data/listPage.js"
+            ][0];
+            iDebug("----listDataPath--:" + ajaxObj.url);
+            ajaxObj.requestData("GET");
+        }
+        // initNode
+        function initNode() {
+            $("node").innerText = nodeData.name;
+        }
+        // initList
+        function initList() {
+            clearList();
+            if (contentData.length > 6) {
+                if (currPage < totlePage - 1) {
+                    for (var i = 0; i < 6; i++) {
+                        $("title" + i).parentNode.style.visibility = 'visible';
+                        $("img" + i).src = contentData[currPage * 6 + i].poster_list.dir + contentData[currPage * 6 + i]
+                            .poster_list.list[smallPic];
+                        iDebug("----$(img" + i + ").src--:" + $("img" + i).src);
+                        if (contentData[currPage * 6 + i].name.length > 5) {
+                            $("title" + i).innerText = contentData[currPage * 6 + i].name.substring(0, 5) + '..';
+                        } else {
+                            $("title" + i).innerText = contentData[currPage * 6 + i].name;
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < contentData.length - currPage * 6; i++) {
+                        $("title" + i).parentNode.style.visibility = 'visible';
+                        $("img" + i).src = contentData[currPage * 6 + i].poster_list.dir + contentData[currPage * 6 + i]
+                            .poster_list.list[smallPic];
+                        iDebug("----$(img" + i + ").src--:" + $("img" + i).src);
+                        if (contentData[currPage * 6 + i].name.length > 5) {
+                            $("title" + i).innerText = contentData[currPage * 6 + i].name.substring(0, 5) + '..';
+                        } else {
+                            $("title" + i).innerText = contentData[currPage * 6 + i].name;
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0; i < contentData.length; i++) {
+                    $("title" + i).parentNode.style.visibility = 'visible';
+                    $("img" + i).src = contentData[currPage * 6 + i].poster_list.dir + contentData[currPage * 6 + i]
+                        .poster_list.list[smallPic];
+                    iDebug("----$(img" + i + ").src--:" + $("img" + i).src);
+                    if (contentData[currPage * 6 + i].name.length > 5) {
+                        $("title" + i).innerText = contentData[currPage * 6 + i].name.substring(0, 5) + '..';
+                    } else {
+                        $("title" + i).innerText = contentData[currPage * 6 + i].name;
+                    }
+                }
+            }
+            initScroll('scroll', 'scrollBar', totlePage);
+        }
+
+        function loseTitleFocus() {
+            if (contentData[currPage * 6 + pos].name.length > 5) {
+                $("title" + pos).innerText = contentData[currPage * 6 + pos].name.substring(0, 5) + '..';
+            }
+        }
+
+        function setTitleFocus() {
+            if (contentData[currPage * 6 + pos].name.length > 5) {
+                $("title" + pos).innerHTML = '<marquee>' + contentData[currPage * 6 + pos].name + '</marquee>';
+            }
+        }
+        // clearList
+        function clearList() {
+            for (var i = 0; i < 6; i++) {
+                $("title" + i).parentNode.style.visibility = 'hidden';
+            }
+        }
+        /*初始化滚动条*/
+        function initScroll(scrollBar, scroll, length) {
+            scrollObj = new ScrollBar(scrollBar, scroll);
+            scrollObj.init(length, 1, 377, 0);
+        }
+        // 上
+        function keyUp() {
+            if (currPage > 0) {
+                if (pos > 2) {
+                    pos -= 3;
+                } else {
+                    pos += 3;
+                    currPage--;
+                    $("curr").innerText = currPage + 1;
+                    initList();
+                    scrollObj.scroll(currPage);
+                }
+            } else {
+                if (pos > 2) {
+                    pos -= 3;
+                }
+            }
+            focusMove()
+        }
+        // 下
+        function keyDown() {
+            if (currPage < totlePage - 1) {
+                if (pos < 3) {
+                    pos += 3;
+                } else {
+                    if ((currPage + 1) * 6 + pos - 3 < contentData.length) {
+                        pos -= 3;
+                    } else {
+                        pos = contentData.length - (currPage + 1) * 6 - 1;
+                    }
+                    currPage++;
+                    $("curr").innerText = currPage + 1;
+                    initList();
+                    scrollObj.scroll(currPage);
+                }
+            } else {
+                if (contentData.length - currPage * 6 > 3) {
+                    if (pos < 3 && currPage * 6 + pos + 3 < contentData.length) {
+                        pos += 3;
+                    } else if (pos < 3 && currPage * 6 + pos + 3 >= contentData.length) {
+                        pos = contentData.length - currPage * 6 - 1;
+                    }
+                }
+            }
+            focusMove();
+        }
+        // 左
+        function keyLeft() {
+            if (currPage < totlePage - 1) {
+                if (pos !== 0 && pos !== 3) {
+                    pos--;
+                } else {
+                    pos += 2;
+                }
+            } else {
+                if (contentData.length - currPage * 6 > 3) {
+                    if (pos !== 0 && pos !== 3) {
+                        pos--;
+                    } else if (pos == 0) {
+                        pos += 3;
+                    } else if (pos == 3) {
+                        pos = contentData.length - currPage * 6 - 1;
+                    }
+                } else {
+                    if (pos > 0) {
+                        pos--;
+                    }
+                }
+            }
+            focusMove();
+        }
+        // 右
+        function keyRight() {
+            if (currPage < totlePage - 1) {
+                if (pos !== 2 && pos !== 5) {
+                    pos++
+                } else {
+                    pos -= 2
+                }
+            } else {
+                if (contentData.length - currPage * 6 > 3) {
+                    if (pos < 2 || (pos > 2 && pos < contentData.length - currPage * 6 - 1)) {
+                        pos++
+                    } else if (pos === 2) {
+                        pos -= 2
+                    }
+                } else {
+                    if (pos < contentData.length - currPage * 6 - 1) {
+                        pos++;
+                    }
+                }
+            }
+            focusMove();
+        }
+        // focusMove
+        function focusMove() {
+            clearColor();
+            $("title" + pos).style.color = '#fff';
+            if (pos < 3) {
+                $("focusIcon" + pos).style.visibility = 'visible';
+                $("focus").style.top = '148px';
+                $("focus").style.left = 48 + pos * 382 + 'px';
+            } else {
+                $("focusIcon" + pos).style.visibility = 'visible';
+                $("focus").style.top = '404px';
+                $("focus").style.left = 48 + (pos - 3) * 382 + 'px';
+            }
+        }
+        // 清除文字样式
+        function clearColor() {
+            for (var i = 0; i < 6; i++) {
+                $("title" + i).style.color = '#ccc';
+                $("focusIcon" + i).style.visibility = 'hidden';
+            }
+        }
+        // doSelect
+        function doSelect() {
+            setGlobalParms({
+                'listPos': pos
+            });
+            str =
+                '{"id":"33","name":"startAppPlay","packageName":"com.ipanel.join.homed.shaoxing","className":"com.ipanel.join.topway.homed.vod.VideoPlayerActivity","videoId":"' +
+                contentData[pos].id +
+                '","videoName":"","videoType":"2","seriesId":"","seriesIdx":"1","playerUser":1,"showHistory":"false"}';
+            iDebug("doSelect str=" + str);
+            Android.JSONCall(str);
+            // window.location.href = vodPlayAddr + "?videoId=" + contentData[pos].id + '&backUrl=' +
+            // encodeURIComponent(window.location.href);
+        }
+        // goback  
+        function goBack() {
+            removeGlobalParms('listPos');
+            window.location.href = 'http://172.26.6.101/portal/supor/index.htm';
+        }
+        // init   
+        function init() {
+            ajaxLoadNodeData();
+            focusMove();
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

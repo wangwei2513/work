@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>test</title>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script>
+	window.onload = function () {
+		var policyUrl = "http://japi.juhe.cn/carInsuranceGift/gift";
+		var verification = "",
+		key = "da11f7b2178848ad7bcc2ce19ae0a15c";
+		//http://japi.juhe.cn/carInsuranceGift/gift?mobile=1516152****&key=您申请的appKey&verification=729408
+function getPolicyNum() {
+	var ajaxObj = new ajaxClass();
+			ajaxObj.url = "getData.php";
+			ajaxObj.successCallback = function(_xmlHttp){
+				var str = _xmlHttp.responseText;
+				var data = str.split(",");
+				console.log(str);
+				console.log(data);
+				}
+			
+			ajaxObj.failureCallback = function(_xmlHttp){
+			
+			};
+			ajaxObj.urlParameters = "url=http://japi.juhe.cn/carInsuranceGift/gift&mobile="+ mobile +"&key="+ key +"&verification="+ verification;
+			ajaxObj.requestData("POST");
+}
+
+data = {"error_code":0,"reason":"Success","result":{"data":{"policyNo":"10451211900358572874"}}}
+var str=JSON.stringify(data)
+console.log(str.split(",")[2].split(":")[3].split("}")[0])
+var dataUrl = "http://japi.juhe.cn/carInsuranceGift/check";
+var realname = "王斌",
+	mobile = "13186032907",
+	gender = "M",
+	birth = "1996-07-07",
+	product = "JSWY",
+	idcard = "610324199607070518",
+	city = "宝鸡",
+	key = "da11f7b2178848ad7bcc2ce19ae0a15c";
+
+//http://japi.juhe.cn/carInsuranceGift/check?company=聚合数据&realname=魏**&mobile=1516152****&gender=M&birth=1989-01-02&product=WYCX&idcard=3203811989********&key=您申请的appKey
+
+
+function submite(){
+	var ajaxObj = new ajaxClass();
+			ajaxObj.url = "getData.php";
+			ajaxObj.successCallback = function(_xmlHttp){
+				var str = _xmlHttp.responseText;
+				var data = str.split(",");
+				console.log(str);
+				console.log(data);
+				}
+			
+			ajaxObj.failureCallback = function(_xmlHttp){
+			
+			};
+			
+			
+			ajaxObj.urlParameters = "url=http://japi.juhe.cn/carInsuranceGift/check&company=出行保险&realname="+ realname +"&mobile="+ mobile +"&gender="+ gender +"&birth="+ birth +"&product="+ product +"&idcard="+ idcard +"&key="+ key +"&city="+ city
+
+			
+			ajaxObj.requestData("POST");
+}
+
+var input0 = document.getElementById("input");
+var btn0 = document.getElementById("btn0");
+var btn1 = document.getElementById("btn1");
+btn0.onclick=function () {
+	submite();
+}
+btn1.onclick=function () {
+	var a = input0.value;
+	verification=a.toString();
+	getPolicyNum();
+	}
+}
+	</script>
+</head>
+<body>
+<button id="btn0">asadasd</button>
+	<input id="input" type="text">
+	<button id="btn1">asadasd</button>
+</body>
+</html>

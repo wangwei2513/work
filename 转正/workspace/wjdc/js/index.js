@@ -1,0 +1,72 @@
+var navPos = 0;
+document.onkeydown = grabEvent;
+document.onsystemevent = grabEvent;
+
+function grabEvent(){
+var eventObj = Event.mapping(event);
+var keycode = eventObj.code;
+    if(keycode == "KEY_EXIT" || keycode == "KEY_MENU") {
+        window.location.href = returnUrl;
+    	return EVENT.STOP;
+    }
+  switch(keycode){
+    case "KEY_UP": //up
+        udMove(-1);
+        return EVENT.STOP;
+        break;
+    case "KEY_DOWN": //down
+        udMove(1);
+        return EVENT.STOP;
+        break;
+    case "KEY_LEFT": //left
+        return EVENT.STOP;
+        break;
+    case "KEY_RIGHT": //right
+        return EVENT.STOP;
+        break;
+    case "KEY_SELECT":
+		if(navPos==0){
+			window.location.href = "dsdc.htm?0";	
+		}else{
+			window.location.href = "dsdc.htm?1";		
+		}
+		
+        return EVENT.STOP;
+        break;
+    case "KEY_BACK":
+        goBack();
+        return EVENT.STOP;
+        break;
+  }
+}
+
+function goBack(){
+    gotoPortal();
+}
+
+function udMove(_num){
+	if(navPos+_num<0 || navPos+_num>1) return;	
+	navLostFocus();
+	navPos+=_num;
+	navGetFocus();
+}
+function navLostFocus(){
+	//$("menu"+navPos).style.webkitTransitionDuration = "200ms";
+	$("menu"+navPos).style.webkitTransform = "scale(1)";
+	$("menu"+navPos).style.border = 'none';
+	$("menu"+navPos).style.top = parseInt($("menu"+navPos).style.top)+10+'px';
+	$("menu"+navPos).style.left = parseInt($("menu"+navPos).style.left)+10+'px';
+}
+function navGetFocus(){
+	//$("menu"+navPos).style.webkitTransitionDuration = "200ms";
+	$("menu"+navPos).style.webkitTransform = "scale(1.008)";
+	$("menu"+navPos).style.border = '#EFD90B solid 10px';
+	$("menu"+navPos).style.top = parseInt($("menu"+navPos).style.top) - 10+'px';
+	$("menu"+navPos).style.left =  parseInt($("menu"+navPos).style.left)-10+'px';
+}
+function init(){
+	navGetFocus();
+}
+window.onload=function(){
+	init();
+}

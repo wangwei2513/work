@@ -1,0 +1,436 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="page-view-size" content="1280*720">
+    <title>健康教育</title>
+    <script src="js/common.js"></script>
+    <script src="js/config.js"></script>
+    <script>
+        var listPos = 0;
+        var currPage = 0;
+        var totalPage = 1;
+        var focusArea = 0; //0列表 1按钮 2一级列表
+        var btnPos = 0;
+        var pageSize = 8;
+        var menuList = [];
+        document.onkeydown = eventHandler;
+
+        function eventHandler(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38:
+                    if (focusArea == 0) {
+                        change(-4);
+                    } else if (focusArea == 1) {
+                        if (listData.length <= 0) {
+                            blurFocus();
+                            focusArea = 2;
+                            getFocus();
+                        } else {
+                            blurFocus();
+                            focusArea = 0;
+                            getFocus();
+                        }
+                    } else if (focusArea == 2) {
+
+                    }
+                    return false;
+                    break;
+                case 2:
+                case 40:
+                    if (focusArea == 0) {
+                        change(4);
+                    } else if (focusArea == 1) {
+
+                    } else if (focusArea == 2) {
+                        if (listData.length > 0) {
+                            $("menu" + menuBox.focusPos).style.backgroundImage = "url(images/border_leaver.png)";
+                            focusArea = 0;
+                            getFocus();
+                        } else {
+                            $("menu" + menuBox.focusPos).style.backgroundImage = "url(images/border_leaver.png)";
+                            focusArea = 1;
+                            getFocus();
+                        }
+                    }
+                    return false;
+                    break;
+                case 3:
+                case 37:
+                    if (focusArea == 0) {
+                        change(-1);
+                    } else if (focusArea == 1) {
+                        changeBtn(-1)
+                    } else if (focusArea == 2) {
+                        changeMenu(-1);
+                    }
+                    return false;
+                case 4:
+                case 39:
+                    if (focusArea == 0) {
+                        change(1);
+                    } else if (focusArea == 1) {
+                        changeBtn(1)
+                    } else if (focusArea == 2) {
+                        changeMenu(1);
+                    }
+                    return false;
+                    break;
+                case 13:
+                    if (focusArea == 0) {
+                        doSelect();
+                    } else if (focusArea == 1) {
+                        if (btnPos == 0) {
+                            changePage(-1);
+                        } else if (btnPos == 1) {
+                            changePage(1);
+                        } else if (btnPos == 2) {
+                            goBack();
+                        }
+                    }
+                    return false;
+                    break;
+                case 340:
+                case 8:
+                case 339:
+                case 27:
+                    goBack();
+                    return false;
+                    break;
+            }
+        }
+
+        function doSelect() {
+            mySessionStorage.setItem("jkjyTypePos", menuBox.position);
+            mySessionStorage.setItem("jkjyPos", listPos);
+            mySessionStorage.setItem("jkjyCurrPage", currPage);
+            var str =
+                '{"id":"33","name":"startAppPlay","packageName":"com.ipanel.join.homed.shaoxing","className":"com.ipanel.join.topway.homed.vod.VideoPlayerActivity","videoId":"' +
+                listData[listPos].id +
+                '","videoName":"","videoType":"2","seriesId":"","seriesIdx":"1","playerUser":1,"showHistory":"false"}';
+            iDebug("doSelect str=" + str);
+            Android.JSONCall(str);
+        }
+
+        function goBack() {
+            mySessionStorage.removeItem("jkjyTypePos");
+            mySessionStorage.removeItem("jkjyPos");
+            mySessionStorage.removeItem("jkjyCurrPage");
+            window.location.href = "index.htm";
+        }
+
+        function changeMenu(_num) {
+            blurFocus();
+            menuBox.changeList(_num);
+            getFocus();
+            currPage = 0;
+            listPos = 0;
+            requestList();
+        }
+
+        function changePage(_num) {
+            if (currPage + _num < 0) return;
+            if (currPage + _num >= totalPage) return;
+            currPage += _num;
+            if (currPage == totalPage - 1 && listPos > (listData.length - 1) % pageSize) {
+                listPos = (listData.length - 1) % pageSize;
+            } else {
+                listPos = (pageSize - 1);
+            }
+            requestList();
+        }
+        var initPos = 0;
+        var ajaxObj = null;
+
+        function init() {
+            //分类下标
+            initPos = parseInt(mySessionStorage.getItem("jkjyTypePos"), 10) ? parseInt(mySessionStorage.getItem(
+                "jkjyTypePos"), 10) : 0;
+            //列表下标
+            listPos = parseInt(mySessionStorage.getItem("jkjyPos"), 10) ? parseInt(mySessionStorage.getItem("jkjyPos"),
+                10) : 0;
+            //当前第几页
+            currPage = parseInt(mySessionStorage.getItem("jkjyCurrPage"), 10) ? parseInt(mySessionStorage.getItem(
+                "jkjyCurrPage"), 10) : 0;
+            //listPos = pos%pageSize;
+            //currPage = parseInt(pos/pageSize);
+            requestMenu();
+            gettime();
+        }
+
+        function requestMenu() { 
+            var url = programTypeUrl;
+            var ajaxObj = new AjaxClass(url,
+                //成功
+                function (_xmlHttp) {
+                    var res = eval("(" + _xmlHttp.responseText + ")");
+                    if (res.ret == 0) {
+                        if (typeof res.type_list != "undefined" && res.type_list != null) {
+                            menuList = res.type_list[0].children;
+                            initMenu();
+                        }
+                    } else {
+                        ajaxErrorInfo("获取分类列表失败！", res.ret);
+                    }
+                },
+                //失败
+                function () {
+
+                });
+            ajaxObj.requestData();
+        }
+
+        var menuBox = null;
+
+        function initMenu() {
+            menuBox = new showList(5, menuList.length, initPos, 0, window);
+            menuBox.focusDiv = "";
+            menuBox.position = initPos;
+            menuBox.focusPos = initPos % 5;
+            menuBox.haveData = function (List) {
+                $("menu" + List.idPos).innerText = menuList[List.dataPos].name;
+            }
+            menuBox.notData = function (List) {
+                $("menu" + List.idPos).innerText = "";
+            }
+            menuBox.startShow();
+            requestList();
+            if (focusArea == 0) {
+                $("menu" + menuBox.focusPos).style.backgroundImage = "url(images/border_leaver.png)";
+                $("menu" + menuBox.focusPos).style.color = "#000000";
+            }
+        }
+
+
+        var listData = [];
+        // 
+        function requestList() {
+            listData = [];
+            var url = programListUrl.replace("{1}", currPage + 1).replace("{2}", menuList[menuBox.position].id);
+            iDebug("requestList url=" + url);
+            var ajaxObj = new AjaxClass(url,
+                //成功
+                function (_xmlHttp) {
+                    var res = eval('(' + _xmlHttp.responseText + ')');
+                    if (res.ret == 0) {
+                        totalPage = Math.ceil(res.total / pageSize);
+                        listData = res.list;
+                        initList();
+                    } else {
+                        iDebug("获取列表失败！", res.ret);
+                    }
+                },
+                //失败
+                function () {
+
+                });
+
+            ajaxObj.requestData();
+            //特殊处理没有数据的时候
+            /*	if(menuList.length<=0){
+            		focusArea = 1;	
+            	}else if(listData&&listData.length==0){
+            		focusArea = 2;
+            	}*/
+        }
+
+        function initList() {
+            for (var i = 0; i < pageSize; i++) {
+                if (listData[i]) {
+                    //$("list"+i).style.visibility = "visible";
+                    if (getStrChineseLength(listData[i].name) > 11) {
+                        $("list" + i).innerText = subStr(listData[i].name, 10) + "...";
+                    } else {
+                        $("list" + i).innerText = listData[i].name;
+                    }
+                    if (typeof listData[i].poster_list.list["246x138"] != "undefined") {
+                        //$("pic"+i).src = listData[i].poster_list.dir + listData[i].poster_list.list["246x138"];
+
+                        $("pic" + i).src = listData[i].poster_list.dir.replace(/slave.homed.me/, "172.26.6.32") +
+                            listData[i].poster_list.list["246x138"];
+                    } else {
+                        $("pic" + i).src = "";
+                    }
+                    $("item" + i).style.visibility = "visible";
+                } else {
+                    $("item" + i).style.visibility = "hidden";
+                    //$("list"+i).style.visibility = "hidden";
+                    //$("list"+i).innerText = "";
+                    //$("pic"+i).src = "";
+                }
+            }
+            getFocus();
+        }
+
+
+        function gettime() {
+            var date = new Date();
+            var str = date.pattern("yyyy-MM-dd EE hh:mm:ss");
+            $("time").innerHTML = str;
+            setTimeout(function () {
+                gettime();
+            }, 1000);
+        }
+
+        function changeBtn(_num) {
+            blurFocus();
+            btnPos = (btnPos + _num + 3) % 3;
+            getFocus();
+        }
+
+        function change(_num) {
+            if (listPos + _num < 0) {
+                if (_num == -1) return;
+                else {
+                    blurFocus();
+                    focusArea = 2;
+                    getFocus();
+                }
+            } else if ((currPage == totalPage - 1 && listPos + _num >= listData.length) || (listPos + _num >= pageSize)) { //最后一页
+                if (_num == 1) return;
+                else {
+                    blurFocus();
+                    focusArea = 1;
+                    getFocus();
+                }
+            } else {
+                blurFocus();
+                listPos += _num;
+                getFocus();
+            }
+        }
+
+        function getFocus() {
+            if (focusArea == 0) {
+                if (getStrChineseLength(listData[listPos].name) > 11) {
+                    $("list" + listPos).innerHTML = "<marquee>" + listData[listPos].name + "</marquee>";
+                }
+                $("listFocus").style.left = 62 + (listPos % 4) * 293 + "px";
+                $("listFocus").style.top = 93 + Math.floor((listPos / 4)) * 213 + "px";
+                $("listFocus").style.visibility = "visible";
+            } else if (focusArea == 1) {
+                $("btn" + btnPos).style.backgroundImage = "url(images/focus_bt.png)";
+            } else if (focusArea == 2) {
+                $("menu" + menuBox.focusPos).style.backgroundImage = "url(images/border_focus.png)";
+                $("menu" + menuBox.focusPos).style.color = "#000000";
+            }
+        }
+
+        function blurFocus() {
+            if (focusArea == 0) {
+                if (getStrChineseLength(listData[listPos].name) > 11) {
+                    $("list" + listPos).innerText = subStr(listData[listPos].name, 10) + "...";
+                }
+                $("listFocus").style.visibility = "hidden";
+            } else if (focusArea == 1) {
+                $("btn" + btnPos).style.backgroundImage = "url(images/btn_01.png)";
+            } else if (focusArea == 2) {
+                $("menu" + menuBox.focusPos).style.backgroundImage = "url()";
+                $("menu" + menuBox.focusPos).style.color = "#ffffff";
+            }
+        }
+
+        window.onload = init;
+    </script>
+</head>
+
+<body style="background-color:transparent;">
+    <div id="bodyBox" style="position:absolute; left:0px; top:0px; width:1280px; height:720px;background:url(images/bg_02.jpg) no-repeat;">
+
+        <!--titile -->
+        <img src="images/logo_03.png" style="position:absolute;left:57px;top:44px;" />
+        <!--时间信息-->
+        <div id="time" style="position:absolute;left:905px;top:48px;color:#000000;font-size:24px;">&nbsp;</div>
+        <!--列表信息-->
+        <!--标题信息 -->
+        <div style="position:absolute;left:0px;top:113px;background:url(images/cover_top.png);width:1280px;height:60px;">
+            <div style="position:absolute;left:61px;top:0px;width:1080px;height:60px;color:#fafdff;font-size:28px;text-align:center;">
+                <table border="0" cellpadding="0" cellspacing="0" width="1080" height="60" style="text-align:center;">
+                    <tr>
+                        <td width="216" id="menu0"></td>
+                        <td width="216" id="menu1"></td>
+                        <td width="216" id="menu2"></td>
+                        <td width="216" id="menu3"></td>
+                        <td width="216" id="menu4"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div style=" position:absolute; left:0px; top:114px; width:1280px; height:506px;text-align:center;">
+            <div id="item0" style=" position:absolute; left:62px; top:93px;visibility:hidden;">
+                <img id="pic0" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px;background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list0" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item1" style=" position:absolute; left:355px; top:93px;visibility:hidden;">
+                <img id="pic1" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list1" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item2" style=" position:absolute; left:649px; top:93px;visibility:hidden;">
+                <img id="pic2" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list2" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item3" style=" position:absolute; left:942px; top:93px;visibility:hidden;">
+                <img id="pic3" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list3" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item4" style=" position:absolute; left:62px; top:306px;visibility:hidden;">
+                <img id="pic4" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list4" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item5" style=" position:absolute; left:355px; top:306px;visibility:hidden;">
+                <img id="pic5" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list5" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item6" style=" position:absolute; left:649px; top:306px;visibility:hidden;">
+                <img id="pic6" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list6" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+            <div id="item7" style=" position:absolute; left:942px; top:306px;visibility:hidden;">
+                <img id="pic7" src="images/pic1_01.jpg" width="278" height="183" />
+                <div style=" position:absolute; left:0px; top:139px; width:278px; height:44px; background:url(images/pic1_01_bg.png);">&nbsp;</div>
+                <div id="list7" style=" position:absolute; left:0px; top:139px; width:278px; height:44px; line-height:44px; font-size:24px; color:#fff; text-indent:0.25em; z-index:9;">&nbsp;</div>
+            </div>
+        </div>
+
+        <!--焦点-->
+        <div id="listFocus" style=" position:absolute; left:51px; top:86px; visibility:hidden;">
+            <div style="position: absolute; left: -8px; top: 110px;"><img src="images/focus01.png" width="300" height="204" /></div>
+            <div style="position: absolute; left: 115px; top: 174px;"><img src="images/icon1_03.png" width="47" height="53" /></div>
+        </div>
+
+        <!--跑马灯效果-->
+        <!--<img src="images/icon_02.png" style="position:absolute;left:63px;top:655px"/>
+	<div style="position:absolute;left:97px;top:655px;color:#010101;font-size:22px;">
+		<marquee>明天医院停电一天请相关物业部门做好停电准备并告知相关</marquee>
+	</div>-->
+        <!--上一页 -->
+        <div id="btn0" style="position:absolute;left:775px;top:655px;background:url(images/btn_02.png);width:142px;height:46px;color:#000000;font-size:24px;text-align:center;
+				line-height:46px;">
+            上一页
+        </div>
+        <!--下一页 -->
+        <div id="btn1" style="position:absolute;left:929px;top:655px;background:url(images/btn_02.png);width:142px;height:46px;color:#313130;font-size:24px;text-align:center;
+				line-height:46px;">
+            下一页
+        </div>
+        <!--返回-->
+        <div id="btn2" style="position:absolute;left:1083px;top:655px;background:url(images/btn_01.png);width:142px;height:46px;color:#313130;font-size:24px;text-align:center;
+				line-height:46px;">
+            返回
+        </div>
+    </div>
+</body>
+
+</html>

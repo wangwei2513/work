@@ -1,0 +1,459 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>02灯塔党建2级</title>
+    <style>
+        .line1 td {
+            border-bottom: 1px solid rgba(255, 185, 118, .3);
+        }
+    </style>
+</head>
+
+<body background="images/bg1.jpg" leftmargin="0" topmargin="0">
+    <div style="position:absolute;left:0px;top:0px; width:254px; height:720px; background:url(images/list_bg1.png);">
+        <div style="position:absolute;left:40px;top:112px; width:197px; height:510px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:30px; color:#fdbd96; text-align:center;">
+                <tr height="85">
+                    <td id="nav0" style="background:url(images/list_f1.png) no-repeat center; color:#fff;">农村</td>
+                </tr>
+                <tr height="85">
+                    <td id="nav1">城市社区</td>
+                </tr>
+                <tr height="85">
+                    <td id="nav2">机关</td>
+                </tr>
+                <tr height="85">
+                    <td id="nav3">高校</td>
+                </tr>
+                <tr height="85">
+                    <td id="nav4">国有企业</td>
+                </tr>
+                <tr height="85">
+                    <td id="nav5" style="font-size:24px;">非公有制经济<br/>和社会组织</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div style="position:absolute;left:245px;top:0px; width:224px; height:720px; background:url(images/list_bg2.png);">
+        <div style="position:absolute;left:17px;top:112px; width:197px; height:510px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:30px; color:#e4d7d4; text-align:center;">
+                <tr height="85">
+                    <td id="menu0">上级精神</td>
+                </tr>
+                <tr height="85">
+                    <td id="menu1">政策法规</td>
+                </tr>
+                <tr height="85">
+                    <td id="menu2">最新动态</td>
+                </tr>
+                <tr height="85">
+                    <td id="menu3">经验做法</td>
+                </tr>
+                <tr height="85">
+                    <td id="menu4">先进典型</td>
+                </tr>
+                <tr height="85">
+                    <td id="menu5">&nbsp;</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div style="position:absolute;left:60px;top:41px;"><img src="images/title01.png" width="242" height="36"></div>
+
+    <!--右边内容-->
+    <div style="position:absolute;left:491px;top:114px; width:666px; height:532px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:28px;color:#e4d7d4;">
+            <tr height="76" class="line1">
+                <td id="list0" style="padding-left:10px;">东营市垦利区扎实推进村级党务督查工作</td>
+            </tr>
+            <tr height="76" class="line1">
+                <td id="list1" style="padding-left:10px;">临沂市河东区：“三四三”工作法转化提升后进村</td>
+            </tr>
+            <tr height="76" class="line1">
+                <td id="list2" style="padding-left:10px;">梁山县杨营镇倾力打造基层党建示范点</td>
+            </tr>
+            <tr height="76" class="line1">
+                <td id="list3" style="padding-left:10px;">邹城市千泉街道：“四坚持”抓党建促脱贫</td>
+            </tr>
+            <tr height="76" class="line1">
+                <td id="list4" style="padding-left:10px;">嘉祥县党建示范区创建初见成效</td>
+            </tr>
+            <tr height="76" class="line1">
+                <td id="list5" style="padding-left:10px;">龙口市辛店村：党建引领闯出城中村发展新路</td>
+            </tr>
+            <tr height="76">
+                <td id="list6" style="padding-left:10px;">莱西市曲家庄村：创新党建新模式 带领社员奔小康</td>
+            </tr>
+        </table>
+    </div>
+
+    <!--滑动条-->
+    <div style="position:absolute;left:1204px;top:143px; width:4px; height:488px; background:url(images/page_bg0.png);">
+        <div id="navBar" style="position:absolute;left:-13px;top:36px; width:30px; height:63px; background:url(images/page_bg.png); line-height:32px; text-align:center; font-size:23px; color:#fff;"><span id="currPage"></span><br/><span id="totlePage"></span></div>
+    </div>
+    <script type="text/javascript" src="js/keyevent.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.onkeydown = eventHandler;
+
+        function eventHandler(e) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            var eventObj = Event.mapping(keycode);
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    changeUD(-1);
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    changeUD(1);
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    changeLR(-1);
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    changeLR(1);
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                    window.location.href = "../pt/index.htm";
+                    removeGlobalParms([enName + "_listPos", enName + "_menuPos", enName + "_focusArea"]);
+                    return false;
+                    break;
+            }
+        }
+        // 变量
+        var ajaxObj = null,
+            menuData = [],
+            listData = [],
+            navData = [],
+            menuPos = 0,
+            listPos = 0,
+            focusArea = 0,
+            currPage = 0,
+            navPos = 0,
+            totlePage = 0,
+            navBarSpeed = 0,
+            menuPath = "menu.js",
+            listpath = "/content.js";
+        // 加载nav数据
+        function ajaxLoadNavData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+
+            ajaxObj.url = menuPath;
+
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                navData = getData;
+                initNav();
+                ajaxLoadMenuData();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 加载menu数据
+        function ajaxLoadMenuData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+
+            ajaxObj.url = "../" + navData[navPos].enName + "/" + menuPath;
+            // 
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                menuData = getData;
+                initMenu();
+                ajaxLoadContentData();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 加载list数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            // 
+            ajaxObj.url = "../" + navData[navPos].enName + "/" + menuData[menuPos].enName + listpath;
+            console.log("../" + navData[navPos].enName + "/" + menuData[menuPos].enName + listpath)
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                listData = getData;
+                totlePage = Math.ceil(listData.length / 7)
+                navBarSpeed = parseFloat(354 / (listData.length - 1))
+                initList();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 渲染nav
+        function initNav() {
+            emptyNav();
+            for (var i = 0; i < navData.length; i++) {
+                $("nav" + i).innerHTML = navData[i].name;
+            }
+        }
+        // 渲染menu
+        function initMenu() {
+            emptyMenu();
+            for (var i = 0; i < menuData.length; i++) {
+                $("menu" + i).innerHTML = menuData[i].name;
+            }
+        }
+        // 渲染list
+        function initList() {
+            emptyList()
+            if (listData.length > 7) {
+                if (currPage < totlePage - 1) {
+                    for (var i = 0; i < 7; i++) {
+                        $("list" + i).innerHTML = listData[currPage * 7 + i].title;
+                    }
+                } else {
+                    for (var i = 0; i < listData.length - currPage * 7; i++) {
+                        $("list" + i).innerHTML = listData[currPage * 7 + i].title;
+                    }
+                }
+
+            } else {
+                for (var i = 0; i < listData.length; i++) {
+                    $("list" + i).innerHTML = listData[currPage * 7 + i].title;
+                }
+            }
+
+            initPageNum();
+        }
+        // 渲染滑动条页码
+        function initPageNum() {
+            $("currPage").innerHTML = currPage * 7 + listPos + 1;
+            $("totlePage").innerHTML = listData.length;
+        }
+        // 清空menu
+        function emptyMenu() {
+            for (var i = 0; i < 6; i++) {
+                $("menu" + i).innerHTML = "";
+            }
+        }
+        // 清空nav
+        function emptyNav() {
+            for (var i = 0; i < 5; i++) {
+                $("nav" + i).innerHTML = "";
+            }
+        }
+        // 清空list
+        function emptyList() {
+            for (var i = 0; i < 7; i++) {
+                $("list" + i).innerHTML = "";
+            }
+        }
+        // 上下
+        function changeUD(num) {
+            if (focusArea == 0) {
+                if (num < 0) {
+                    if (navPos > 0) {
+                        navPos--;
+                        navFocus();
+
+                    }
+                } else {
+                    if (menuData.length < 7) {
+                        if (navPos < navData.length - 1) {
+                            navPos++;
+                            navFocus();
+                        }
+                    } else {
+                        if (navPos < 7) {
+                            navPos++;
+                            navFocus();
+                        }
+                    }
+                }
+                ajaxLoadMenuData()
+                menuPos = 0;
+                listPos = 0;
+            } else if (focusArea == 1) {
+                if (num < 0) {
+                    if (menuPos > 0) {
+                        menuPos--;
+                        menuFocus();
+
+                    }
+                } else {
+                    if (menuData.length < 7) {
+                        if (menuPos < menuData.length - 1) {
+                            menuPos++;
+                            menuFocus();
+                        }
+                    } else {
+                        if (menuPos < 7) {
+                            menuPos++;
+                            menuFocus();
+                        }
+                    }
+                }
+                ajaxLoadContentData()
+                listPos = 0;
+            } else {
+                if (num < 0) {
+                    if (listPos > 0) {
+                        listPos--;
+                        listFocus();
+                    } else if (listPos == 0 && currPage != 0) {
+                        listPos = 6;
+                        currPage--;
+                        initList();
+                    }
+                } else {
+                    if (listData.length < 6) {
+                        if (listPos < listData.length - 1) {
+                            listPos++;
+                            listFocus();
+                        }
+                    } else {
+                        if (listPos < 6 && currPage < totlePage - 1) {
+                            listPos++;
+                            listFocus();
+                        } else if (listPos == 6 && currPage < totlePage - 1) {
+                            listPos = 0;
+                            currPage++;
+                            initList();
+                            listFocus();
+                        } else if (currPage == totlePage - 1 && listPos < listData.length - currPage * 7 - 1) {
+                            listPos++;
+                            listFocus();
+                        }
+                    }
+                }
+            }
+            initPageNum();
+            navBarmove();
+        }
+        // 滑动条移动
+        function navBarmove() {
+            $("navBar").style.top = (36 + listPos * navBarSpeed) + "px";
+        }
+        // menu焦点
+        function menuFocus() {
+            emptyMenuStyle();
+            $("menu" + menuPos).style.background = "url(images/list_f1.png) no-repeat center";
+            $("menu" + menuPos).style.color = "#fff"
+        }
+        // 清除menu样式
+        function emptyMenuStyle() {
+            for (var i = 0; i < 6; i++) {
+                $("menu" + i).style.background = "";
+                $("menu" + i).style.color = "#fdbd96"
+            }
+        }
+        // nav焦点
+        function navFocus() {
+            emptyNavStyle();
+            $("nav" + navPos).style.background = "url(images/list_f1.png) no-repeat center";
+            $("nav" + navPos).style.color = "#fff"
+        }
+        // 清除nav样式
+        function emptyNavStyle() {
+            for (var i = 0; i < 6; i++) {
+                $("nav" + i).style.background = "";
+                $("nav" + i).style.color = "#fdbd96"
+            }
+        }
+        // list焦点
+        function listFocus() {
+            emptyListStyle();
+            $("list" + listPos).style.background = "url(images/list_f3.png) no-repeat center";
+            $("list" + listPos).style.color = "#fff"
+        }
+        // 清楚list样式
+        function emptyListStyle() {
+            for (var i = 0; i < 7; i++) {
+                $("list" + i).style.background = "";
+                $("list" + i).style.color = "#e4d7d4"
+            }
+        }
+        // 左右
+        function changeLR(num) {
+            if (focusArea == 0 && num > 0) {
+                focusArea = 1;
+                navBlur();
+                menuFocus();
+            } else if (focusArea == 1 && num > 0) {
+                focusArea = 2;
+                menuBlur();
+                listFocus();
+            } else if (focusArea == 1 && num < 0) {
+                focusArea = 0;
+                menuBlur();
+                navFocus();
+            } else if (focusArea == 2 && num < 0) {
+                focusArea = 1;
+                listBlur();
+                menuFocus();
+            }
+        }
+        // menu失去焦点样式
+        function menuBlur() {
+            $("menu" + menuPos).style.background = "url(images/list_ct.png) no-repeat center";
+        }
+        // nav失去焦点样式
+        function navBlur() {
+            $("nav" + navPos).style.background = "url(images/list_ct.png) no-repeat center";
+        }
+        // list失去焦点样式
+        function listBlur() {
+            $("list" + listPos).style.background = "";
+        }
+        // 确定
+        function doSelect() {
+            if (focusArea == 1) {
+                window.location.href = menuData[menuPos].enName + "/index.htm?listPos=" + listPos;
+
+            }
+        }
+        // 初始化
+        function init() {
+            ajaxLoadNavData();
+        }
+
+
+        window.onload = init();
+    </script>
+</body>
+
+</html>

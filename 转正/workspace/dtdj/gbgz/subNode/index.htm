@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>06</title>
+
+</head>
+
+<body background="images/bg1.jpg" leftmargin="0" topmargin="0">
+    <div style="position:absolute;left:0px;top:0px; width:1280px; height:110px; background:url(images/top_bg1.png);">
+        <div style="position:absolute;left:60px;top:41px;"><img src="images/title03.png" width="159" height="36"></div>
+    </div>
+
+    <div style="position:absolute;left:64px;top:129px;width:1095px;height:540px;">
+        <div id="title" style="line-height:39px; text-align:center; font-size:28px; color:#ff961a;">潍坊市寒亭区实行村党支部书记近亲属入党报告办法</div>
+        <div style="line-height:39px; text-align:center; font-size:18px; color:#d8a99e;"> 来源：<span id="subTitle">灯塔-党建在线</span>  时间：<span id="date">2017-08-14 11:26</span>   </div>
+        <div style="position:absolute;left:0px;top:78px;line-height:68px;font-size:26px; text-indent:2em;overflow:hidden; color:#f2ebeb;width:1095px;height:476px;">
+            <div id="content" style="position:absolute;left:0px;top:0px;line-height:68px;font-size:26px; text-indent:2em;color:#f2ebeb;">为有效解决和防止农村发展党员工作中存在的“近亲繁殖”“家族化”问题，潍坊市寒亭区制定实施《农村党支部书记近亲属入党报告办法》，提升了农村发展党员工作的公信度和群众满意度。<br> 明确报告范围内容。农村党支部书记在本村的直系血亲、三代以内旁系血亲及近姻亲，在拟确定为入党积极分子前，村党支部必须以书面形式向街道党工委报告。报告的主要内容包括：入党积极分子人选的姓名、性别、年龄、文化程度等基本情况，与村党支部书记的亲属关系，现实表现以及吸收为入党积极分子的理由等。，审核完成后各督查组严格按照配档表推进，每周五汇</div>
+        </div>
+    </div>
+
+    <!--滑动条-->
+    <div style="position:absolute;left:1204px;top:227px; width:4px; height:420px; background:rgba(255,188,112,.38);">
+        <div id="navBar" style="position:absolute;left:-13px;top:36px; width:30px; height:63px; background:url(images/page_bg.png); line-height:32px; text-align:center; font-size:23px; color:#fff;"><span id="currPage"></span><br/><span id="totlePage"></span></div>
+    </div>
+    <script type="text/javascript" src="js/keyevent.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.onkeydown = eventHandler;
+
+        function eventHandler(e) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            var eventObj = Event.mapping(keycode);
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    keyUp();
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    keyDown();
+                    return false;
+                    break;
+                case "KEY_LEFT":
+
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+
+                    return false;
+                    break;
+                case "KEY_SELECT":
+
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                    window.location.href = "../index.htm";
+                    return false;
+                    break;
+            }
+        }
+        // 变量
+        var contentData = [],
+            ajaxObj = null,
+            currPage = 0,
+            totlePage = 0,
+            speed = 0,
+            listPos = window.location.href.split("?")[1].split("=")[1] ? window.location.href.split("?")[1].split("=")[1] : 0;
+        // 加载list数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+
+            ajaxObj.url = "content.js";
+
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                contentData = getData;
+
+                initContent();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 渲染list
+        function initContent() {
+            $("content").innerHTML = contentData[listPos].content;
+            $("title").innerHTML = contentData[listPos].title;
+            $("subTitle").innerHTML = contentData[listPos].subTitle;
+            $("date").innerHTML = contentData[listPos].date;
+            totleLen = $("content").offsetHeight;
+            totlePage = Math.ceil($("content").offsetHeight / 476);
+            speed = 348 / totlePage;
+            changePageNum();
+        }
+        // 初始化
+        function init() {
+            ajaxLoadContentData();
+        }
+        // 滑动条数据改变
+        function changePageNum() {
+            $("currPage").innerHTML = currPage + 1;
+            $("totlePage").innerHTML = totlePage;
+            $("navBar").style.top = 36 + speed * currPage + "px";
+        }
+        // 下
+        function keyDown() {
+            if (totlePage > 2 && currPage < totlePage - 2) {
+                currPage++
+                $("content").style.top = -(currPage * 476) + "px"
+            } else if (totlePage > 2 && currPage == totlePage - 2) {
+                currPage++
+                $("content").style.top = -(totleLen - 476) + "px"
+            } else if (totlePage == 2 && currPage < 1) {
+                currPage++
+                $("content").style.top = -(totleLen - 476) + "px"
+            }
+            changePageNum();
+
+        }
+        // 上
+        function keyUp() {
+            if ($("content").offsetTop < 0) {
+                if (currPage <= totlePage - 1 && currPage > 1) {
+                    currPage--;
+                    $("content").style.top = $("content").offsetTop + 476 + "px"
+                } else {
+                    currPage--;
+                    $("content").style.top = "0px"
+                }
+            }
+            changePageNum();
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

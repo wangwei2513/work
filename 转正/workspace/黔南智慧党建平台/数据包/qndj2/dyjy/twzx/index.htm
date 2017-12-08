@@ -1,0 +1,317 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>19便民服务</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+    <div style="position:absolute;left:73px;top:45px;width:255px;font-size:30px;color:#fff; line-height:34px;">
+        <span id="lable0">便民服务</span>
+        <b style="display:inline-block; width:25px; line-height:34px;background:url(images/arrow_left.png) no-repeat center;">&nbsp;</b>
+        <span id="lable1" style="font-size:24px;">乡村旅游</span>
+    </div>
+
+    <div style="position:absolute;left:75px;top:96px;width:1129px;height:555px;background:url(images/tab_bg5.png);">
+
+        <div style="position:absolute;left:26px;top:37px;width:335px;height:230px;">
+            <img id="pic0" src="images/pic17_1.png" width="335" height="230">
+            <div id="title0" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <div style="position:absolute;left:392px;top:37px;width:335px;height:230px;">
+            <img id="pic1" src="images/pic17_1.png" width="335" height="230">
+            <div id="title1" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <div style="position:absolute;left:759px;top:37px;width:335px;height:230px;">
+            <img id="pic2" src="images/pic17_1.png" width="335" height="230">
+            <div id="title2" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <!--第二排-->
+        <div style="position:absolute;left:26px;top:306px;width:335px;height:230px;">
+            <img id="pic3" src="images/pic17_1.png" width="335" height="230">
+            <div id="title3" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <div style="position:absolute;left:392px;top:306px;width:335px;height:230px;">
+            <img id="pic4" src="images/pic17_1.png" width="335" height="230">
+            <div id="title4" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <div style="position:absolute;left:759px;top:306px;width:335px;height:230px;">
+            <img id="pic5" src="images/pic17_1.png" width="335" height="230">
+            <div id="title5" style="position:absolute;left:0px;top:192px;width:335px;height:38px; line-height:38px;background:url(images/pic17_cover.png);color:#000;font-size:20px; text-align:center;">平坝区天龙村</div>
+        </div>
+
+        <!--滑动条-->
+        <div style="position:absolute;left:1115px;top:2px;width:10px;height:87px;">
+            <div style="position:absolute;left:0px;top:0px;width:10px;height:10px;background:url(images/page_bar1.png);"></div>
+            <div style="position:absolute;left:0px;top:10px;width:10px;height:67px;background:url(images/page_bar2.png);"></div>
+            <div style="position:absolute;left:0px;top:77px;width:10px;height:10px;background:url(images/page_bar3.png);"></div>
+        </div>
+    </div>
+
+    <!-- 焦点
+    <div style="position: absolute; left: 87px; top: 123px; width: 363px; height: 260px; background: url(images/pic17_f1.png);"></div> -->
+
+    <div style="position:absolute;left:1076px;top:661px;width:127px;line-height:32px; font-size:24px; color:rgba(255,255,255,.7); text-align:right;">
+        <span id="curr">第1页</span>/<span id="totle">3页</span>
+    </div>
+    <script type="text/javascript" src="js/keyevent.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.onkeydown = eventHandler;
+
+        function eventHandler(e) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            var eventObj = Event.mapping(keycode);
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    keyUp();
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    keyDown();
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    keyLeft();
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    keyRight();
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                    removeParms();
+                    window.location.href = "../../index.htm";
+
+                    return false;
+                    break;
+            }
+        }
+        // 变量
+        var ajaxObj = null,
+            listData = [],
+            preListPos = 0,
+            currPage = getGlobalParms("thisCurrPage") ? parseInt(getGlobalParms("thisCurrPage")) : 0,
+            totlePage = 0,
+            listPos = getGlobalParms("thisListPos") ? parseInt(getGlobalParms("thisListPos")) : 0;
+
+        function ajaxLoadNodeData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            //   "../" +
+            ajaxObj.url = "node.js";
+            // ajaxObj.url = menuData[menuPos].enName + "/" + menuPath;
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                var navigator = getData.navigator.split(">");
+                $("lable0").innerText = navigator[navigator.length - 2];
+                $("lable1").innerText = navigator[navigator.length - 1];
+                ajaxLoadListData();
+            }
+
+            ajaxObj.failureCallback = function () {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 加载list数据
+        function ajaxLoadListData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            //   "../" +
+            ajaxObj.url = "content.js";
+            // ajaxObj.url = menuData[menuPos].enName + "/" + menuPath;
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                listData = getData;
+                totlePage = Math.ceil(listData.length / 5);
+                changePageNum();
+                initList();
+                listFocus();
+            }
+
+            ajaxObj.failureCallback = function () {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 渲染页面
+        // initList
+        function initList() {
+            emptyList();
+            changePageNum();
+            if (listData.length > 6) {
+                if (currPage < totlePage - 1) {
+                    for (var i = 0; i < 6; i++) {
+                        $("pic" + i).parentNode.style.display = "block";
+                        $("pic" + i).src = listData[currPage * 6 + i].entryImage.imageUrl;
+                        $("title" + i).innerText = listData[currPage * 6 + i].title;
+                    }
+                } else {
+                    for (var i = 0; i < listData.length - currPage * 6; i++) {
+                        $("pic" + i).parentNode.style.display = "block";
+                        $("pic" + i).src = listData[currPage * 6 + i].entryImage.imageUrl;
+                        $("title" + i).innerText = listData[currPage * 6 + i].title;
+                    }
+                }
+            } else {
+                for (var i = 0; i < listData.length; i++) {
+                    $("pic" + i).parentNode.style.display = "block";
+                    $("pic" + i).src = listData[i].entryImage.imageUrl;
+                    $("title" + i).innerText = listData[i].title;
+                }
+            }
+
+        }
+        // 清空list
+        function emptyList() {
+            for (var i = 0; i < 6; i++) {
+                $("pic" + i).parentNode.style.display = "none";
+            }
+        }
+
+        // listFocus
+        function listFocus() {
+            clearListStyle();
+            preListPos = listPos;
+            $("pic" + listPos).style.outline = "#ff0 solid 3px";
+            $("pic" + listPos).style.borderRadius = "5px"
+
+        }
+        // 清除list样式
+        function clearListStyle() {
+            $("pic" + preListPos).style.outline = ""
+        }
+        // changePageNum
+        function changePageNum() {
+            $("totle").innerText = totlePage + "页";
+            $("curr").innerText = "第" + (currPage + 1) + "页";
+        }
+        // 上
+        function keyUp() {
+            if (listPos < 3 && currPage > 0) {
+                currPage--;
+                listPos += 3;
+                changePageNum();
+                listFocus();
+                initList();
+            } else if (listPos > 2) {
+                listPos -= 3;
+                listFocus();
+            }
+        }
+        // 下
+        function keyDown() {
+            if (listPos > 2 && currPage < totlePage - 1) {
+                if (currPage * 6 + listPos + 3 < listData.length) {
+                    listPos -= 3;
+                } else {
+                    listPos = listData.length - (currPage + 1) * 6 - 1;
+                }
+                currPage++;
+                changePageNum();
+                initList();
+                listFocus();
+            } else if (listPos < 3) {
+                if (currPage < totlePage - 1) {
+                    listPos += 3;
+                    listFocus();
+                } else {
+                    if (currPage * 6 + listPos + 3 < listData.length) {
+                        listPos += 3;
+                        listFocus();
+                    } else {
+                        listPos = listData.length - currPage * 6 - 1;
+                    }
+                }
+
+            }
+        }
+        // 左
+        function keyLeft() {
+            if (listPos != 0 && listPos != 3) {
+                listPos--;
+                listFocus();
+            } else {
+                listPos += 2;
+                listFocus();
+            }
+        }
+        // 右
+        function keyRight() {
+            if (currPage < totlePage - 1) {
+                if (listPos != 2 && listPos != 5) {
+                    listPos++;
+                    listFocus();
+                } else {
+                    listPos -= 2;
+                    listFocus();
+                }
+            } else {
+                if ((listData.length - currPage * 6) / 3 > 1) {
+                    if (listPos < 2 && listPos < listData.length - currPage * 6 - 1) {
+                        listPos++;
+                        listFocus();
+                    }
+                } else {
+                    if (listPos < listData.length - currPage * 6 - 1) {
+                        listPos++;
+                        listFocus();
+                    }
+                }
+            }
+
+        }
+
+        function setParms() {
+            setGlobalParms({
+                "thisCurrPage": currPage
+            });
+            setGlobalParms({
+                "thisListPos": listPos
+            });
+        }
+
+        function removeParms() {
+            removeGlobalParms(["thisCurrPage", "thisListPos"]);
+
+        }
+        // init
+        function init() {
+            ajaxLoadNodeData();
+            listFocus();
+        }
+        // doSelect
+        function doSelect() {
+            setParms();
+            window.location.href = "content.htm?listPos=" + listPos;
+        }
+        window.onload = init();
+    </script>
+</body>
+
+</html>

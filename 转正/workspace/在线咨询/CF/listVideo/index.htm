@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>法制讲堂</title>
+<script src="js/common.js"></script>
+<script>
+	var listData = [];
+	var listPos = 0;
+	var currPage = 0;
+	var totalPage = 0;
+	var pageSize = 6;
+	var maxWordSize = 12;
+	var enName = "";
+	var prePageUrl = "";		//上一页地址
+	var file = "content.js";
+
+	function eventHandler(eventObj) {
+		iDebug("[listVideo index.htm]__eventObj.code="+eventObj.code);
+		switch(eventObj.code){
+			case "KEY_UP"://up
+				changeUD(-1);
+				return false;
+				break;
+			case "KEY_DOWN"://down
+				changeUD(1);
+				return false;
+				break;
+			case "KEY_LEFT"://left
+				changeLR(-1);
+				return false;
+				break;
+			case "KEY_RIGHT"://right
+				changeLR(1);
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				goBack();
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+		}
+	}
+
+	function goBack() {
+		delGlobalVar(enName+"_backUrl");
+		window.location.href = prePageUrl;
+	}
+
+	function changeUD(_num) {
+		loseFocus();
+		if(listPos+_num*3<0||listPos+_num*3>pageSize-1||listPos+currPage*pageSize+_num*3>listData.length-1){
+			changePage(_num);
+		}else{
+			listPos += _num*3;
+			onFocus();
+		}
+	}
+
+	function changeLR(_num) {
+		if(listPos+_num<0||listPos+_num>pageSize-1||listPos+currPage*pageSize+_num>listData.length-1)return;
+		loseFocus();
+		listPos += _num;
+		onFocus();
+	}
+
+	function changePage(_num) {
+		if(totalPage < 2){
+			onFocus();
+			return;
+		}
+		currPage = (currPage+_num+totalPage)%totalPage;
+		listPos = 0;
+		initList();
+	}
+
+	function onFocus() {
+		$("listName" + listPos).innerHTML = marqueeStr(listData[listPos+currPage*pageSize].title,maxWordSize);
+		$("listFocus").style.left = 87 + listPos%3*367 + "px";
+		$("listFocus").style.top = 116 + Math.floor(listPos/3)*270 + "px";
+	}
+
+	function loseFocus() {
+		$("listName" + listPos).innerHTML = getStrChineseLen(listData[listPos+currPage*pageSize].title,maxWordSize);
+	}
+
+	function doSelect() {
+		setGlobalVar("storyBack","listPos="+listPos+"&currPage="+currPage);
+		window.location.href = "content.htm?position="+(listPos+currPage*pageSize);
+	}
+
+	function init() {
+		var backUrl = checkStrNull(getGlobalVar("storyBack"));
+		if(backUrl!=""){
+			listPos = parseInt(getParam("listPos",backUrl),10);
+			currPage = parseInt(getParam("currPage",backUrl),10);
+		}
+		delGlobalVar("storyBack");
+		iDebug("[listVideo.htm] init__listPos="+listPos+"  currPage="+currPage);
+		getNode()
+		getData();
+	}
+
+	function getNode() {
+		var ajaxObj = new ajaxClass("node.js",function(_xmlHttp){
+			var jsonData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(jsonData)!=""){
+				enName = jsonData.enName;
+				prePageUrl = checkStrNull(getGlobalVar(enName+"_backUrl"));
+				if(prePageUrl!=""){
+
+				}else if(window.location.href.indexOf("?")>-1){
+					prePageUrl = window.location.href.split("backUrl=")[1];
+					setGlobalVar(enName+"_backUrl",prePageUrl);
+				}else{
+					prePageUrl = "../index.htm";
+				}
+				iDebug("[listVideo index.htm] enName="+enName+"|  prePageUrl="+prePageUrl);
+			}
+		},function(_xmlHttp){
+			iDebug('[list&word index.htm] getData fail !');
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function getData() {
+		var ajaxObj = new ajaxClass(file,function(_xmlHttp){
+			listData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(listData)!=""){
+				totalPage = Math.ceil(listData.length/pageSize);
+				iDebug("[listVideo index.htm] getData totalPage="+totalPage);
+				initList();
+			}
+		},function(_xmlHttp){
+			iDebug('[listVideo index.htm] getData fail !');
+		});
+		ajaxObj.charset = "gbk";
+		ajaxObj.requestData();
+	}
+
+	function initList() {
+		for(var i=0;i<pageSize;i++){
+			if(listData[i+currPage*pageSize]){
+				$("listImg" + i).style.opacity = 1;
+				$("listImg" + i).src = listData[i+currPage*pageSize].entryImage.imageUrl;
+				$("listName" + i).innerHTML = getStrChineseLen(listData[i+currPage*pageSize].title,maxWordSize);
+			}else{
+				$("listImg" + i).style.opacity = 0;
+				$("listImg" + i).src = "";
+				$("listName" + i).innerHTML = "";
+			}
+		}
+		onFocus();
+	}
+</script>
+</head>
+<body background="images/tm_bg.jpg" leftmargin="0" topmargin="0" onLoad="init()">
+	<div style="position:absolute; top:48px; left:76px; width:189px; height:48px;">
+		<img src="images/logo.png" width="189" height="48" />
+	</div>
+	<div style="position:absolute; top:139px; left:110px; width:100px; height:100px;">
+		<img id="listImg0" src="" width="331" height="200" />
+		<div id="listName0" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div style="position:absolute; top:139px; left:477px; width:100px; height:100px;">
+		<img id="listImg1" src="" width="331" height="200" />
+		<div id="listName1" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div style="position:absolute; top:139px; left:844px; width:100px; height:100px;">
+		<img id="listImg2" src="" width="331" height="200" />
+		<div id="listName2" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div style="position:absolute; top:409px; left:110px; width:100px; height:100px;">
+		<img id="listImg3" src="" width="331" height="200" />
+		<div id="listName3" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div style="position:absolute; top:409px; left:477px; width:100px; height:100px;">
+		<img id="listImg4" src="" width="331" height="200" />
+		<div id="listName4" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div style="position:absolute; top:409px; left:844px; width:100px; height:100px;">
+		<img id="listImg5" src="" width="331" height="200" />
+		<div id="listName5" style="position:absolute; top:200px; left:0px; width:331px; height:46px; font-size:26px; color:#ffffff; line-height:46px;"></div>
+	</div>
+	<div id="listFocus" style="position:absolute; top:116px; left:87px; width:377px; height:250px;">
+		<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+			<tr>
+				<td width="36" height="36" background="images/focus_01.png"></td>
+				<td width="305" background="images/focus_02.png"></td>
+				<td width="36" background="images/focus_03.png"></td>
+			</tr>
+			<tr>
+				<td height="178" background="images/focus_04.png"></td>
+				<td align="center"><img src="images/play.png" width="104" height="104" /></td>
+				<td background="images/focus_05.png"></td>
+			</tr>
+			<tr>
+				<td height="36" background="images/focus_06.png"></td>
+				<td background="images/focus_07.png"></td>
+				<td background="images/focus_08.png"></td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

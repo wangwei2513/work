@@ -1,0 +1,385 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>无标题文档</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+    <img src="images/logo.png" width="843" height="87" style="position:absolute; left:99px; top:29px;" />
+    <div id="menuFocus" style="position:absolute; top:133px; left:56px; width:73px; height:55px; background-color: #faedcb;"></div>
+
+    <div style="position:absolute; top:132px; left:53px; width:1185px; height:55px;">
+        <table width="1185" border="0" cellspacing="0" cellpadding="0" style="text-align:center; line-height:55px; font-size:30px; color:#4f0d0e;">
+            <tr>
+                <td id="menu0" width="79">峡山</td>
+                <td id="menu1" width="79">&nbsp;</td>
+                <td id="menu2" width="79">&nbsp;</td>
+                <td id="menu3" width="79">&nbsp;</td>
+                <td id="menu4" width="79">&nbsp;</td>
+                <td id="menu5" width="79">&nbsp;</td>
+                <td id="menu6" width="79">&nbsp;</td>
+                <td id="menu7" width="79">&nbsp;</td>
+                <td id="menu8" width="79">&nbsp;</td>
+                <td id="menu9" width="79">&nbsp;</td>
+                <td id="menu10" width="79">&nbsp;</td>
+                <td id="menu11" width="79">&nbsp;</td>
+                <td id="menu12" width="79">&nbsp;</td>
+                <td id="menu13" width="79">&nbsp;</td>
+                <td id="menu14" width="79">&nbsp;</td>
+            </tr>
+        </table>
+    </div>
+    <div id="list0" style="position:absolute; top:223px; left:215px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829; text-align:center">双河村</div>
+    <div id="list1" style="position:absolute; top:223px; left:705px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list2" style="position:absolute; top:308px; left:215px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list3" style="position:absolute; top:308px; left:705px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list4" style="position:absolute; top:393px; left:215px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list5" style="position:absolute; top:393px; left:705px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list6" style="position:absolute; top:478px; left:215px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list7" style="position:absolute; top:478px; left:705px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list8" style="position:absolute; top:563px; left:215px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <div id="list9" style="position:absolute; top:563px; left:705px; width:347px; height:57px; background: url(images/btn_bg.png) no-repeat; font-size:30px; line-height:57px; color:#ede829;text-align:center">双河村</div>
+    <script type="text/javascript" src="js/keyevent.js"></script>
+    <script src="js/common.js"></script>
+    <script>
+        document.onkeydown = eventHandler;
+
+        function eventHandler(e) {
+            var e = e || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            var eventObj = Event.mapping(keycode);
+            switch (eventObj.code) {
+                case "KEY_UP":
+                    changeUD(-1);
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    changeUD(1);
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    changeLR(-1);
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    changeLR(1);
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                case "KEY_BACK":
+                    window.location.href = "http://10.191.69.205:80/newappcms/swgkpicture/wftv/index.htm";
+                    removeParms();
+                    return false;
+                    break;
+            }
+        }
+        // 变量
+        var ajaxObj = null,
+            menuData = [],
+            listData = [],
+            menuPos = getGlobalParms("menuPos") ? getGlobalParms("menuPos") : 0,
+            listPos = getGlobalParms("listPos") ? getGlobalParms("listPos") : 0,
+            focusArea = getGlobalParms("focusArea") ? getGlobalParms("focusArea") : 0,
+            currPage = getGlobalParms("currPage") ? getGlobalParms("currPage") : 0,
+            navPos = 0,
+            totlePage = 0,
+            navBarSpeed = 0,
+            menuPath = "menu.js";
+        // 加载menu数据
+        function ajaxLoadMenuData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+
+            ajaxObj.url = menuPath;
+            // 
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                menuData = getData;
+                initMenu();
+                ajaxLoadContentData();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+        // 加载list数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            //   "../" +
+            ajaxObj.url = menuData[menuPos].enName + "/" + menuPath;
+            // ajaxObj.url = menuData[menuPos].enName + "/" + menuPath;
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                listData = getData;
+                totlePage = Math.ceil(listData.length / 10)
+                    // navBarSpeed = parseFloat(354 / (listData.length - 1))
+                initList();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+
+        // 渲染menu
+        function initMenu() {
+            emptyMenu();
+            for (var i = 0; i < menuData.length; i++) {
+                $("menu" + i).innerHTML = menuData[i].name;
+            }
+        }
+        // 渲染list
+        function initList() {
+            emptyList()
+            if (listData) {
+                if (listData.length > 10) {
+                    if (currPage < totlePage - 1) {
+                        for (var i = 0; i < 10; i++) {
+                            $("list" + i).style.display = "block";
+                            $("list" + i).innerHTML = listData[currPage * 10 + i].name;
+                        }
+                    } else {
+                        for (var i = 0; i < listData.length - currPage * 10; i++) {
+                            $("list" + i).style.display = "block";
+                            $("list" + i).innerHTML = listData[currPage * 10 + i].name;
+                        }
+                    }
+
+                } else {
+                    for (var i = 0; i < listData.length; i++) {
+                        $("list" + i).style.display = "block";
+                        $("list" + i).innerHTML = listData[currPage * 10 + i].name;
+                    }
+                }
+            }
+
+            // initPageNum();
+        }
+
+        // 清空menu
+        function emptyMenu() {
+            for (var i = 0; i < 15; i++) {
+                $("menu" + i).innerHTML = "";
+            }
+        }
+
+        // 清空list
+        function emptyList() {
+            for (var i = 0; i < 10; i++) {
+                $("list" + i).style.display = "none"
+                $("list" + i).innerHTML = "";
+            }
+        }
+        // 上下
+        function changeUD(num) {
+            if (focusArea == 0) {
+                if (num > 0) {
+                    focusArea = 1;
+                    menuBlur();
+                    listFocus();
+                }
+            } else if (focusArea == 1) {
+                if (num < 0) {
+                    if (listPos < 2) {
+                        focusArea = 0;
+                        listPos = 0;
+                        listBlur();
+                        menuFocus();
+                    }
+                    // else if (listPos < 2 && currPage > 0) {
+                    //     listPos += 8;
+                    //     listFocus();
+                    //     currPage--;
+                    //     initList();
+                    // } 
+                    else {
+                        listPos -= 2;
+                        listFocus();
+                    }
+                } else {
+                    if (listData.length < 10) {
+                        if (listPos < menuData.length - 2) {
+                            listPos += 2;
+                            listFocus();
+                        }
+                    } else {
+                        if (listPos < 8 && currPage < totlePage - 1) {
+                            listPos += 2;
+                            listFocus();
+                        }
+                        // else if (listPos > 7 && currPage < totlePage - 1) {
+                        //     listPos -= 8;
+                        //     listFocus();
+                        //     currPage++;
+                        //     initList();
+                        // } 
+                        else if (currPage == totlePage - 1 && listPos + currPage * 10 < listData.length - 2) {
+                            listPos += 2;
+                            listFocus();
+                        }
+                    }
+                }
+            }
+        }
+
+        // menu焦点
+        function menuFocus() {
+            $("menuFocus").style.left = (56 + menuPos * 79) + "px";
+        }
+
+        // list焦点
+        function listFocus() {
+            emptyListStyle();
+            $("list" + listPos).style.background = "url(images/btn_focus.png) no-repeat";
+            $("list" + listPos).style.color = "#000"
+        }
+        // 清楚list样式
+        function emptyListStyle() {
+            for (var i = 0; i < 10; i++) {
+                $("list" + i).style.background = "url(images/btn_bg.png) no-repeat";
+                $("list" + i).style.color = "#ede829"
+            }
+        }
+        // 左右
+        function changeLR(num) {
+            if (focusArea == 0) {
+
+                if (num > 0) {
+                    if (menuData.length > 15) {
+                        if (menuPos < 14) {
+                            menuPos++;
+                            menuFocus();
+                            currPage = 0;
+                            listPos = 0;
+                            ajaxLoadContentData();
+                            emptyListStyle()
+                        }
+                    } else {
+                        if (menuPos < menuData.length - 1) {
+                            menuPos++;
+                            menuFocus();
+                            currPage = 0;
+                            listPos = 0;
+                            ajaxLoadContentData();
+                            emptyListStyle()
+                        }
+                    }
+
+                } else if (num < 0 && menuPos > 0) {
+                    menuPos--;
+                    menuFocus();
+                    currPage = 0;
+                    listPos = 0;
+                    ajaxLoadContentData();
+                    emptyListStyle()
+                }
+            } else if (focusArea == 1) {
+                if (listPos % 2) {
+                    if (num > 0 && currPage < totlePage - 1) {
+                        currPage++;
+                        initList();
+                        if (listPos + 10 > listData.length - 1) {
+                            var listNum = (listData.length - 1) % 10
+                            if (listNum % 2) {
+                                listPos = listNum - 1;
+                            } else {
+                                listPos = listNum;
+                            }
+                        } else {
+                            listPos--;
+                        }
+
+                        listFocus();
+                    } else if (num < 0) {
+                        listPos--;
+                        listFocus();
+                    }
+
+                } else {
+                    if (currPage * 10 + listPos < listData.length - 1 && num > 0) {
+                        listPos++;
+                        listFocus();
+                    } else if (num < 0 && currPage > 0) {
+                        currPage--;
+                        initList();
+                        listPos++;
+                        listFocus();
+                    }
+                }
+            }
+        }
+        // menu失去焦点样式
+        function menuBlur() {
+            // $("menu" + menuPos).style.background = "url(images/list_ct.png) no-repeat center";
+        }
+
+        // list失去焦点样式
+        function listBlur() {
+            $("list" + listPos).style.background = "url(images/btn_bg.png) no-repeat";
+            $("list" + listPos).style.color = "#ede829";
+        }
+        // 确定
+        function doSelect() {
+            if (focusArea == 1) {
+                window.location.href = listData[currPage * 10 + listPos].linkUrl;
+                setParms();
+            }
+        }
+
+        function setParms() {
+            setGlobalParms({
+                "menuPos": menuPos
+            });
+            setGlobalParms({
+                "listPos": listPos
+            });
+            setGlobalParms({
+                "focusArea": focusArea
+            });
+            setGlobalParms({
+                "currPage": currPage
+            });
+
+        }
+
+        function removeParms() {
+            removeGlobalParms(["menuPos", "listPos", "focusArea", "currPage"]);
+
+        }
+        // 初始化
+        function init() {
+            ajaxLoadMenuData();
+            if (getGlobalParms("listPos") != undefined) {
+                menuFocus();
+                listFocus();
+            }
+        }
+
+
+        window.onload = init();
+    </script>
+</body>
+
+</html>

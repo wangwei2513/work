@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript"
+src="http://epg.interface.gzgd/nn_cms/data/webapp/common/gzgd.config.js"></script>
+<script type="text/javascript"
+src="http://epg.interface.gzgd/nn_cms/data/webapp/common/android.js"></script>
+</head>
+<body>
+
+		<button onclick="createVideo('http://10.69.248.135:3000/test.mp4');" id="playBtn01">create</button>
+		<button onclick="playVideo('http://10.69.248.196:3000/test.mp4')">play</button>
+		<button onclick="pauseVideo();" id="playBtn01">pause</button>
+		<button onclick="resumeVideo();" id="playBtn01">resume</button>
+		<button onclick="seekVideo();" id="playBtn01">seek</button>
+		<button onclick="stopVideo();" id="playBtn01">stop</button>
+		<button onclick="getCurrent();" id="playBtn01">getcurrent</button>
+		<button onclick="getDuration();" id="playBtn01">getDuration</button>
+		<button onclick="resize();" id="playBtn01">resize</button>
+		<button onclick="voiceDown();" id="playBtn01">voiceDown</button>
+		<button onclick="voiceUp();" id="playBtn01">voiceUp</button>
+		<button onclick="mute();" id="playBtn01">mute</button>
+		<button onclick="getMaxVoice();" id="playBtn01">getMaxVoice</button>
+		<button onclick="getVersion();" id="playBtn01">getVersion</button>
+		<button onclick="getCurrentVoice();" id="playBtn01">getCurrentVoice</button>
+		<button onclick="areaid();" id="playBtn01">areaid</button>
+		<button onclick="get_mac_info();" id="playBtn01">get_mac_info</button>
+		<button onclick="get_webtoken();" id="playBtn01">get_webtoken</button>
+		<button onclick="get_tag();" id="playBtn01">get_tag</button>
+		<button onclick="get_device_id();" id="playBtn01">get_device_id</button>
+		<button onclick="get_version();" id="playBtn01">get_version</button>
+		<button onclick="get_user_id();" id="playBtn01">get_user_id</button>
+		<button onclick="get_area_code();" id="playBtn01">get_area_code</button>
+		<button onclick="showDialog();" id="playBtn01">showtoast</button>
+		<button onclick="go_starcor_play();" id="playBtn01">go_starcor_play</button>
+		<button onclick="go_starcor_play_v2();" id="playBtn01">go_starcor_play_v2</button>
+		<button onclick="runCommand();" id="playBtn01">runCommand</button>
+		<button onclick="getajax();" id="playBtn01">getajax</button>
+		<button onclick="goToVodPlayer();" id="playBtn01">goToVodPlayer</button>
+		<button onclick="goVodPlayerNotQuit();" id="playBtn01">goVodPlayerNotQuit</button>
+		<button onclick="getAutoMode();" id="playBtn01">getAutoMode</button>
+		<button onclick="setAutoMode();" id="playBtn01">setAutoMode</button>
+		<button onclick="jumpTOappstore();" id="playBtn01">jumpTOappstore</button>
+		<button onclick="getUrlEnter();" id="playBtn01">getUrlEnter</button>
+<div style="text-align:center;clear:both;">
+	<script>
+	var id;
+	function getajax(){
+	gzgd.ajax("http://10.21.4.12/gzgd/AuthIndexStandard?callback=JSON_CALLBACK&nns_video_id=12756a3b3a3be3bc0c76da779194fb00&nns_video_type=0&nns_func=check_auth_and_get_media_by_media&nns_version=1.4.6&nns_output_type=json", 
+	function(json){
+	console.log(json.restartAtToken);
+	},"")
+	}
+	function goToVodPlayer(){
+	var url ="rtsp://10.21.4.248:5544/nn_vod.ts?id=5da6a131c864cbf48189093afa329075&nn_area_code=&provider=coship&nst=ipqam&npv=gz_starcor&did=8851003195356651&uid=8851003195356651";
+			 	  android.goToVodPlayer(url,0);
+
+	}function goVodPlayerNotQuit(){
+	var url ="rtsp://10.21.4.248:5544/nn_vod.ts?id=f4a6b6e56499d687fa1ca560b5ce6fd8&nn_area_code=&provider=coship&nst=ipqam&npv=gz_starcor&did=8851004071914936&uid=8851004071914936";
+			 	  android.goVodPlayerNotQuit(url,"http://10.69.33.66:8888/html/CommonDetails.html?assetId=OTHE8020171013000033&date=1509606648382",0);
+
+	}
+	function runCommand(){
+	var command1 = 'am start -n com.atet.familygame.tv/com.atet.overseas.tv.detail.DetailActivity -e gameId 98';
+	android.runCommand(command1);
+	}
+	function go_starcor_play(){
+	android.go_starcor_play("a2dec38dff32a90535d55258bf53650b",0,0,"starcor");
+	}
+	function go_starcor_play_v2(){
+	android.go_starcor_play_v2("playLive","9245676006cb79b03798b89fa05576b1",20170816,100000,0,"starcor");
+	}function jumpTOappstore(){
+	android.jumpToAppStore("com.lutongnet.kalaok2.guizhoucct");
+	}
+	function showDialog(){
+	var titile = "title";
+	
+	android.showErrorDialog(
+	"网络请求超时"
+            );
+	}
+	function areaid(){
+  console.log(android.getBoxInfo("AREAID"));
+  }
+  function getUrlEnter(){
+  alert(android.getUrlEnter("n215_a"));
+  }
+  function getAutoMode(){
+  console.log(android.getAutoMode());
+  }function setAutoMode(){
+  console.log(android.setAutoMode(0));
+  }function get_mac_info(){
+  console.log(android.get_mac_info());
+  }
+  function get_webtoken(){
+  console.log(android.get_token());
+  }
+  function get_tag(){
+  console.log(android.get_tag());
+  }
+  function get_device_id(){
+  console.log(android.get_device_id());
+  }
+  function get_version(){
+  console.log(android.get_version());
+  }
+  function get_user_id(){
+  console.log(android.get_user_id());
+  }
+  function getVersion(){
+  console.log(android.get_version());
+  }
+  function get_area_code(){
+  console.log(android.get_area_code());
+  android.get_area_code();
+  }
+  function caid(){
+  console.log(android.getCAID());
+  }
+	function createVideo(video){
+		console.log("playVideo");
+		id = android.create_miniPlayer(0,0,0.6,0.6);
+		//android.bringToForeground("video");
+		id = 10086;
+  }
+  function playVideo(video){
+		console.log("playVideo");
+		id = 10086;
+		console.log(id);
+		//String playerId, String videoId, String videoIndex, String position, String source
+		//android.play_miniVideo(id,"",video,video,0,0);
+		android.play_urlVideo(id,video);
+		var data = {};
+		data.url = video;
+		var position = [0.5,0.5,0.5,0.5];
+		//android.apkPlayer.init(1,position,0,data,function errorCallback(resp){},function eventCallback(resp){console.log(resp)});
+  }
+  function pauseVideo(video){
+		console.log("playVideo");
+		console.log(id);
+		
+		//android.pause_miniPlayer(id);
+		android.apkPlayer.pause();
+  }
+  function resumeVideo(video){
+		console.log("playVideo");
+		console.log(id);
+		android.go_on_play(id);
+  }
+  function seekVideo(video){
+		console.log("playVideo");
+		console.log(id);
+		//android.miniPlayer_seekTo(id,1000);
+		android.apkPlayer.seek(1000);
+  }
+  function stopVideo(video){
+		console.log("playVideo");
+		console.log(id);
+		android.stop_miniPlayer(id);
+  }
+  function resize(video){
+		console.log("playVideo");
+		console.log(id);
+		//android.stop_miniPlayer(id);
+		android.apkPlayer.playerFull(1);
+		android.apkPlayer.playerFull(0);
+  }
+  function getCurrent(){
+  console.log(android.get_miniVideo_current(0))
+  }
+  function getDuration(){
+  console.log(android.get_miniPlayer_duration(0))
+  }
+  function voiceDown(){
+  console.log(android.voiceDown());
+  }
+  function voiceUp(){
+  console.log(android.voiceUp());
+  }
+  function mute(){
+  console.log(android.mute());
+  }
+  function getMaxVoice(){
+  console.log(android.getMaxVoice());
+  }
+  function getCurrentVoice(){
+  console.log(android.getCurrentVoice());
+  }
+  function onEvent(event){
+	  console.log(typeof(event));
+	  console.log(event.type);
+	  console.log(event.reason);
+	  console.log(event.errortype);
+	  console.log(event.errorreason);
+  };
+(function (win) {
+    var Base64 = {
+
+        // private property
+        _keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",
+
+        // public method for encoding
+        encode: function (input) {
+            var output = "";
+            var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = Base64._utf8_encode(input);
+
+            while (i < input.length) {
+
+                chr1 = input.charCodeAt(i++);
+                chr2 = input.charCodeAt(i++);
+                chr3 = input.charCodeAt(i++);
+
+                enc1 = chr1 >> 2;
+                enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+                enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+                enc4 = chr3 & 63;
+
+                if (isNaN(chr2)) {
+                    enc3 = enc4 = 64;
+                } else if (isNaN(chr3)) {
+                    enc4 = 64;
+                }
+
+                output = output +
+                    this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+                    this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+            }
+
+            return output;
+        },
+
+        // public method for decoding
+        decode: function (input) {
+            var output = "";
+            var chr1, chr2, chr3;
+            var enc1, enc2, enc3, enc4;
+            var i = 0;
+
+            input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+            while (i < input.length) {
+
+                enc1 = this._keyStr.indexOf(input.charAt(i++));
+                enc2 = this._keyStr.indexOf(input.charAt(i++));
+                enc3 = this._keyStr.indexOf(input.charAt(i++));
+                enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+                chr1 = (enc1 << 2) | (enc2 >> 4);
+                chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+                chr3 = ((enc3 & 3) << 6) | enc4;
+
+                output = output + String.fromCharCode(chr1);
+
+                if (enc3 != 64) {
+                    output = output + String.fromCharCode(chr2);
+                }
+                if (enc4 != 64) {
+                    output = output + String.fromCharCode(chr3);
+                }
+
+            }
+
+            output = Base64._utf8_decode(output);
+
+            return output;
+
+        },
+
+        // private method for UTF-8 encoding
+        _utf8_encode: function (string) {
+            string = string.replace(/\r\n/g, "\n");
+            var utftext = "";
+
+            for (var n = 0; n < string.length; n++) {
+
+                var c = string.charCodeAt(n);
+
+                if (c < 128) {
+                    utftext += String.fromCharCode(c);
+                } else if ((c > 127) && (c < 2048)) {
+                    utftext += String.fromCharCode((c >> 6) | 192);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                } else {
+                    utftext += String.fromCharCode((c >> 12) | 224);
+                    utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+                    utftext += String.fromCharCode((c & 63) | 128);
+                }
+
+            }
+
+            return utftext;
+        },
+
+        // private method for UTF-8 decoding
+        _utf8_decode: function (utftext) {
+            var string = "";
+            var i = 0;
+            var c = c1 = c2 = 0;
+
+            while (i < utftext.length) {
+
+                c = utftext.charCodeAt(i);
+
+                if (c < 128) {
+                    string += String.fromCharCode(c);
+                    i++;
+                } else if ((c > 191) && (c < 224)) {
+                    c2 = utftext.charCodeAt(i + 1);
+                    string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+                    i += 2;
+                } else {
+                    c2 = utftext.charCodeAt(i + 1);
+                    c3 = utftext.charCodeAt(i + 2);
+                    string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+                    i += 3;
+                }
+
+            }
+
+            return string;
+        }
+
+    }
+
+    var AndroidHtml5 = {
+        idCounter: 0, // 参数序列计数器  
+        OUTPUT_RESULTS: {}, // 输出的结果         
+        CALLBACK_SUCCESS: {}, // 输出的结果成功时调用的方法          
+        CALLBACK_FAIL: {}, // 输出的结果失败时调用的方法  
+
+        callNative: function (cmd, type,args, success, fail) {
+            var key = "ID_" + (++this.idCounter);
+            console.log("cmd:" + JSON.stringify(cmd))
+
+            if (typeof success != 'undefined') {
+                AndroidHtml5.CALLBACK_SUCCESS[key] = success;
+            } else {
+                AndroidHtml5.CALLBACK_SUCCESS[key] = function (result) {};
+            }
+
+            if (typeof fail != 'undefined') {
+                AndroidHtml5.CALLBACK_FAIL[key] = fail;
+            } else {
+                AndroidHtml5.CALLBACK_FAIL[key] = function (result) {};
+            }
+             window.android.async(JSON.stringify(cmd), type,JSON.stringify(args),key);
+            return this.OUTPUT_RESULTS[key];
+        },
+
+        callBackJs: function (result, type,key) {
+			if(type == "json"){
+				this.OUTPUT_RESULTS[key] = result;
+				var status = result.status;
+				console.log(status);
+				if (status == 200) {
+					console.log(typeof this.CALLBACK_SUCCESS[key]);
+					if (typeof this.CALLBACK_SUCCESS[key] != "undefined") {
+						setTimeout("AndroidHtml5.CALLBACK_SUCCESS['" + key + "']("+result.message+")", 0);
+					}
+				} else {
+					if (typeof this.CALLBACK_FAIL != "undefined") {
+						setTimeout("AndroidHtml5.CALLBACK_FAIL['" + key + "']("+result.message+")", 0);
+					}
+				}
+			}
+			else{
+				console.log('result key:' + key)
+				this.OUTPUT_RESULTS[key] = result;
+				var obj = JSON.parse(result);
+				var message = Base64.decode(obj.message);
+				console.log('result message:' + message)
+				var status = obj.status;
+				if (status == 200) {
+					if (typeof this.CALLBACK_SUCCESS[key] != "undefined") {
+						setTimeout("AndroidHtml5.CALLBACK_SUCCESS['" + key + "']('" + message + "')", 0);
+					}
+				} else {
+					if (typeof this.CALLBACK_FAIL != "undefined") {
+						setTimeout("AndroidHtml5.CALLBACK_FAIL['" + key + "']('" + message + "')", 0);
+					}
+				}
+			}
+        }
+    };
+
+
+    var exec_asyn = function exec_asyn(service, action,type, args, success, fail) {
+        var json = {
+            "service": service,
+            "action": action
+        };
+        var result = AndroidHtml5.callNative(json, type,args, success, fail);
+    }
+
+
+    var gzgd = {}
+
+    gzgd.get = function (url, mediatype, header, success, fail) {
+
+        exec_asyn("request", "", "json",{
+                "url": url,
+                "method": "get",
+                "mediatype": mediatype
+            },
+            success, function(){
+                android.showToast("系统忙,请稍候重试。");
+            })
+
+    }
+
+    gzgd.post = function (url, mediatype, header, body, success, fail) {
+
+        exec_asyn("request", "","json", {
+                "url": url,
+                "method": "post",
+                "mediatype": mediatype,
+                "body": body,
+                "header": header
+            },
+            success, function(){
+                android.showToast("系统忙,请稍候重试。");
+            })
+
+    }
+
+    gzgd.ajax = function (method,url,mediatype,header,body,success,fail) {
+        if(arguments.length < 4){/*兼容旧传参格式url,success,body*/
+            gzgd.ajax('post',method,'text/xml',null,mediatype,url,null)
+            return;
+        }
+        var o = {
+                "url": url,
+                "method": method.toLowerCase(),
+                "mediatype": mediatype || "application/json",
+                "body": body || null,
+                "header": header || null
+            };
+        if (method!='post') {
+            delete o.body;
+            delete o.header;
+        };
+        exec_asyn(
+            "request",
+            "",
+            "json",
+            o,
+            success || function(){
+                android.showToast("success");
+            },
+            fail || function(){
+                android.showToast("系统忙,请稍候重试。");
+            }
+        )
+    }
+
+	gzgd.getstring = function (url, mediatype, header, success, fail) {
+
+        exec_asyn("request", "", "string",{
+                "url": url,
+                "method": "get",
+                "mediatype": mediatype
+            },
+            success, function(){
+                android.showToast("系统忙,请稍候重试。");
+            })
+
+    }
+
+    gzgd.poststring = function (url, mediatype, header, body, success, fail) {
+
+        exec_asyn("request", "", "string",{
+                "url": url,
+                "method": "post",
+                "mediatype": mediatype,
+                "body": body,
+                "header": header
+            },
+            success,function(){
+                android.showToast("系统忙,请稍候重试。");
+            })
+
+    }
+    gzgd.ajaxstring = function (url,success,body) {
+
+        exec_asyn("request", "","string", {
+                "url": url,
+                "method": "post",
+                "mediatype": "text/xml",
+                "body": body,
+                "header": null
+            },
+            success, function(){
+                android.showToast("系统忙,请稍候重试。");
+            })
+
+    }
+    window.gzgd = gzgd;
+    window.AndroidHtml5 = AndroidHtml5;
+
+    console.log('gzgd.js init complete')
+})(window);
+	</script>
+</div>
+</body>
+</html>

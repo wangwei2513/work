@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>文字详情</title>
+    <style>
+        body {
+            background: url(images/bg.jpg) no-repeat;
+        }
+    </style>
+    <script src="../js/common.js"></script>
+</head>
+
+<body>
+    <div style="position:absolute; left:74px; top:51px;font-size: 32px; color: #fff;">
+        <img src="../images/icon1_03.png" width="17" height="28" />
+        <img src="../images/icon1_03.png" width="17" height="28" />
+        <span id="labelName"></span>
+    </div>
+
+    <div style="position:absolute; left:102px; top:132px; width:1074px; height:524px;overflow:hidden;">
+        <div id="contentBox" style="position:absolute;left:0px;top:0px;width:1074px;">
+            <div id="title" style="margin-top:16px;;width:1012px; text-align:center; font-size:36px; color:#fff; "></div>
+            <div id="source" style="margin-top:10px;width:1012px; text-align:right; font-size:24px; color:#fff; "></div>
+            <div id="content" style="margin-left:25px;margin-top:10px;width:1012px;font-size:26px; color:#fff; line-height:40px; "></div>
+        </div>
+        <img id="scrollBar" style="position:absolute; left:1058px; top:56px; " src="../images/icon1_08.jpg " width="2 " height="452 " />
+        <img id="scroll" style="position:absolute; left:1054px; top:55px; " src="../images/icon1_07.png " width="10 " height="87 " />
+    </div>
+    <script>
+        function eventHandler(eventObj) {
+            var keycode = eventObj.code;
+            switch (keycode) {
+                case "KEY_UP":
+                    changeUD(-1);
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    changeUD(1);
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    changeLR(-1);
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    changeLR(1);
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_BACK":
+                    goBack()
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                    goBack();
+                    return false;
+                    break;
+                default:
+                    return true;
+                    break;
+            }
+        }
+
+        var contentIdx = parseInt(mySessionStorage.getItem("index")) || 0;
+        var contentData = {};
+        var scrollObj = {
+            startPos: 55,
+            step: 0,
+            endPos: 421,
+            direction: 'top'
+        };
+        var maxTime = 0;
+        var scrollIndex = 0;
+        var contentTop = 0;
+        var contentHeight = 0;
+
+        function init() {
+            $("labelName").innerText = mySessionStorage.getItem("hdjj_labelName");
+            getContentData();
+        }
+
+        window.onload = init;
+
+        function getContentData() {
+            var ajaxObj = new ajaxClass();
+            ajaxObj.frame = window;
+            var url = 'content.js';
+            ajaxObj.url = url;
+            //ajaxObj.charset = 'utf-8';
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval('(' + _xmlHttp.responseText + ')');
+                contentData = getData[contentIdx];
+                initContent();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+
+        function initContent() {
+            $('title').innerText = contentData.title;
+            $('source').innerText = contentData.subTitle;
+            $('content').innerHTML = contentData.content;
+            contentHeight = $('contentBox').offsetHeight;
+            initScroll();
+        }
+
+        function initScroll() {
+            if (contentHeight > 524) {
+                maxTime = Math.ceil((contentHeight - 524) / 40);
+                scrollObj.step = (scrollObj.endPos - scrollObj.startPos) / maxTime;
+            } else {
+                $('scroll').style.visibility = 'hidden';
+                $('scrollBar').style.visibility = 'hidden';
+            }
+        }
+
+        function changeLR(num) {
+
+        }
+
+        function changeUD(num) {
+            contentTop -= num * 40;
+            if (contentTop < 524 - contentHeight) {
+                contentTop = 524 - contentHeight;
+            } else if (contentTop > 0) {
+                contentTop = 0;
+            }
+            $('contentBox').style.top = contentTop + 'px';
+            scrollIndex += num;
+            if (scrollIndex < 0) {
+                scrollIndex = 0;
+            } else if (scrollIndex > maxTime) {
+                scrollIndex = maxTime;
+            }
+            $('scroll').style.top = (scrollObj.startPos + scrollObj.step * scrollIndex) + 'px';
+        }
+
+        function doSelect() {
+
+        }
+
+        function goBack() {
+            window.location.href = 'index.htm';
+        }
+    </script>
+</body>
+
+</html>

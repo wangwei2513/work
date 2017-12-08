@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title></title>
+	<style>
+	*{
+		margin:0px;
+		padding:0px;
+	}
+	body {
+		background:url(images/bg.jpg) no-repeat;
+	}
+	#director{
+		position:absolute;
+		left:912px;
+		top:63px;
+		color:#000;
+		font-size:22px;
+	}
+	#leftList{
+		position:absolute;
+		left:72px;
+		top:292px;
+		background:url(images/border_left.png);
+		width:238px;
+		height:364px;
+	}
+	#leftList>div{
+		width:179px;
+		height:41px;
+		position:absolute;
+		font-size:20px;
+		color:#000;
+		text-align:center;
+		line-height:41px;
+	}
+	#rightBox{
+		position:absolute;
+		left:325px;
+		top:140px;
+		width:881px;
+		height:514px;
+		background:url(images/border_right.png);
+	}
+	#focusDiv{
+		width:213px;
+		height:249px;
+		position:absolute;
+		left:325px;
+		top:140px;
+		z-index:1;
+		border:4px solid #ff7c00;
+		visibility: hidden;
+	}
+	.rightDiv {
+		position:absolute;
+		width:221px;
+		height:257px;
+		overflow:hidden;
+	}
+	</style>
+<script src="js/common.js"></script>
+<script type="text/javascript" src="js/DataCollection.js"></script>
+<script>
+var navStr = getGlobalVar("navigator");
+navStr = navStr.replace(/ > /g,">");
+var navStrArr = navStr.split(">")
+var listType = "";
+ var bacUrlDed = "http://172.23.252.132/sazs/index.htm"
+ var msg = "";
+	var clickLink = "";
+	var clickLinkHead = location.href.split("/").slice(0,5).join("/")
+	function getTitleData() {
+		
+			var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr+"||"+ msg +"||"+"点击";
+				try{
+					DataCollection.collectData(["01",clickLink,location.href,title,"",""])
+				}catch(e){};
+	}
+	function getInitData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr+"||"+ navStr.split(">")[2]+"||"+"加载" ;
+				try{
+					DataCollection.collectData(["01",location.href,document.referrer,title,"",""])
+				}catch(e){};
+	}
+	function getBackTitleData() {
+		var title = navStr.split(">")[1]+"||"+ listType +"||" +navStr+"||"+ navStr.split(">")[1]+"||"+"返回";
+				try{
+					DataCollection.collectData(["01",bacUrlDed,location.href,title,"",""])
+				}catch(e){};
+	}
+	
+document.onkeydown = eventHandler;
+function eventHandler(eve){
+	var e = eve || window.event;
+	var keycode = e.keyCode || e.which || e.charCode;
+
+ 	if(keycode>=48 && keycode <=57){
+		selectByNum(keycode-48);
+		return false;
+	}
+ 	switch(keycode){
+ 		case 1:   // up
+	    case 38:
+	    case 87:
+	    	if(focusArea === 0){
+	    		 focusMove(-1);
+	    	}
+	     	else {
+	     		focusMove(-4);
+	     	}
+	      	return false;
+	      	break;
+	    case 2:   // down
+	    case 40:
+	    case 83:
+	      if(focusArea === 0){
+	    		 focusMove(1);
+	    	}
+	     	else {
+	     		focusMove(4);
+	     	}
+	      	return false;
+	      	break;
+	    case 3:   // left
+	    case 37:
+	    case 65:
+	    	if(focusArea === 1){
+	    		focusMove(-1);
+	    	}
+	      	return false;
+	      	break;
+	    case 4:   // right
+	    case 39:
+	    case 68:
+	    	if(focusArea === 0 &&rightArr.length>0){
+	    		focusArea = 1;
+		    	focusMove(0);
+	    	}
+	    	else if(focusArea === 1){
+	    		focusMove(1);
+	    	}	 	
+		  //rightFrame.focus();
+	      return false;
+	      break;
+	    case 13:  //KEY_SELECT
+	    	doSelect();
+	      	return false;
+	      	break;
+	    case 8:  //KEY_BACK
+	    	setGlobalVar("focus_sub","");
+			setGlobalVar("page_sub","");
+			setGlobalVar("focus_frame","");
+			setGlobalVar("frame_page","");
+				listType = "栏目";
+				getBackTitleData();
+				navStr = navStrArr.slice(0,navStrArr.length-1).join(">");
+			setGlobalVar("navigator",navStr);
+	      	window.location.href = "../index.htm";
+	      	return false;
+	      	break;
+	    case 27:
+	      return false;
+	      break;
+	}
+}
+
+var focusArea = 0;
+var focusLeft = 0;
+var focusRight = 0;
+var menuPage = 0;
+var contentPage = 0;
+var leftArr = [];
+var rightArr = [];
+var rightDiv = getByClass("rightDiv");
+var rightImg = getByClass("rightImg");
+var rightTitle = getByClass("rightTitle");
+var rightContent = getByClass("rightContent");
+var detailBtn = getByClass("detailBtn");
+function init(){
+	var url = window.location.search;
+	var pageIndex = parseInt(url.split("=")[1]);
+	var menuLoc = "menu.js";
+	sendAjax(menuLoc,null,function(data){
+		leftArr = eval('('+data+')');
+	});
+	var focusFrame = getGlobalVar("focus_frame");
+	var framePage = getGlobalVar("frame_page");
+	if(focusFrame && framePage){
+		focusLeft = parseInt(focusFrame) || 0;
+		menuPage = parseInt(framePage) || 0;
+		focusMove(0);
+	}
+	var focus = getGlobalVar("focus_sub");
+	var page = getGlobalVar("page_sub");
+	if(focus && page){
+		focusRight = parseInt(focus) || 0;
+		contentPage = parseInt(page) || 0;
+		focusArea = 1;
+		focusMove(0);
+	}
+	initList(menuPage*6);
+	frameChange(menuPage*6+focusLeft);
+	initRightList(contentPage*8);
+	listType = "栏目";
+	getInitData();
+}
+
+function initList(startPos){
+	for(var i=0;i<6;++i){
+		if(i+startPos>leftArr.length-1){
+			$("item_"+i).style.visibility = "hidden";
+			continue;
+		}
+		$("item_"+i).style.visibility = "visible";
+		$("item_"+i).innerText = leftArr[i+startPos].name;
+	}
+}
+
+function initRightList(startPos){
+	for(var i=0;i<8;i++){
+		if(i+startPos>rightArr.length-1){
+			rightDiv[i].style.visibility = "hidden";
+			continue;
+		}
+		rightDiv[i].style.visibility = "visible";
+		rightImg[i].src = rightArr[startPos+i].entryImage.imageUrl;
+	}
+}
+
+function focusMove(step){
+	if(focusArea === 0){
+		if(step === -1 && focusLeft > 0){
+			$("item_"+focusLeft).style.background = "";
+			$("item_"+focusLeft).style.color = "";
+			focusLeft--;
+			$("item_"+focusLeft).style.background = "url(images/border_middle.png)";
+			$("item_"+focusLeft).style.color = "#ffffff";
+			setGlobalVar("focus_sub","");
+			setGlobalVar("page_sub","");
+			focusRight = 0;
+			contentPage = 0;
+			frameChange(menuPage*6+focusLeft);
+			initRightList(0);
+		}
+		else if(step === -1 && focusLeft === 0 && menuPage !== 0 ){
+			$("item_"+focusLeft).style.background = "";
+			$("item_"+focusLeft).style.color = "";
+			focusLeft+=5;
+			menuPage -- ;
+			$("item_"+focusLeft).style.background = "url(images/border_middle.png)";
+			$("item_"+focusLeft).style.color = "#ffffff";
+			setGlobalVar("focus_sub","");
+			setGlobalVar("page_sub","");
+			initList(menuPage*6);
+			focusRight = 0;
+			contentPage = 0;
+			frameChange(menuPage*6+focusLeft);
+			initRightList(0);
+		}
+		else if(step === 1 && focusLeft < 5 && menuPage*6+focusLeft < leftArr.length-1){
+			$("item_"+focusLeft).style.background = "";
+			$("item_"+focusLeft).style.color = "";
+			focusLeft++;
+			$("item_"+focusLeft).style.background = "url(images/border_middle.png)";
+			$("item_"+focusLeft).style.color = "#ffffff";
+			setGlobalVar("focus_sub","");
+			setGlobalVar("page_sub","");
+			focusRight = 0;
+			contentPage = 0;
+			frameChange(menuPage*6+focusLeft);
+			initRightList(0);
+		}
+		else if( step === 1 && focusLeft === 5 && menuPage*6+6 < leftArr.length){
+			$("item_"+focusLeft).style.background = "";
+			$("item_"+focusLeft).style.color = "";
+			focusLeft-=5;
+			menuPage ++ ;
+			$("item_"+focusLeft).style.background = "url(images/border_middle.png)";
+			$("item_"+focusLeft).style.color = "#ffffff";
+			setGlobalVar("focus_sub","");
+			setGlobalVar("page_sub","");
+			initList(menuPage*6);
+			focusRight = 0;
+			contentPage = 0;
+			frameChange(menuPage*6+focusLeft);
+			initRightList(0);
+		}
+		else if( step === 0){
+			$("item_0").style.background = "";
+			$("item_0").style.color = "";
+			$("item_"+focusLeft).style.background = "url(images/border_middle.png)";
+			$("item_"+focusLeft).style.color = "#ffffff";
+		}
+	}
+	else if(focusArea === 1){
+		if(step === -1 ){
+			if(focusRight === 0 || focusRight === 4){
+				focusArea = 0;
+				$("focusDiv").style.visibility = "hidden";
+			}
+			else {
+				focusRight -- ;
+			}
+			$("focusDiv").style.left = (325+(focusRight%4*220)) + "px";		
+		}
+		else if(step === 1 && contentPage*8+focusRight+1 < rightArr.length){
+			if(focusRight === 3 || focusRight === 7){
+				return 0;
+			}
+			else {
+				focusRight ++ ;
+			}
+			$("focusDiv").style.left = (325+(focusRight%4)*220) + "px";		
+		}
+		else if(step === -4 ){
+			if(focusRight < 4 && contentPage > 0){
+				focusRight += 4;
+				contentPage -- ;
+				initRightList(contentPage*8);
+			}
+			else if(focusRight >= 4){
+				focusRight -= 4;
+			}
+			$("focusDiv").style.top = (140+parseInt(focusRight/4)*257) + "px";		
+		}
+		else if(step === 4 ){
+			if(focusRight < 4 && contentPage*8+focusRight+4 < rightArr.length-1){
+				focusRight += 4;
+			}
+			else if(focusRight >= 4 && contentPage*8+1 < rightArr.length-1){
+				contentPage ++;
+				if(contentPage*8+focusRight-4<rightArr.length-1){
+					focusRight -= 4;
+				}
+				else {
+					focusRight = (rightArr.length-1)%4;
+					$("focusDiv").style.left = (325+(focusRight%4)*220) + "px";		
+				}
+				initRightList(contentPage*8);
+			}
+			$("focusDiv").style.top = (140+parseInt(focusRight/4)*257) + "px";			
+		}
+		else if( step === 0){
+			$("focusDiv").style.visibility = "visible";
+			$("focusDiv").style.top = (140+parseInt(focusRight/4)*257) + "px";
+			$("focusDiv").style.left = (325+(focusRight%4)*220) + "px";	
+		}
+	}
+}
+
+
+function frameChange(frameIndex){
+	var contentLoc = leftArr[focusLeft].enName + "/content.js";
+	sendAjax(contentLoc,null,function(data){
+		rightArr = eval('('+data+')');	
+	});
+}
+
+function doSelect(){
+	if(focusArea === 1){
+		if(rightArr[contentPage*8+focusRight].videoUrl){
+			focusMemory();
+			var resourceIds = rightArr[contentPage*8+focusRight].videoUrl.split("&");
+			msg = rightArr[contentPage*8+focusRight].title;
+			if(SysInfo.middlewareCopyRight == 'Coship' || SysInfo.middlewareCopyRight == '同洲软件'){
+				var userid = getUserId();
+				var videoid = resourceIds[0];
+				var url = zhongshanUrl + "?userId="+userid+"&columnMapId="+videoid+"&rtsp=N";
+				sendAjax(url,null,function(data){
+					var returnData=eval('(' + data + ')');
+					if (returnData.rtsp) {
+						//setGlobal();
+						setGlobalVar('isBack','Y');
+						setGlobalVar("vod_ctrl_startime", 0);
+						//alert(getGlobalVar('vod_ctrl_startime'));
+						setGlobalVar("vod_play_totalTime", returnData.playTime);
+						setGlobalVar("vod_ctrl_backurl", location.href);
+						setGlobalVar("vod_ctrl_endurl", location.href);
+						setGlobalVar("vod_ctrl_rtsp", encodeURIComponent(returnData.rtsp));
+						setGlobalVar("displayName", "");
+						setGlobalVar("vod_play_type", "3");
+						window.location.href = bendiPlayer;
+					}
+				});
+			}
+			else {
+				setGlobalVar('isBack','Y')
+				
+				listType = "视频";
+				clickLink = shengPlayer +'?assetId='+resourceIds[1];
+				getTitleData();
+				var url = shengPlayer +'?assetId='+resourceIds[1];
+				window.location.href = url;
+			}
+		}
+		else {
+			focusMemory();
+			msg = leftArr[menuPage*6+focusLeft].name;
+			listType = "图文";
+			clickLink =clickLinkHead+"/"+ leftArr[menuPage*6+focusLeft].enName  + "/index.htm";
+			getTitleData();
+			navStr = navStr +">"+ leftArr[menuPage*6+focusLeft].name;
+			setGlobalVar("navigator",navStr);
+			window.location.href = leftArr[menuPage*6+focusLeft].enName + "/index.htm?index="+(contentPage*8+focusRight);
+		}	
+	}	
+}
+
+function selectByNum(num){	
+	if(contentPage*8+num-1 < rightArr.length){
+		if(rightArr[contentPage*8+num-1].videoUrl){
+			focusMemory();
+			var resourceIds = rightArr[contentPage*8+num-1].videoUrl.split("&");
+			msg = rightArr[contentPage*8+num-1].name;
+			if(SysInfo.middlewareCopyRight == 'Coship' || SysInfo.middlewareCopyRight == '同洲软件'){
+				var userid = getUserId();
+				var videoid = resourceIds[0];
+				var url = zhongshanUrl + "?userId="+userid+"&columnMapId="+videoid+"&rtsp=N";
+				sendAjax(url,null,function(data){
+					var returnData=eval('(' + data + ')');
+					if (returnData.rtsp) {
+						//setGlobal();
+						setGlobalVar('isBack','Y');
+						setGlobalVar("vod_ctrl_startime", 0);
+						//alert(getGlobalVar('vod_ctrl_startime'));
+						setGlobalVar("vod_play_totalTime", returnData.playTime);
+						setGlobalVar("vod_ctrl_backurl", location.href);
+						setGlobalVar("vod_ctrl_endurl", location.href);
+						setGlobalVar("vod_ctrl_rtsp", encodeURIComponent(returnData.rtsp));
+						setGlobalVar("displayName", "");
+						setGlobalVar("vod_play_type", "3");
+						window.location.href = bendiPlayer;
+					}
+				});
+			}
+			else {
+				setGlobalVar('isBack','Y')
+				
+				listType = "视频";
+				clickLink = shengPlayer +'?assetId='+resourceIds[1];
+				getTitleData();
+				var url = shengPlayer +'?assetId='+resourceIds[1];
+				window.location.href = url;
+			}
+		}
+		else {
+			focusMemory();
+			msg = leftArr[menuPage*6+focusLeft].name;
+			listType = "图文";
+			clickLink =clickLinkHead+"/"+ leftArr[menuPage*6+focusLeft].enName  + "/index.htm";
+			getTitleData();
+			navStr = navStr +">"+ leftArr[menuPage*6+focusLeft].name;
+			setGlobalVar("navigator",navStr);
+			window.location.href = leftArr[menuPage*6+focusLeft].enName + "/index.htm?index="+(contentPage*8+num-1);
+		}	
+	}
+}
+
+function focusMemory(){
+	setGlobalVar("focus_sub",focusRight);
+	setGlobalVar("page_sub",contentPage);
+	setGlobalVar("focus_frame",focusLeft);
+	setGlobalVar("frame_page",menuPage);
+}
+</script>
+</head>
+<body onload="init();">
+	<div id="director">中山市食品药品监督管理局</div>
+	<!--左侧信息-->
+	<div style="position:absolute;left:72px;top:95px;">
+		<img id="listImg" src="images/border_top.png"/>
+	</div>
+	<img src="images/boder_pic.png" style="position:absolute;left:72px;top:140px;"/>
+	<div id="leftList">
+		<div id="item_0" style="left:31px;top:22px;background:url(images/border_middle.png);
+		color:#ffffff;">
+			
+		</div>
+		<div id="item_1" style="left:31px;top:79px;"></div>
+		<div id="item_2" style="left:31px;top:136px;"></div>
+		<div id="item_3" style="left:31px;top:193px;"></div>
+		<div id="item_4" style="left:31px;top:250px;"></div>
+		<div id="item_5" style="left:31px;top:307px;"></div>
+	</div>
+
+	<!--右侧内容-->
+	<div id="focusDiv"></div>
+	<div id="rightBox">	
+		<div class="rightDiv" style="left:0px;top:0px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:220px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					1
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:220px;top:0px;">
+			<img class="rightImg" src="" width="221" height="225" />
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:221px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					2
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:440px;top:0px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:221px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					3
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:660px;top:0px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:222px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					4
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:0px;top:257px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:220px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					5
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:220px;top:257px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:221px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					6
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:440px;top:257px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:221px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					7
+				</div>
+			</div>
+		</div>
+		<div class="rightDiv" style="left:660px;top:257px;">
+			<img class="rightImg" src="" width="221" height="225"/>
+			<!--cover-->
+			<div style="position:absolute;left:0px;top:225px;background:url(images/boder-cover.png);width:221px;height:32px;text-align:center;color:#eeeeee;
+						font-size:16px;line-height:32px;">
+				进入了解
+				<div style="position:absolute;display:inline-table;left:175px;top:5px;background:url(images/icon_border.png);width:37px;height:24px;color:#eeeeee;
+							font-size:18px;line-height:24px;">
+					8
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

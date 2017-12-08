@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>近期动态详情</title>
+    <style>
+        body {
+            background: url(../images/bg1.png) no-repeat;
+        }
+        
+        .play-icon {
+            position: absolute;
+            margin: auto;
+            top: 0px;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+        }
+    </style>
+    <script src="../js/common.js"></script>
+    <script src="../js/config.js"></script>
+</head>
+
+<body>
+    <!--标签-->
+    <div style="position:absolute; left:74px; top:51px;height:42px;line-height:42px;font-size: 32px; color: #fff;">
+        <img src="../images/icon1_03.png" width="17" height="28" />
+        <span id="labelName"></span>
+    </div>
+
+    <div style="position:absolute; left:102px; top:132px;width:592px;height:372px;">
+        <img id="focusImg" src="" width="592" height="372" />
+        <img id="focusIcon" id="icon_0" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+    <div style="position:absolute; left:728px; top:132px; width:449px; height:372px; background:url(images/icon_bg3.png);">
+        <div id="title" style="position:absolute; left:18px; top:20px; width:409px; font-size:30px; color:#fff;"></div>
+        <div id="source" style="position: absolute; left: 18px; top: 71px;  font-size: 24px; color: #fff;"></div>
+        <div id="date" style="position:absolute; left:261px; top:71px; width:166px; text-align:right; font-size:24px; color:#fff;"></div>
+        <div id="content" style="position:absolute; left:18px; top:126px; width:409px;height:240px;font-size:24px; color:#fff; line-height:35px;overflow:hidden;"></div>
+    </div>
+    <!--焦点-->
+    <div id="focusDiv" style="position: absolute; left: 670px; top: 73px; width: 578px;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="149" height="109" style="background:url(../images/jd01.png);"></td>
+                <td style="background:url(../images/jd02.png);">&nbsp;</td>
+                <td width="149" height="109" style="background:url(../images/jd03.png);"></td>
+            </tr>
+            <tr>
+                <td height="281" style="background:url(../images/jd04.png);">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="background:url(../images/jd05.png);">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="149" height="109" style="background:url(../images/jd06.png);"></td>
+                <td style="background:url(../images/jd07.png);">&nbsp;</td>
+                <td width="149" height="109" style="background:url(../images/jd08.png);"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!--箭头-->
+    <div style="position:absolute; left:60px; top:564px;"><img src="../images/icon1_05.png" width="28" height="53" /></div>
+    <div style="position:absolute; left:1192px; top:564px;"><img src="../images/icon1_06.png" width="28" height="53" /></div>
+
+    <!--列表-->
+    <div id="ct_0" style="position:absolute; left:102px; top:530px;width:200px;height:126px;">
+        <img id="img_0" src="" width="200" height="126" />
+        <img id="icon_0" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+    <div id="ct_1" style="position:absolute; left:320px; top:530px;width:200px;height:126px;">
+        <img id="img_1" src="" width="200" height="126" />
+        <img id="icon_1" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+    <div id="ct_2" style="position:absolute; left:538px; top:530px;width:200px;height:126px;">
+        <img id="img_2" src="" width="200" height="126" />
+        <img id="icon_2" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+    <div id="ct_3" style="position:absolute; left:756px; top:530px;width:200px;height:126px;">
+        <img id="img_3" src="" width="200" height="126" />
+        <img id="icon_3" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+    <div id="ct_4" style="position:absolute; left:974px; top:530px;width:200px;height:126px;">
+        <img id="img_4" src="" width="200" height="126" />
+        <img id="icon_4" class="play-icon" src="../images/icon1_01.png" width="48" height="48" />
+    </div>
+
+    <!--焦点-->
+    <div id="listFocus" style="position: absolute; left: 45px; top: 472px; width: 328px;visibility:hidden;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td width="149" height="109" style="background:url(../images/jd01.png);"></td>
+                <td style="background:url(../images/jd02.png);">&nbsp;</td>
+                <td width="149" height="109" style="background:url(../images/jd03.png);"></td>
+            </tr>
+            <tr>
+                <td height="34" style="background:url(../images/jd04.png);">&nbsp;</td>
+                <td>&nbsp;</td>
+                <td style="background:url(../images/jd05.png);">&nbsp;</td>
+            </tr>
+            <tr>
+                <td width="149" height="109" style="background:url(../images/jd06.png);"></td>
+                <td style="background:url(../images/jd07.png);">&nbsp;</td>
+                <td width="149" height="109" style="background:url(../images/jd08.png);"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function eventHandler(eventObj) {
+            var keycode = eventObj.code;
+            switch (keycode) {
+                case "KEY_UP":
+                    changeUD(-1);
+                    return false;
+                    break;
+                case "KEY_DOWN":
+                    changeUD(1);
+                    return false;
+                    break;
+                case "KEY_LEFT":
+                    changeLR(-1);
+                    return false;
+                    break;
+                case "KEY_RIGHT":
+                    changeLR(1);
+                    return false;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return false;
+                    break;
+                case "KEY_BACK":
+                    goBack()
+                    return false;
+                    break;
+                case "KEY_EXIT":
+                    goBack();
+                    return false;
+                    break;
+                default:
+                    return true;
+                    break;
+            }
+        }
+        var focusArea = 1;
+        var contentData = [];
+        var contentIdx = parseInt(mySessionStorage.getItem("index")) || 0;
+        var contentList = null;
+        var focusPos = {
+            startPos: 45,
+            step: 218,
+            direction: 'left'
+        };
+        var backUrl = "";
+
+        function init() {
+            $("labelName").innerText = mySessionStorage.getItem("hdjj_labelName");
+            getContentData();
+        }
+
+        window.onload = init;
+
+        function getContentData() {
+            var ajaxObj = new ajaxClass();
+            ajaxObj.frame = window;
+            var url = 'content.js';
+            ajaxObj.url = url;
+            // ajaxObj.charset = 'utf-8';
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval('(' + _xmlHttp.responseText + ')');
+                contentData = getData;
+                initContent();
+            }
+
+            ajaxObj.failureCallback = function() {
+
+            }
+
+            ajaxObj.requestData();
+        }
+
+        function initContent() {
+            contentList = new List(5, contentData.length, 'listFocus', focusPos);
+            contentList.initList(0);
+            contentList.haveData = function(posObj) {
+                $('img_' + posObj.idPos).src = contentData[posObj.dataPos].entryImage.imageUrl;
+                if (contentData[posObj.dataPos].videoUrl != "") {
+                    $('icon_' + posObj.idPos).style.visibility = 'visible';
+                } else {
+                    $('icon_' + posObj.idPos).style.visibility = 'hidden';
+                }
+            }
+            contentList.noData = function(posObj) {
+                $('icon_' + posObj.idPos).style.visibility = 'hidden';
+                $('ct_' + posObj.idPos).style.visibility = 'hidden';
+            }
+            contentList.initContent();
+            contentList.changeFocus(contentIdx, 0);
+            showContent();
+        }
+
+        function showContent() {
+            var data = contentData[contentList.position];
+            $('focusImg').src = data.entryImage.imageUrl;
+            if (data.videoUrl != "") {
+                $('focusIcon').style.visibility = 'visible';
+            } else {
+                $('focusIcon').style.visibility = 'hidden';
+            }
+            if (data.title.length > 15) {
+                $('title').innerText = data.title.substring(0, 14) + '..';
+            } else {
+                $('title').innerText = data.title;
+            }
+            if (data.subTitle.length > 11) {
+                $('source').innerText = data.subTitle.substring(0, 10) + '..';
+            } else {
+                $('source').innerText = data.subTitle;
+            }
+            $('date').innerText = data.date;
+            $('content').innerHTML = data.content;
+        }
+
+        function setFocus() {
+            if (focusArea === 0) {
+                $('focusDiv').style.visibility = 'visible';
+                $('focusDiv').style.width = '720px';
+                $('focusDiv').style.left = '45px';
+            } else if (focusArea === 1) {
+                $('focusDiv').style.visibility = 'visible';
+                $('focusDiv').style.width = '578px';
+                $('focusDiv').style.left = '670px';
+            } else if (focusArea === 2) {
+                $('listFocus').style.visibility = 'visible';
+            }
+        }
+
+        function loseFocus() {
+            if (focusArea === 0) {
+                $('focusDiv').style.visibility = 'hidden';
+            } else if (focusArea === 1) {
+                $('focusDiv').style.visibility = 'hidden';
+            } else if (focusArea === 2) {
+                $('listFocus').style.visibility = 'hidden';
+            }
+        }
+
+        function changeLR(num) {
+            if (focusArea === 0 && num > 0) {
+                focusArea = 1;
+                setFocus();
+            } else if (focusArea === 1 && num < 0) {
+                focusArea = 0;
+                setFocus();
+            } else if (focusArea === 2) {
+                contentList.changeFocus(num, 0);
+                showContent();
+            }
+        }
+
+        function changeUD(num) {
+            if ((focusArea === 0 || focusArea === 1) && num > 0) {
+                loseFocus();
+                focusArea = 2;
+                setFocus();
+            } else if (focusArea === 2 && num < 0) {
+                loseFocus();
+                if (contentList.currFocus < 3) {
+                    focusArea = 0;
+                } else {
+                    focusArea = 1;
+                }
+                setFocus();
+            }
+        }
+
+        function doSelect() {
+            if (focusArea === 0) {
+                if (contentData[contentList.position].videoUrl != "") {
+                    mySessionStorage.setItem("index", contentList.position);
+                    window.location.href = playUrl + '?videoId=' + contentData[contentList.position].videoUrl + '&backUrl=' + encodeURIComponent(window.location.href);
+                }
+            } else if (focusArea === 1) {
+                mySessionStorage.setItem("index", contentList.position);
+                window.location.href = 'content.htm';
+            }
+        }
+
+        function goBack() {
+            window.location.href = '../index.htm';
+        }
+    </script>
+
+</body>
+
+</html>

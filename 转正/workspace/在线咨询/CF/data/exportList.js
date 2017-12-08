@@ -1,0 +1,25 @@
+[{
+	id:"100007826",
+	name:"曹玲燕",
+	imgUrl:"images/touxiang1.png",
+	state:0,
+	time:"08:00-12:00",
+	price:"30",
+	intro:"擅长儿童呼吸系统疾病及哮喘病的诊治，具有丰富的临床及科研工作经验"
+},{
+	id:"100007826",
+	name:"贾英",
+	imgUrl:"images/touxiang1.png",
+	state:1,
+	time:"08:00-12:00",
+	price:"30",
+	intro:"擅长小儿消化系统疾病的诊治及儿童胃镜检查"
+},{
+	id:"100007826",
+	name:"彭音",
+	imgUrl:"images/touxiang1.png",
+	state:2,
+	time:"08:00-12:00",
+	price:"40",
+	intro:"熟悉小儿内科常见疾病处理，擅长小儿神经系统感染性疾病"
+}]

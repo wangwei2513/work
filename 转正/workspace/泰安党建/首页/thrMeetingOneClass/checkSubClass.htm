@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="page-view-size" content="1280*720">
+<title>查看下级</title>
+<style type="text/css">
+.menuItem{position: absolute;width: 331px;line-height: 73px;font-size: 30px;text-align: center;}
+p{margin: 0;}
+</style>
+</head>
+<body bgcolor="transparent" background="images/bg3.png" onload="init()" onunload="exit()">
+<!-- logo -->
+<img src="images/logo.png" width="475" height="67" style="position:absolute;left:73px;top:32px;">
+<!-- time -->
+<div id="h_m_s" style="position:absolute;width:130px;line-height:22px;left:1077px;top:56px;font-size:26px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">00:00:00</div>
+<div id="y_m_d" style="position:absolute;width:130px;line-height:18px;left:1077px;top:78px;font-size:18px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">1970/01/01</div>
+<!-- menu -->
+<div style="position:absolute;left:75px;top:111px;">
+	<img id="menu0Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu0Text" class="menuItem" style="color:#000000;"></div>
+</div>
+<div style="position:absolute;left:75px;top:223px;">
+	<img id="menu1Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu1Text" class="menuItem" style="color:#000000;"></div>
+</div>
+<div style="position:absolute;left:75px;top:335px;">
+	<img id="menu2Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu2Text" class="menuItem" style="color:#000000;"></div>
+</div>
+<div style="position:absolute;left:75px;top:447px;">
+	<img id="menu3Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu3Text" class="menuItem" style="color:#000000;"></div>
+</div>
+<div style="position:absolute;left:75px;top:559px;">
+	<img id="menu4Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu4Text" class="menuItem" style="color:#000000;"></div>
+</div>
+<!-- meeting Info -->
+<div id="meetInfo" style="position:absolute;width:667px;height:112px;line-height:28px;left:539px;top:512px;font-size:26px;color:#000000;overflow:hidden;">
+	<p>会议议题：<span id="meetName">暂无</span></p>
+	<p>开始时间：<span id="meetTime">暂无</span></p>
+	<p>议题简介：<span id="meetIntr">暂无</span></p>
+</div>
+<!-- footer -->
+<div style="position:absolute;width:720px;height:24px;line-height:24px;padding-left:36px;left:75px;top:662px;font-size:24px;color:#faf9f6;background:url(images/notice.png) no-repeat left center;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+<img src="images/tips01.png" width="305" height="40" style="position:absolute;left:903px;top:652px;">
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+<script type="text/javascript" src="js/player.js"></script>
+<script type="text/javascript">
+//@denglc
+document.onkeydown = eventHandler;
+document.onirkeypress = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(e){
+	var e = e || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	iDebug(">>>denglc-->checkSubClass-->keycode:"+keycode);
+	var eventObj = Event.mapping(keycode);
+	switch(eventObj.code){
+		case "KEY_UP":
+			changeUD(-1);
+			return false;
+			break;
+		case "KEY_DOWN":
+			changeUD(1);
+			return false;
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+			window.location.href = "index.htm";
+			return false;
+			break;
+		case "MSG_MEDIA_URL_VALID":
+			MPlayer.play();
+			break;
+		case "MSG_MEDIA_URL_INVALID":
+			break;
+		case "MSG_MEDIA_PLAY_SUCCESS":
+			break;
+		case "MSG_MEDIA_PLAY_FAILED":
+			break;
+	}
+}
+/**************************变量**************************/
+var menuPos = 0;
+var sortData = ["东平党支部","宁阳党支部","肥城党支部","新泰党支部","岱岳党支部"];//排序优先级 越靠后优先级越高 没有按返回顺序
+var menuData = [];
+var meetingInfo = {};
+var channelId = "";
+var accesstoken = "";//token
+var deviceid = "";
+var playUrlBefore = "";
+var isPlay = false;
+/**************************方法**************************/
+function init(){
+	initPlayer();
+	initParams();
+	initTime();
+	ajaxGetAreaList();//获取所有区域
+	onFocus();
+}
+
+function initPlayer(){
+	MPlayer.init();
+}
+
+function initParams(){
+	accesstoken = getGlobalParms("thrOne_accesstoken") || "TOKEN50001002";
+	deviceid = getGlobalParms("thrOne_deviceid") || "9999";
+}
+
+function initTime(){
+	var date = new Date();
+	var y = date.getFullYear();
+	var m = date.getMonth();
+	var d = date.getDate();
+	var h = date.getHours();
+	var mm = date.getMinutes();
+	var s = date.getSeconds();
+	$("h_m_s").innerText = addZero(h) + ":" + addZero(mm) + ":" + addZero(s);
+	$("y_m_d").innerText = y + "/" + addZero(m+1) + "/" + addZero(d);
+	setTimeout(initTime,1000);
+}
+
+function ajaxGetAreaList(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.queryAreaData;
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetAreaList url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetAreaList:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){//仅取areaLevel为2的
+			for(var i=0;i<getData.msg.length;i++){
+				if(getData.msg[i].areaLevel == 2){
+					menuData.push(getData.msg[i]);
+				}
+			}
+			sort(menuData,"areaName");
+		}else{
+			menuData = [{"areaName":"岱岳党支部"},{"areaName":"新泰党支部"},{"areaName":"肥城党支部"},{"areaName":"宁阳党支部"},{"areaName":"东平党支部"}];
+		}
+		initMenuList();
+		if(menuData[menuPos].placeMaster){
+			ajaxGetSubMeeting(menuData[menuPos].placeMaster);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		menuData = [{"areaName":"岱岳党支部"},{"areaName":"新泰党支部"},{"areaName":"肥城党支部"},{"areaName":"宁阳党支部"},{"areaName":"东平党支部"}];
+		initMenuList();
+	}
+	ajaxObj.requestData();
+}
+
+function sort(__listArr,__property){
+	var tempArr = __listArr;
+	tempArr.sort(function(a,b){
+		return ((sortData.indexOf(b[__property]) - sortData.indexOf(a[__property])) > 0 ? 1 : sortData.indexOf(b[__property]) == sortData.indexOf(a[__property]) ? 0 : -1);
+	});
+	return tempArr;
+}
+
+function initMenuList(){
+	for(var i=0;i<Math.min(menuData.length,5);i++){
+		$("menu"+i+"Text").innerText = menuData[i].areaName || "";
+	}
+}
+
+function ajaxGetSubMeeting(placeMaster){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.querySubMeeting;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,"4,5,61,62,63,64,7").replace(/\{2\}/,placeMaster);//类型4,5,61,62,63,64,7合起来是三会一课类型的会议
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetSubMeeting url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetSubMeeting:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			if(getData.msg.length > 0){
+				channelId = getData.msg[0].channelId;
+				playMonitor(sliceMonitorAddr());
+				isPlay = true;
+				meetingInfo.theme = getData.msg[0].theme;
+				meetingInfo.themeDesc = getData.msg[0].themeDesc;
+				meetingInfo.startTime = getData.msg[0].startTime;
+			}
+		}
+		initMeetingInfo();
+	}
+	ajaxObj.failureCallback = function(){
+		initMeetingInfo();
+	}
+	ajaxObj.requestData();
+}
+
+function initMeetingInfo(){
+	$("meetName").innerText = meetingInfo.theme || "暂无";
+	$("meetTime").innerText = meetingInfo.startTime || "暂无";
+	$("meetIntr").innerText = meetingInfo.themeDesc || "暂无";
+}
+
+function onFocus(){
+	$("menu"+menuPos+"Bg").src = "images/listL_f1.png";
+	$("menu"+menuPos+"Text").style.color = "#f8af89";
+}
+
+function loseFocus(){
+	$("menu"+menuPos+"Bg").src = "images/listL_bg1.png";
+	$("menu"+menuPos+"Text").style.color = "#000000";
+}
+
+function sliceMonitorAddr(){
+	return livePlay+"?accesstoken="+accesstoken+"&programid="+channelId+"&playtype=live&protocol=http&playtoken=ABCDEFGHIGK&verifycode="+deviceid+"&auth=no";
+}
+
+function playMonitor(__url){
+	iDebug(">>>denglc-->playMonitor-->url="+__url);
+	iDebug(">>>denglc-->playMonitor-->playUrlBefore="+playUrlBefore);
+	if(typeof __url == "undefined" || __url == "")return;
+	if(playUrlBefore == __url)return;
+	MPlayer.setPosition(539,110,667,374);	
+	if(browserType == "Inspur"){
+		MPlayer.play(__url);
+	}else{
+		MPlayer.setMediaSource(__url);
+	}
+	playUrlBefore = __url;
+}
+
+function changeUD(_num){
+	loseFocus();
+	$("meetName").innerText = "暂无";
+	$("meetTime").innerText = "暂无";
+	$("meetIntr").innerText = "暂无";
+	menuPos = (menuPos + _num + 5) % 5;
+	stopToggle();
+	if(menuData[menuPos].placeMaster){
+		ajaxGetSubMeeting(menuData[menuPos].placeMaster);
+	}
+	onFocus();
+}
+
+function stopToggle(){
+	meetingInfo = {};
+	if(isPlay){
+		playUrlBefore = "";
+		MPlayer.stop(0)
+		isPlay = false;
+	}else{
+
+	}
+}
+
+function exit(){
+	MPlayer.stop(1);
+}
+</script>
+</body>
+</html>

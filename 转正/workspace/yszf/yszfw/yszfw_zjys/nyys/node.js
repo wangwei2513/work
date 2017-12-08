@@ -1,0 +1,16 @@
+{
+	"blurImageUrl": "",
+	"clickable": 1,
+	"enName": "nyys",
+	"entryCombinedImage": "",
+	"entryWord": "",
+	"focusImageUrl": "http://10.7.27.220:80/appcmsFiles/",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "ds_wenziliebiao",
+	"name": "农业阳朔",
+	"navigator": "阳朔政府网>走进阳朔>农业阳朔",
+	"newAdd": 0,
+	"nodePath": "yszfw/yszfw_zjys/nyys",
+	"subNodeFocusCombinedImage": "http://10.7.27.220:80/appcmsFiles/"
+}

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="app">
+        <router-link to="{name:'user',params:{userId:123}}">123</router-link>
+        <router-view></router-view>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script>
+        const Home = {
+            template: '<div>This is Home</div>'
+        }
+        const Foo = {
+            template: '<div>This is Foo</div>'
+        }
+        const Bar = {
+            template: '<div>This is Bar {{ $route.params.id }}</div>'
+        }
+        const user = {
+            template: "<div>{{$route.params.userId}}</div>"
+        }
+        const router = new VueRouter({
+            mode: 'history',
+            // base: __dirname,
+            routes: [{
+                    path: '/',
+                    name: 'home',
+                    component: Home
+                },
+                {
+                    path: '/foo',
+                    name: 'foo',
+                    component: Foo
+                },
+                {
+                    path: '/bar/:id',
+                    name: 'bar',
+                    component: Bar
+                }
+            ]
+        })
+        new Vue({
+            router,
+            template: `
+              <div id="app">
+                <h1>Named Routes</h1>
+                <p>Current route name: {{ $route.name }}</p>
+                <ul>
+                  <li><router-link :to="{ name: 'home' }">home</router-link></li>
+                  <li><router-link :to="{ name: 'foo' }">foo</router-link></li>
+                  <li><router-link :to="{ name: 'bar', params: { id: 123 }}">bar</router-link></li>
+                </ul>
+                <router-view class="view"></router-view>
+              </div>
+            `
+        }).$mount('#app')
+    </script>
+</body>
+
+</html>

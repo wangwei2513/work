@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>会议回看</title>
+<script type="text/javascript" src="config/config.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="videoList.js"></script>
+<script type="text/javascript">
+var itemLen = 7;
+var subMenuBox=[];
+var url = window.location.href;
+var itemIndex = 0;
+var allPage;
+var currPage=1;
+
+document.onkeydown = eventHandler;
+function eventHandler(key){
+	var e = key || event;
+	var returnFlag = false;
+	var keyCode = e.keyCode || e.which || e.charCode;
+	switch(keyCode) {
+		case 4:
+		case 39://右
+			event.returnValue=false;
+			return false;
+			break;
+		case 3:
+		case 37: //左
+			event.returnValue=false;
+			return false;
+			break;	
+		case 1:
+		case 38: //上
+			changeUD(-1);
+			event.returnValue=false;
+			return false;
+			break;
+		case 2:
+		case 40:  //下
+			changeUD(1);
+			event.returnValue=false;
+		    return false;	
+			break;	
+		case 13:  //确定键
+			doSelect();
+			event.returnValue=false;
+			return false;
+			break;
+		case 340:
+		case 8:
+			goBack();
+			event.returnValue=false;
+			return false;
+			break;
+		}
+	return returnFlag;
+}
+
+
+function goBack(){
+	window.location.href = "index.htm";
+}
+
+function changeLR(_num){}
+
+function changeUD(_num){
+	if(videoList.length!=0){
+		subMenuBox.changeList(_num);
+		if(videoList[subMenuBox.position].title.length>24){
+			$("itemFocus").innerHTML="<marquee width=\"700px\">"+videoList[subMenuBox.position].title+"</marquee>";
+		}else{
+			$("itemFocus").innerText = videoList[subMenuBox.position].title;
+		}
+		if(allPage>1){
+			scrollObj.scroll(subMenuBox.currPage-1);
+		}else{
+			$("scrollBar").style.visibility = "hidden";
+		}
+	}
+}
+
+function doSelect(){
+	if(videoList[subMenuBox.position].playUrl!=""){
+		window.location.href = "play.htm?position="+subMenuBox.position+"?returnType=1";
+	}
+}
+
+function init(){
+	getParms();
+	initItem();
+	initScroll();
+}
+
+function getParms(){
+	var pos = getUrlArgs("position",url);
+	if(pos!=""){
+		itemIndex = parseInt(pos,10);
+	}
+}
+
+function initItem(){
+	if(videoList.length <= 0){
+		clearAll();
+		return;
+	}
+	subMenuBox=new showList(itemLen,videoList.length,itemIndex,151,window);
+	subMenuBox.focusDiv = "itemFocus";//焦点元素的ID
+	subMenuBox.listHigh = [57,57,57,57,60,59,56];   //行高
+	//menuBox.listSign = 1;  //表示横向移动，不设置则默认为竖向
+	subMenuBox.focusLoop = true;//是否循环切换
+	subMenuBox.pageLoop = true;//是否循环翻页
+	subMenuBox.haveData = function(List){//显示一行数据
+		if(videoList[List.dataPos].title.length>24){
+			$("item"+List.idPos).innerText = getStrChineseLen(videoList[List.dataPos].title,24);		
+		}else{
+			$("item"+List.idPos).innerText = videoList[List.dataPos].title;	
+		}
+	};
+	subMenuBox.notData = function(List){   //清空一行数据
+	   $("item"+List.idPos).innerText="";
+	};
+	if(videoList[subMenuBox.position].title.length>24){
+		$("itemFocus").innerHTML="<marquee width=\"700px\">"+videoList[subMenuBox.position].title+"</marquee>";
+	}else{
+		$("itemFocus").innerText = videoList[subMenuBox.position].title;
+	}
+	subMenuBox.startShow(); //开始显示列表信息
+}
+
+function clearAll(){
+	for(var i = 0;i< itemLen;i++){
+		if(i==0){
+			$("item"+i).innerText = "暂无数据";
+		}else{
+			$("item"+i).innerText = "";
+		}
+	}
+	$("itemFocus").style.visibility = "hidden";
+	$("scrollBar").style.visibility = "hidden";
+}
+
+
+
+function initScroll(){
+	allPage = Math.ceil(videoList.length/itemLen);
+	if(allPage>1){
+		$("scrollBar").style.visibility = "visible";
+		scrollObj = new ScrollBar("scroll","scroll_bar");
+		scrollObj.init(allPage,1,400,0,"top");
+		scrollObj.scroll(currPage-1);
+	}else{
+		$("scrollBar").style.visibility = "hidden";
+	}
+}
+</script>
+</head>
+
+<body leftmargin="0" topmargin="0" background="images/bg.jpg" onload="init();">
+
+<!--<div style="position:absolute; left:1087px; top:40px;">
+	<img src="images/ycpx.png"/>
+</div>-->
+<!--会议列表-->
+<div style="position:absolute; left:66px; top:142px; width:1148px; height:420px; background:url(images/listBtm01.png) no-repeat;">
+
+	<table width="945" border="0" cellspacing="0" cellpadding="0" style="position:absolute; left:41px; top:9px; font-size:24px; color:#fbf9f5;">
+		  <tr>
+			<td height="57" id="item0"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item1"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item2"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item3"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item4"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item5"></td>
+		  </tr>
+		  <tr>
+			<td height="57" id="item6"></td>
+		  </tr>
+</table>
+</div>
+
+<!--焦点-->
+<div style="position:absolute; left:75px; top:151px; width:1042px; height:57px; background:#fa852f; line-height:57px; padding-left:32px; color:#0c0c0b; font-size:24px; visibility:visible"  id="itemFocus"></div>
+    
+
+<!--提示框-->
+<!--<div id="showTips" style="position:absolute; left:406px; top:209px; width:468px; height:300px; background-color:#e1e1de; border:1px #9d9d9b solid; visibility:hidden;">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size:28px; color:#1d1f21;">
+		<tr>
+			<td height="52" colspan="2" align="center" style="border-bottom:1px #9d9d9b solid; color:#788080; line-height:52px;" id="tipsTitle"></td>
+		</tr>
+		<tr>
+			<td height="248" colspan="2" style="border-top:1px #9d9d9b solid; line-height:30px; padding:10px; vertical-align:top;" id="tipsText">
+			</td>
+		</tr>
+	</table>
+</div>-->
+
+	 <div id="scrollBar" style="position:absolute; left:1215px; top:150px; width:10px; height:411px;">
+        <div id="scroll" style="position:absolute; width:8px; height:410px; z-index:2;">
+        <img src="images/scroll_up.png" width="8" height="5">
+        <img id="scroll_bar" src="images/scroll_mid.png" width="8" height="1" >
+        <img src="images/scroll_down.png" width="8" height="5"></div>
+        <div style="position:absolute; left:0; top:0; width:8px; height:408px; background:url(images/scroll_bg1.png);"></div>
+    </div>
+</body>
+</html>
+

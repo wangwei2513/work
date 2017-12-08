@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"zsc","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495613011711184046.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"半价！玩转中山影视城只需32元！","navigator":"南朗镇>活动>半价！玩转中山影视城只需32元！","newAdd":0,"nodePath":"xlz/huodong/zsc"}

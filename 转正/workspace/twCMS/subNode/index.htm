@@ -1,0 +1,220 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+    <title>党章党规学习</title>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript">
+        window.onkeydown = function(e) {
+                var e = e || event;
+                var keycode = e.keyCode || e.which || e.charCode;
+                switch (keycode) {
+                    case 1:
+                    case 38: //up
+                        changeUD(-1);
+                        return EVENT.STOP;
+                        break;
+                    case 2:
+                    case 40: //down
+                        changeUD(1);
+                        return EVENT.STOP;
+                        break;
+                    case 3:
+                    case 37: //left
+                        changeLR(-1);
+                        return EVENT.STOP;
+                        break;
+                    case 4:
+                    case 39: //right
+                        changeLR(1);
+                        return EVENT.STOP;
+                        break;
+                    case 13: //enter
+                        doSelect();
+                        return EVENT.STOP;
+                        break;
+                    case 8:
+                    case 340: //back
+                        window.location.href = "../index.htm";
+                        mySessionStorage.removeItem("xxjy_tListPos");
+                        return EVENT.STOP;
+                        break;
+                    case 27:
+                    case 339: //exit
+                        return EVENT.STOP;
+                        break;
+                }
+            }
+            /**********************变量**********************/
+        var menuData = [];
+        var listPos = 0;
+        var focusArea = 0;
+        var currPage = 1;
+        var totalPage = 1;
+        var pageSize = 8;
+
+        var ajaxObj = null;
+        var file = "content.js";
+        /**********************方法**********************/
+        function init() {
+            initParams();
+            ajaxMenuList();
+        }
+
+        function initParams() {
+            if (mySessionStorage.getItem("xxjy_tListPos")) {
+                var pos = parseInt(mySessionStorage.getItem("xxjy_tListPos"), 10);
+                listPos = pos % pageSize;
+                currPage = Math.floor(pos / pageSize) + 1;
+            }
+        }
+
+        function ajaxMenuList() {
+            if (ajaxObj == null) {
+                ajaxObj = new ajaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+
+            var url = file;
+            ajaxObj.url = url;
+
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                menuData = getData;
+                initContent();
+                onFocus();
+            }
+
+            ajaxObj.failureCallback = function() {
+                initContent();
+                onFocus();
+            }
+
+            ajaxObj.requestData();
+        }
+
+        function initContent() {
+            clearContent();
+            if (menuData.length > 0) {
+                totalPage = Math.ceil(menuData.length / pageSize);
+                for (var i = 0; i < Math.min(pageSize, menuData.length - (currPage - 1) * pageSize); i++) {
+                    $("icon" + i).style.display = "inline";
+                    $("icon" + i).src = "images/icon0.png";
+                    $("list" + i).innerText = getStrChineseLen(menuData[i + (currPage - 1) * pageSize].title, 22);
+                }
+            }
+            $("cur").innerText = listPos + 1;
+            $("total").innerText = menuData.length;
+        }
+
+        function clearContent() {
+            for (var i = 0; i < pageSize; i++) {
+                $("icon" + i).style.display = "none";
+                $("icon" + i).src = "";
+                $("list" + i).innerText = "";
+            }
+        }
+
+        function onFocus() {
+            switch (focusArea) {
+                case 0:
+                    onContentFocus();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function onContentFocus() {
+            $("focus").style.top = 152 + listPos * 49 + "px";
+            if (menuData.length > 0) {
+                if (menuData[listPos + (currPage - 1) * pageSize].title.length > 22) {
+                    $("list" + listPos).innerHTML = "<marquee style=\"width:535px;\">" + menuData[listPos + (currPage - 1) * pageSize].title + "</marquee>";
+                }
+            }
+            var pos = listPos + (currPage - 1) * pageSize;
+            mySessionStorage.setItem("xxjy_tListPos", pos);
+        }
+
+        function changeUD(_num) {
+            if (menuData.length <= 0) {
+                return false;
+            }
+            $("list" + listPos).innerText = getStrChineseLen(menuData[listPos + (currPage - 1) * pageSize].title, 22);
+            if ((listPos == 0 && currPage == 1 && _num == -1) || (listPos == pageSize - 1 && currPage == totalPage && _num == 1)) {;
+            } else if ((listPos == 0 && currPage > 1 && _num == -1) || (listPos == pageSize - 1 && currPage < totalPage && _num == 1)) {
+                currPage += _num;
+                initContent();
+                listPos = _num == -1 ? pageSize - 1 : 0;
+            } else {
+                listPos += _num;
+                listPos = listPos + (currPage - 1) * pageSize >= menuData.length ? (menuData.length - 1) % pageSize : listPos;
+            }
+            onContentFocus();
+        }
+
+        function changeLR(_num) {
+            if (menuData.length <= 0) {
+                return false;
+            }
+        }
+
+        function doSelect() {
+            if (menuData.length <= 0) {
+                return false;
+            }
+            var tmp = listPos + (currPage - 1) * pageSize;
+            window.location.href = "content.htm";
+        }
+    </script>
+</head>
+
+<body background="images/bg.jpg" topmargin="0" leftmargin="0" onload="init()">
+    <!-- 左侧图片 -->
+    <img src="images/poster0.png" width="335" height="530" style="position:absolute;left:60px;top:130px;">
+    <!-- 右侧焦点 -->
+    <img id="focus" src="images/focus0.png" width="658" height="44" style="position:absolute;left:443px;top:152px;">
+    <!-- 右侧条目 -->
+    <table cellpadding="0" cellspacing="0" border="0" style="position:absolute;width:639px;height:392px;left:457px;top:152px;font-size:24px;color:#000;">
+        <tr>
+            <td width="53" height="49"><img id="icon0" src="" width="20" height="21"></td>
+            <td id="list0" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon1" src="" width="20" height="21"></td>
+            <td id="list1" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon2" src="" width="20" height="21"></td>
+            <td id="list2" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon3" src="" width="20" height="21"></td>
+            <td id="list3" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon4" src="" width="20" height="21"></td>
+            <td id="list4" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon5" src="" width="20" height="21"></td>
+            <td id="list5" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon6" src="" width="20" height="21"></td>
+            <td id="list6" width="586"></td>
+        </tr>
+        <tr>
+            <td width="53" height="49"><img id="icon7" src="" width="20" height="21"></td>
+            <td id="list7" width="586"></td>
+        </tr>
+    </table>
+    <!-- 页码 -->
+    <div style="position:absolute;width:300px;height:44px;line-height:44px;left:652px;top:588px;font-size:22px;color:#000;text-align:center;">第<span id="cur"></span>条/共<span id="total"></span>条</div>
+</body>
+
+</html>

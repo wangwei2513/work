@@ -1,0 +1,18 @@
+[
+  {
+    "blurImageUrl":"",
+    "clickable":1,
+    "enName":"bxfc",
+    "entryCombinedImage":"",
+    "entryWord":"",
+    "focusImageUrl":"",
+    "isManaged":"notManaged",
+    "linkUrl":"",
+    "listType":"tv_square",
+    "name":"°ÙÐÕ·ç²É",
+    "navigator":"",
+    "newAdd":17,
+    "nodePath":"new_bxfc/bxfc",
+    "subNodeFocusCombinedImage":""
+  }
+]

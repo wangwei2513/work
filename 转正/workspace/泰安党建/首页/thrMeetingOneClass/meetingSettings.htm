@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="page-view-size" content="1280*720">
+<title>会议设置</title>
+<style type="text/css">
+.menuItem{position: absolute;width: 331px;line-height: 73px;font-size: 30px;text-align: center;}
+.contMenu{position: absolute;width: 168px;line-height: 50px;font-size: 22px;color:#010101;text-align: center;}
+.listItem{position: absolute;width: 573px;line-height: 61px;left: 113px;font-size: 26px;color: #000;}
+</style>
+</head>
+<body background="images/bg.jpg" onload="init()">
+<!-- logo -->
+<img src="images/logo.png" width="475" height="67" style="position:absolute;left:73px;top:32px;">
+<!-- time -->
+<div id="h_m_s" style="position:absolute;width:130px;line-height:22px;left:1077px;top:56px;font-size:26px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">00:00:00</div>
+<div id="y_m_d" style="position:absolute;width:130px;line-height:18px;left:1077px;top:78px;font-size:18px;color:rgba(255,255,255,0.6);letter-spacing:2px;text-align:right;">1970/01/01</div>
+<!-- left menu -->
+<div style="position:absolute;left:75px;top:135px;">
+	<img id="menu0Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu0Text" class="menuItem" style="color:#000000;">支部党员大会</div>
+</div>
+<div style="position:absolute;left:75px;top:252px;">
+	<img id="menu1Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu1Text" class="menuItem" style="color:#000000;">支部委员会</div>
+</div>
+<div style="position:absolute;left:75px;top:369px;">
+	<img id="menu2Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu2Text" class="menuItem" style="color:#000000;">党小组会</div>
+</div>
+<div style="position:absolute;left:75px;top:486px;">
+	<img id="menu3Bg" src="images/listL_bg1.png" width="331" height="73" style="position:absolute;">
+	<div id="menu3Text" class="menuItem" style="color:#000000;">党课</div>
+</div>
+<!-- content list -->
+<img id="contBg0" src="images/listr_bg1.png" width="746" height="425" style="position:absolute;left:461px;top:135px;">
+<div id="cont1Menu" style="position:absolute;left:461px;top:135px;visibility:hidden;">
+	<div style="position:absolute;left:1px;">
+		<img id="cont1Menu0Bg" src="images/zu_ct.png" width="168" height="50" style="position:absolute;">
+		<div id="cont1Menu0Text" class="contMenu">第一小组</div>
+	</div>
+	<div style="position:absolute;left:193px;">
+		<img id="cont1Menu1Bg" src="images/zu_ct.png" width="168" height="50" style="position:absolute;">
+		<div id="cont1Menu1Text" class="contMenu">第二小组</div>
+	</div>
+	<div style="position:absolute;left:385px;">
+		<img id="cont1Menu2Bg" src="images/zu_ct.png" width="168" height="50" style="position:absolute;">
+		<div id="cont1Menu2Text" class="contMenu">第三小组</div>
+	</div>
+	<div style="position:absolute;left:577px;">
+		<img id="cont1Menu3Bg" src="images/zu_ct.png" width="168" height="50" style="position:absolute;">
+		<div id="cont1Menu3Text" class="contMenu">第四小组</div>
+	</div>
+	<div id="cont1MenuFocus" style="position:absolute;left:1px;">
+		<img src="images/zu_f1.png" width="168" height="50" style="position:absolute;">
+		<div id="cont1MenuFocusTxt" class="contMenu" style="color:#f8af89;">第一小组</div>
+	</div>
+</div>
+<img id="contBg1" src="images/listr_bg2.png" width="746" height="374" style="position:absolute;left:461px;top:186px;visibility:hidden;">
+<img id="listFocus" src="images/listR_f1.png" width="745" height="61" style="position:absolute;left:462px;top:135px;visibility:hidden;">
+<div id="noList" style="position:absolute;width:746px;line-height:61px;left:461px;top:318px;font-size:26px;color:#000;text-align:center;visibility:hidden;">暂无数据</div>
+<div id="list0" style="position:absolute;left:461px;top:135px;visibility:hidden;">
+	<img id="list0Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list0Title" class="listItem"></div>
+</div>
+<div id="list1" style="position:absolute;left:461px;top:196px;visibility:hidden;">
+	<img id="list1Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list1Title" class="listItem"></div>
+</div>
+<div id="list2" style="position:absolute;left:461px;top:257px;visibility:hidden;">
+	<img id="list2Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list2Title" class="listItem"></div>
+</div>
+<div id="list3" style="position:absolute;left:461px;top:318px;visibility:hidden;">
+	<img id="list3Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list3Title" class="listItem"></div>
+</div>
+<div id="list4" style="position:absolute;left:461px;top:379px;visibility:hidden;">
+	<img id="list4Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list4Title" class="listItem"></div>
+</div>
+<div id="list5" style="position:absolute;left:461px;top:440px;visibility:hidden;">
+	<img id="list5Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list5Title" class="listItem"></div>
+</div>
+<div id="list6" style="position:absolute;left:461px;top:501px;visibility:hidden;">
+	<img id="list6Icon" src="images/check1.png" width="27" height="27" style="position:absolute;left:35px;top:17px;">
+	<div id="list6Title" class="listItem"></div>
+</div>
+<!-- button bar -->
+<div style="position:absolute;left:813px;top:578px;">
+	<img id="btn0Bg" src="images/btn1_ct.png" width="148" height="52" style="position:absolute;">
+	<div id="btn0Text" style="position:absolute;width:148px;line-height:52px;font-size:24px;color:#f8af89;text-align:center;">开始会议</div>
+</div>
+<div style="position:absolute;left:978px;top:578px;">
+	<img id="btn1Bg" src="images/btn2_ct.png" width="108" height="52" style="position:absolute;">
+	<div id="btn1Text" style="position:absolute;width:108px;line-height:52px;font-size:24px;color:#f8af89;text-align:center;">上一页</div>
+</div>
+<div style="position:absolute;left:1100px;top:578px;">
+	<img id="btn2Bg" src="images/btn2_ct.png" width="108" height="52" style="position:absolute;">
+	<div id="btn2Text" style="position:absolute;width:108px;line-height:52px;font-size:24px;color:#f8af89;text-align:center;">下一页</div>
+</div>
+<!-- footer -->
+<div style="position:absolute;width:720px;height:24px;line-height:24px;padding-left:36px;left:75px;top:662px;font-size:24px;color:#faf9f6;background:url(images/notice.png) no-repeat left center;">尊敬的用户：您好！今明两天有大到暴雨，请您做好防雨防暴措施。</div>
+<img src="images/tips01.png" width="305" height="40" style="position:absolute;left:903px;top:652px;">
+<div id="tips" style="position:absolute;left:365px;top:153px;visibility:hidden;">
+	<img src="images/tck_bg.png" width="560" height="360" style="position:absolute;">
+	<table border="0" cellpadding="0" cellspacing="0" width="500" height="339" style="position:absolute;left:30px;color:#ffffff;text-align:center;">
+		<tr>
+			<td height="97" style="font-size:28px;">温馨提示</td>
+		</tr>
+		<tr>
+			<td id="tipsCont" height="242" style="font-size:25px;"></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+<script type="text/javascript" src="js/scrollText.js"></script>
+<script type="text/javascript">
+//@denglc
+document.onkeydown = eventHandler;
+document.onirkeypress = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(e){
+	var e = e || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	iDebug(">>>denglc-->settings-->keycode:"+keycode);
+	var eventObj = Event.mapping(keycode);
+	switch(eventObj.code){
+		case "KEY_UP":
+			changeUD(-1);
+			return false;
+			break;
+		case "KEY_DOWN":
+			changeUD(1);
+			return false;
+			break;
+		case "KEY_LEFT":
+			changeLR(-1);
+			return false;
+			break;
+		case "KEY_RIGHT":
+			changeLR(1);
+			return false;
+			break;
+		case "KEY_SELECT":
+			doSelect();
+			return false;
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+			window.location.href = "index.htm";
+			return false;
+			break;
+	}
+}
+//预加载图片 对HTML中没有请求的图片地址但本页面后续可能用到的图片进行预加载
+var preLoadImages = ["images/listL_f1.png","images/check2.png","images/btn1_f1.png"];
+(function(){
+	for(var i=0;i<preLoadImages.length;i++){
+		var img = new Image();
+		img.src = preLoadImages[i];
+	}
+})();
+/**************************变量**************************/
+var menuPos = 0;//左边菜单的索引 2 党小组会
+var listPos = 0;//列表索引
+var btnPos = 0;//按钮区索引
+var contMenuPos = 0;//当选择党小组会时有效 为右侧四个分组的索引
+var focusArea = 0;//0 菜单 1 右侧列表 2 按钮区 3 党小组会时分组选项
+var returnArea = 0;//记录之前的区域
+var currPage = 1;//内容展示区当前页
+var totalPage = 1;//内容展示区总页数
+var pageSize = 7;//内容展示区每页个数 党小组会时为6
+var listData = [];//内容展示区当前页数据
+var selectStr = "";//选择字符串 menuPos|currPage|listPos[|contMenuPos]
+var selectObj = {
+	"theme":"",
+	"id":""
+};//记录选择的议题发起会议时需要
+var showTipsTimer = -1;
+/**************************方法**************************/
+function init(){
+	initParams();
+	initTime();
+	ajaxGetContList(1);
+}
+
+function initParams(){
+}
+
+function initTime(){
+	var date = new Date();
+	var y = date.getFullYear();
+	var m = date.getMonth();
+	var d = date.getDate();
+	var h = date.getHours();
+	var mm = date.getMinutes();
+	var s = date.getSeconds();
+	$("h_m_s").innerText = addZero(h) + ":" + addZero(mm) + ":" + addZero(s);
+	$("y_m_d").innerText = y + "/" + addZero(m+1) + "/" + addZero(d);
+	setTimeout(initTime,1000);
+}
+
+function ajaxGetContList(isChange){//isChange必传 是否切换展示区样式 0 不切换 1 切换
+	pageSize = menuPos != 2 ? 7 : 6;
+	var type = menuPos != 2 ? menuPos + 4 : parseInt((menuPos + 4 + "" + (contMenuPos + 1)),10);
+
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.queryThemes;
+	url = url.replace(/\{0\}/,cardNo).replace(/\{1\}/,type).replace(/\{2\}/,currPage).replace(/\{3\}/,pageSize);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetContList url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetContList:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			totalPage = Math.ceil(getData.msg.total / pageSize) || 1;
+			listData = getData.msg.notices;
+		}else{
+			listData = [];
+		}
+		if(isChange){
+			showContent();
+		}
+		initContent();
+		onFocus();
+	}
+	ajaxObj.failureCallback = function(){
+		listData = [];
+		if(isChange){
+			showContent();
+		}
+		initContent();
+		onFocus();
+	}
+	ajaxObj.requestData();
+}
+
+function showContent(){
+	$("contBg0").style.visibility = menuPos != 2 ? "visible" : "hidden";
+	$("cont1Menu").style.visibility = menuPos != 2 ? "hidden" : "visible";
+	$("contBg1").style.visibility = menuPos != 2 ? "hidden" : "visible";
+}
+
+function initContent(){
+	for(var i=0;i<7;i++){
+		$("list"+i).style.visibility = "hidden";
+	}
+	if(listData.length > 0){
+		$("noList").style.visibility = "hidden";
+		var shift = menuPos == 2 ? 1 : 0;
+		var selectArr = selectStr.split("|");
+		var flag = 0;
+		if(menuPos == selectArr[0] && currPage == selectArr[1]){
+			if(menuPos != 2){
+				flag = 1;
+			}else if(contMenuPos == selectArr[3]){
+				flag = 1;
+			}
+		}
+		for(var i=0;i<Math.min(listData.length,pageSize);i++){
+			$("list"+(i+shift)).style.visibility = "visible";
+			if(flag == 1 && i == selectArr[2]){
+				$("list"+(i+shift)+"Icon").src = "images/check2.png";
+			}else{
+				$("list"+(i+shift)+"Icon").src = "images/check1.png";
+			}
+			$("list"+(i+shift)+"Title").innerText = getStrChineseLen(listData[i].theme,21);
+		}
+	}else{
+		if(currPage > totalPage){
+			currPage = totalPage;
+			listPos = pageSize - 1;
+			ajaxGetContList();
+		}else{
+			$("noList").style.visibility = "visible";
+		}
+	}
+}
+
+function onFocus(){
+	switch(focusArea){
+		case 0:
+			$("menu"+menuPos+"Bg").src = "images/listL_f1.png";
+			break;
+		case 1:
+			if(listData.length <= 0){
+				focusArea = 0;
+				onFocus();
+				return false;
+			}else if(listPos >= listData.length){
+				listPos = listData.length - 1;
+			}
+			var shift = menuPos == 2 ? 1 : 0;
+			$("listFocus").style.visibility = "visible";
+			$("listFocus").style.top = 135 + (listPos + shift) * 61 + "px";
+			if(getStrChineseLength(listData[listPos].theme) > 22){
+				$("list"+(listPos+shift)+"Title").innerText = listData[listPos].theme;
+				scroll.init($("list"+(listPos+shift)+"Title"),"left",4,104);
+			}
+			break;
+		case 2:
+			$("btn"+btnPos+"Bg").src = "images/btn1_f1.png";
+			$("btn"+btnPos+"Text").style.color = "#ffffff";
+			break;
+		case 3:
+			$("cont1MenuFocus").style.left = 1 + contMenuPos * 192 + "px";
+			$("cont1MenuFocusTxt").innerText = $("cont1Menu"+contMenuPos+"Text").innerText;
+			break;
+	}
+	if($("menu"+menuPos+"Text").style.color === "rgb(0, 0, 0)"){
+		$("menu"+menuPos+"Text").style.color = "#a52b06";
+	}
+}
+
+function loseFocus(){
+	switch(focusArea){
+		case 0:
+			$("menu"+menuPos+"Bg").src = "images/listL_bg1.png";
+			$("menu"+menuPos+"Text").style.color = "#000000";
+			break;
+		case 1:
+			$("listFocus").style.visibility = "hidden";
+			var shift = menuPos == 2 ? 1 : 0;
+			if(getStrChineseLength(listData[listPos].theme) > 22){
+				scroll.stop();
+				$("list"+(listPos+shift)+"Title").innerText = getStrChineseLen(listData[listPos].theme,21);
+			}
+			break;
+		case 2:
+			if(btnPos == 0){
+				$("btn"+btnPos+"Bg").src = "images/btn1_ct.png";
+			}else{
+				$("btn"+btnPos+"Bg").src = "images/btn2_ct.png";
+			}
+			$("btn"+btnPos+"Text").style.color = "#f8af89";
+			break;
+	}
+}
+
+function changeUD(_num){
+	loseFocus();
+	switch(focusArea){
+		case 0:
+			if(menuPos == 3 && _num == 1){
+				returnArea = focusArea;
+				focusArea = 2;
+			}else{
+				menuPos = (menuPos + _num + 4) % 4;
+				currPage = 1;
+				listPos = 0;
+				ajaxGetContList(1);
+				return false;
+			}
+			break;
+		case 1:
+			if(listPos == 0 && _num == -1){
+				if(menuPos == 2){
+					focusArea = 3;
+				}
+			}else if(listPos == listData.length - 1 && _num == 1){
+				returnArea = focusArea;
+				focusArea = 2;
+			}else{
+				listPos += _num;
+			}
+			break;
+		case 2:
+			if(_num == -1){
+				focusArea = returnArea;
+			}
+			break;
+		case 3:
+			if(_num == 1){
+				if(listData.length > 0){
+					focusArea = 1;
+				}else{
+					returnArea = focusArea;
+					focusArea = 2;
+				}
+			}
+			break;
+	}
+	onFocus();
+}
+
+function changeLR(_num){
+	loseFocus();
+	switch(focusArea){
+		case 0:
+			if(_num == 1){
+				if(listData.length > 0){
+					focusArea = 1;
+				}else if(menuPos == 2){
+					focusArea = 3;
+				}
+			}
+			break;
+		case 1:
+			if((menuPos != 2 || menuPos == 2 && contMenuPos == 0) && _num == -1){
+				focusArea = 0;
+			}else if(menuPos == 2){
+				contMenuPos = (contMenuPos + _num + 4) % 4;
+				currPage = 1;
+				listPos = 0;
+				ajaxGetContList(0);
+				$("cont1MenuFocus").style.left = 1 + contMenuPos * 192 + "px";
+				$("cont1MenuFocusTxt").innerText = $("cont1Menu"+contMenuPos+"Text").innerText;
+				return false;
+			}
+			break;
+		case 2:
+			btnPos = (btnPos + _num + 3) % 3;
+			break;
+		case 3:
+			if(contMenuPos == 0 && _num == -1){
+				focusArea = 0;
+			}else{
+				contMenuPos = (contMenuPos + _num + 4) % 4;
+				currPage = 1;
+				listPos = 0;
+				ajaxGetContList(0);
+				return false;
+			}
+			break;
+	}
+	onFocus();
+}
+
+function doSelect(){
+	switch(focusArea){
+		case 1:
+			var flag = 0;
+			var shift = menuPos == 2 ? 1 : 0;
+			var selectArr = selectStr.split("|");
+			if(menuPos == selectArr[0] && currPage == selectArr[1]){
+				if(!shift){
+					flag = 1;
+				}else if(contMenuPos == selectArr[3]){
+					flag = 1;
+				}
+			}
+			if(flag == 1){
+				if(listPos != selectArr[2]){
+					selectStr = menuPos + "|" + currPage + "|" + listPos + (shift ? "|" + contMenuPos : "");
+					$("list"+(listPos+shift)+"Icon").src = "images/check2.png";
+					$("list"+(parseInt(selectArr[2],10)+shift)+"Icon").src = "images/check1.png";
+					selectObj.theme = listData[listPos].theme;
+					selectObj.id = listData[listPos].id;
+				}else{
+					selectStr = "";
+					$("list"+(listPos+shift)+"Icon").src = "images/check1.png";
+					selectObj.theme = "";
+					selectObj.id = "";
+				}
+			}else{
+				selectStr = menuPos + "|" + currPage + "|" + listPos + (shift ? "|" + contMenuPos : "");
+				$("list"+(listPos+shift)+"Icon").src = "images/check2.png";
+				selectObj.theme = listData[listPos].theme;
+				selectObj.id = listData[listPos].id;
+			}
+			break;
+		case 2:
+			if(btnPos == 0){//发起并进入会议
+				if(selectStr != ""){
+					ajaxCreateJoinPlace();
+				}else{
+					showTips("未选择议题，无法发起会议！");
+				}
+			}else if(btnPos == 1){//上一页 没有不处理
+				if(currPage > 1){
+					currPage -- ;
+					listPos = pageSize - 1;
+					ajaxGetContList(0);
+				}
+			}else if(btnPos == 2){
+				if(currPage < totalPage){//下一页 没有不处理
+					currPage ++;
+					listPos = 0;
+					ajaxGetContList(0);
+				}
+			}
+			break;
+	}
+}
+
+function ajaxCreateJoinPlace(){//发起会议
+	var type = menuPos != 2 ? menuPos + 4 : parseInt((menuPos + 4 + "" + (contMenuPos + 1)),10);//会议类型
+
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.createJoinPlace;
+	url = url.replace(/\{0\}/,selectObj.theme).replace(/\{1\}/,cardNo).replace(/\{2\}/,type).replace(/\{3\}/,"").replace(/\{4\}/,selectObj.id);//这里需求只发起本会场的会议
+	ajaxObj.url = url;
+	iDebug(">>>ajaxCreateJoinPlace url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxCreateJoinPlace:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			var identifyValue = getData.msg;//会议识别码
+			ajaxCreateMeeting(type,identifyValue);
+		}else{
+			showTips("发起会议请求错误！错误码："+getData.result);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		showTips("发起会议请求失败！")
+	}
+	ajaxObj.requestData();
+}
+
+function ajaxCreateMeeting(type,identifyValue){//进入并创建会议
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.createMeeting;
+	url = url.replace(/\{0\}/,"会议").replace(/\{1\}/,cardNo).replace(/\{2\}/,type).replace(/\{3\}/,identifyValue);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxCreateMeeting url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxCreateMeeting:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.result == "E0000"){
+			var channelId = getData.msg;
+			var backUrl = window.location.href;
+			setGlobalParms({"thrOne_backUrl":backUrl});
+			var selectArr = selectStr.split("|");
+			var meetType = parseInt(selectArr[0],10) != 2 ? 4 + parseInt(selectArr[0],10) : 4 + parseInt(selectArr[0],10) + "" + (parseInt(selectArr[3],10) + 1);
+			window.location.href = "tyLive.htm?type=1&channelId="+channelId+"&meetType="+meetType;
+		}else{
+			showTips("进入会议请求错误！错误码："+getData.result);
+		}
+	}
+	ajaxObj.failureCallback = function(){
+		showTips("进入会议请求失败！")
+	}
+	ajaxObj.requestData();
+}
+
+function showTips(str){
+	clearTimeout(showTipsTimer);
+	$("tips").style.visibility = "visible";
+	$("tipsCont").innerText = str;
+	showTipsTimer = setTimeout(hideTips,3000);
+}
+
+function hideTips(){
+	$("tips").style.visibility = "hidden";
+}
+</script>
+</body>
+</html>

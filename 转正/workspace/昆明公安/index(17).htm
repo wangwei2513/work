@@ -1,0 +1,4266 @@
+﻿<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+<script src = "../commonJS/homedconfig.js"></script>
+<script src = "../commonJS/keyevent.js"></script>
+<script src = "../commonJS/ajax.js"></script>
+<script src = "../commonJS/common.js"></script>
+
+<script type="text/javascript">
+<!--
+initPage(window);
+
+var da_id = navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.da_id:"50001002";
+var access_token = navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.access_token:"TOKEN50001002";
+var deviceid = navigator.appName.indexOf("iPanel") != -1?(iPanel.eventFrame.device_id?iPanel.eventFrame.device_id:9999):9999;
+
+if (DEBUG){
+	var da_id = "50001002";//navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.da_id:"50001002";
+	var access_token = "TOKEN50001002";//navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.access_token:"TOKEN50001002";
+	var deviceid = 9999;//navigator.appName.indexOf("iPanel") != -1?(iPanel.eventFrame.device_id?iPanel.eventFrame.device_id:9999):9999;
+}
+
+var sizeInfo = "sdsize=160x200&hdsize=160x200&vodsize=160x200&appsize=160x200&chnlsize=163x198&musicsize=163x198&accesstoken="+access_token;
+
+var vodParam = null;
+var initFlag = false;
+var dateTimeout = -1;
+var focusArea = 0;				//0表示显示的是栏目内容、1表示显示的筛选内容、2表示显示的是喜爱的内容
+var colorValue = "";
+
+/*
+ 主菜单变量
+*/
+var menuObj = null;
+var mainMenu = [];
+var mainMenuPos = 0;
+var mainMenuFocusPos = 0;
+var mainShowLen = 5;
+var mainLabelId;
+
+/*
+主栏目推荐变量
+*/
+var labelRecomList = [];
+var labelRecomLen = 6;
+var recomAjaxObj = {requestAbort:function(){}};
+
+/*
+数据列表变量
+暂时没做缓存，怕缓存的数据过大，后续需要加上---sunnyfang
+*/
+var labelListAjaxObj = {requestAbort:function(){}};
+var labelList = [];
+var labelListPos = 0;
+var labelListLen = -1;
+var labelListTimeout = -1;
+var recommTimeout = -1;
+var currListId;
+var labelFlag = true;				//label是否显示，点击list上的栏目时需要隐藏label，此时不能上下键切换主栏目
+/*
+列表参数
+*/
+var pageShowSize = 7;				//一页显示7条数据 
+var pageShowFocus = 3;
+var pageGetSize = 20;				//一页请求10条数据
+//var waitDataFlag = false;			//是否正在获取数据
+
+/*
+*收藏列表参数
+*/
+var favList = [];
+var favListAjaxObj = {requestAbort:function(){}};
+var favListLen = -1;
+var favListPos = 3;
+
+/*
+*提示参数
+*/
+var tipsTimeout = -1;
+var tipsFlag = true;
+
+/*
+*数据是否正在请求的标记
+*/
+var filterRequest = false;			//筛选数据正在请求
+var favRequest = false;				//喜爱数据正在请求
+var detailRequest = false;			//详情数据正在请求
+var priceRequest = false;
+
+
+/*
+*list显示列表
+*/
+var listObj = null;
+var listList = [];
+var listFocusPos;
+
+function eventHandler(eventObj,_type){
+	iDebug("index.htm_eventHandler_eventObj.code_01_22 = " + eventObj.code);
+	iDebug("index.htm_eventHandler_filterRequest = " + filterRequest + "__favRequest = " + favRequest + "__detailRequest = " + detailRequest + "__priceRequest = " + priceRequest + "__favMove = " + favMove + "_-labelFlag = " + labelFlag + "__authFlag = " + authFlag);
+
+	switch(eventObj.code){
+		case 'KEY_NUMERIC':
+			if (eventObj.args.value == 0){ // 实现蓝键功能
+				iPanel.sendSimulateEvent(0, 835, 0);
+			} else if (eventObj.args.value == 7){ // 实现红键功能
+				iPanel.sendSimulateEvent(0, 832, 0);
+			} else if (eventObj.args.value == 8){ // 实现黄键功能
+				iPanel.sendSimulateEvent(0, 834, 0);
+			} else if (eventObj.args.value == 9){ // 实现绿键功能
+				iPanel.sendSimulateEvent(0, 833, 0);
+			} else {
+				if (favFlag || filterRequest || favRequest || detailRequest || priceRequest || favMove || !labelFlag || authFlag || priceInfoFlag || qrcodeObj.payTipsFlag)return returnFalseFlag;
+				doNumber(eventObj.args.value);
+			}
+			return returnFalseFlag;
+			break;
+		case 'KEY_UP':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			changeUD(-1);
+			return returnFalseFlag;
+			break;
+		case 'KEY_DOWN':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			changeUD(1);
+			return returnFalseFlag;
+			break;
+		case 'KEY_LEFT':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			changeLR(-1);
+			return returnFalseFlag;
+			break;
+		case 'KEY_RIGHT':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			changeLR(1);
+			return returnFalseFlag;
+			break;
+
+		case 'KEY_SELECT':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			doSelect();
+			return returnFalseFlag;
+			break;
+		case "KEY_HOMEPAGE":
+		case 'KEY_MENU':
+			return returnTrueFlag;
+			break;
+
+		case 'KEY_BACK':
+		case 'KEY_EXIT':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag)return returnFalseFlag;
+			doBack();
+			return returnFalseFlag;
+			break;
+		
+		case 'KEY_PAGE_UP':
+			listPageUD(-1);
+			return returnFalseFlag;
+		break;
+
+		case 'KEY_PAGE_DOWN':
+			listPageUD(1);
+			return returnFalseFlag;
+		break;
+
+		case 'KEY_GREEN':
+			if (isCP || showType == 3){
+				return returnFalseFlag;
+			}
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag || qrcodeObj.payTipsFlag)return returnFalseFlag;
+			showFilter();
+			return returnFalseFlag;
+			break;
+		
+		case 'KEY_BLUE':
+			if (filterRequest || favRequest || detailRequest || priceRequest || favMove || authFlag || qrcodeObj.payTipsFlag)return returnFalseFlag;
+			if (filterFlag){
+				hideFilter();
+			}
+			favList = [];
+			favListLen = -1;
+			favListPos = 0;
+			getFavList(0,"init");
+			return returnFalseFlag;
+			break;
+
+		default:
+			return eventObj.args.type;
+		break;
+	}
+}
+
+var globalLabelList = null;
+var favFlag = false;		//快捷键进入收藏列表页面
+var showType = 0;			// 0,默认，普通显示模式，3同CP的显示样式3一样不显示筛选 + 推荐
+var isCP = false;			//是否是cp
+var cpObj = null;			//如果是cp进入，那么这里为cp对应的obj
+var tmpHistoryLabelId = 0;
+var tmpNewsLabelId = 0;
+
+var focusRecordObj = null;  // 焦点记忆返回所携带的各种参数
+
+function init(){
+	iDebug("index_init");
+	onShow(1);
+	initFlag = true;
+}
+
+function onShow(__flag){
+
+	// 针对iPanel浏览器才会判断用户类型，因为局方会在浏览器上直接跑这个看效果
+	if(navigatorFlag == "iPanel"){
+		iDebug("index_onShow_userStatus = " + iPanel.eventFrame.userStatus);
+		if (iPanel.eventFrame.userStatus == -1){
+			// 不能判别用户的类型，这里需要重新强制登录，避免出错
+			iPanel.eventFrame.login(3);
+			return;
+		};
+	}
+
+	da_id = navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.da_id:"50001002";
+	access_token = navigator.appName.indexOf("iPanel") != -1?iPanel.eventFrame.access_token:"TOKEN50001002";
+	sizeInfo = "sdsize=160x200&hdsize=160x200&vodsize=160x200&appsize=160x200&chnlsize=163x198&musicsize=163x198&accesstoken="+access_token;
+	deviceid = navigator.appName.indexOf("iPanel") != -1?(iPanel.eventFrame.device_id?iPanel.eventFrame.device_id:9999):9999;
+
+	if(navigatorFlag == "iPanel"){
+		iPanel.misc.setGlobal("vodIndex","vodIndex");
+	}
+
+	iDebug("index_onShow_ initFlag = " + initFlag + "__flag = " + __flag);
+	if (!initFlag){
+		focusRecordObj = null;
+
+		if (navigatorFlag == "iPanel"){
+			hardware.STB.frontPanel(2,"vod",0,3,100);
+		}
+
+		colorValue = getColorValue();
+		$("tipsFocusBg").src = "images/focus03_" + colorValue + ".png";
+		$("payTips_FocusBg").src = "images/focus03_" + colorValue + ".png";
+		$("detailLeft").style.backgroundImage = "url(images/" + colorValue + "_bg_xq_left.png)";
+		$("detailRight").style.backgroundImage = "url(images/" + colorValue + "_bg_xq_right.png)";
+		iDebug("index_onShow_colorValue = " + colorValue);
+		
+		//google调试有语法错误，这里取vodParam挪到一起 加上浏览器判断
+		if(navigatorFlag == "iPanel"){
+			vodParam = iPanel.eventFrame.vodParam;
+			iPanel.eventFrame.vodParam = null;
+			globalLabelList = iPanel.eventFrame.globalLabelList;
+		}
+		else{
+			vodParam = JSON.parse(sessionStorage.getItem("vodParam"));
+			globalLabelList = JSON.parse(sessionStorage.getItem("globalLabelList"));
+			if (!vodParam){
+				vodParam = {};
+			}
+		}
+		
+		iDebug("index_onShow_vodParam = " + JSON.stringify(vodParam));
+		favFlag = vodParam.favFlag?vodParam.favFlag:false;
+		showType = vodParam.showType?vodParam.showType:0;
+
+		focusRecordObj = vodParam.focusRecordObj ? vodParam.focusRecordObj : null; // 焦点记忆所存储的内容
+		iDebug("index_onShow_focusRecordObj = " + focusRecordObj);
+
+		if (vodParam.isCP){
+			isCP = true;
+			cpObj = vodParam.cpObj;
+
+			// CP的无筛选功能，提示要换掉
+			$("fiterTips").src = "images/tips20.png";
+		}
+		else if (showType == 3) {
+			// 党校进入无筛选功能，提示要换掉
+			$("fiterTips").src = "images/tips20.png";
+		} else {
+			$("fiterTips").src = "images/tip_01.png";
+		}
+
+		if(favFlag){//快捷键增加打开收藏列表
+			if (__flag == 1){ // 该窗口被重新刷新，一种是从首页或者快捷键进入强制刷新，还有一种是B窗口被销毁
+				if (focusRecordObj) {
+					// B窗口已经被销毁了，这里要做焦点记忆功能
+					favList = [];
+					favListLen = -1;
+					favListPos = focusRecordObj.favListPos;
+					getFavList(favListPos,"initFocus");
+				} else {
+					clearLabelRecom();
+					$("label").style.visibility = "hidden";
+					$("filterName").style.visibility = "hidden";
+					$("favTips").style.visibility = "visible";
+					$("titleTips").innerHTML = "喜爱<br>Favorites";
+					$("titleTips").style.visibility = "visible";
+					favList = [];
+					favListLen = -1;
+					favListPos = 0;
+					getFavList(0,"init");
+				}
+			} else {
+				if ( vodParam && (vodParam.from == "vodPlay" || vodParam.from == "orderGW")){
+					// 从播放返回的时候 端点发生了变化，这里针对单集的vod取一下，因为剧集的话，选集时会重新取一次...
+					iDebug("index_onShow_fav_selectFlag " + selectFlag);
+					if (selectFlag){
+						getDetail();
+					}
+				}
+			}
+		} else {
+			//设计重新改动，这里又不要两种配色了，只要蓝色
+			for (var i = 0 ; i< 6 ; i++){
+				$("numIcon" + i).src = "images/" + "blue" + "_num_" + (i+1) + ".png";
+				if (i < 3){
+					$("labelRecom" + i).style.backgroundImage = "url(images/" + "blue" + "_bg_rcmd_01.png)";
+				}
+				else{
+					$("labelRecom" + i).style.backgroundImage = "url(images/" + "blue" + "_bg_rcmd_02.png)";
+				}
+			}
+
+			if (__flag == 1){ // 该窗口被重新刷新，一种是从首页或者快捷键进入强制刷新，还有一种是B窗口被销毁
+				if (focusRecordObj) {
+					// B窗口已经被销毁了，这里要做焦点记忆功能
+					mainMenuPos = focusRecordObj.mainMenuPos;
+					
+					getMainLabelId();
+					getMainLabel();//取栏目，需求列表上面要显示列表 + 栏目
+				} else {
+					//从首页或者快捷键进入，页面需要刷新一下
+					resetAll();
+					if (!isCP){
+						if (globalLabelList){
+							if (vodParam && vodParam.from == "index"){
+								mainMenuPos = vodParam.currLabelPos;
+							}
+							else{
+								mainMenuPos = 0;
+							}
+							getMainLabelId();
+							getMainLabel();//取栏目，需求列表上面要显示列表 + 栏目
+						}
+						else{
+							getGlobalLabel();
+						}
+					}
+					else{
+						//要求type = 2的 不显示主栏目和推荐，但是list列表上需要显示 列表 + 栏目
+						/*if (cpObj.type == 2){
+							//不显示主栏目和推荐,只有list
+							mainMenu = [];
+							mainLabelList = [];
+							showBgImg();
+							currListId = cpObj.labelId;
+							getLabelList(labelListPos,"init");
+						}
+						else{
+							mainMenuPos = 0;
+							getMainLabelId();
+							getMainLabel();//取栏目，需求列表上面要显示列表 + 栏目
+						}*/
+						mainMenuPos = 0;
+						getMainLabelId();
+						getMainLabel();//取栏目，需求列表上面要显示列表 + 栏目
+					}
+					iDebug("index_onShow_mainMenuPos = " + mainMenuPos + "__labelListPos = " + labelListPos);
+				}
+			}
+			else { // 直接显示的B窗口
+				if (vodParam && (vodParam.from == "vodPlay" || vodParam.from == "orderGW")){
+					//从播放返回的时候 端点发生了变化，这里针对单集的vod取一下，因为剧集的话，选集时会重新取一次...
+					iDebug("index_onShow_selectFlag " + selectFlag);
+					if (selectFlag){
+						getDetail();
+					}
+				}
+			}
+		}
+		
+		$("dateTime").innerText = "";
+		showDate();
+
+		if (!isCP){
+			if (filterObjMgr.contentType.length == 0) {
+				filterObjMgr.filterTimeout = setTimeout("getFilterConfig()",3000);//预取一下
+			}
+		}
+
+		if (isCP){
+			tmpHistoryLabelId = cpObj.historyLabelId;
+			tmpNewsLabelId = cpObj.newsLabelId;
+		} else {
+			tmpHistoryLabelId = hisrotyLabelId;
+			tmpNewsLabelId = newListId;
+		}
+	}
+}
+
+/*
+ * @获取vod的根栏目的labelId
+ */
+function getMainLabelId(){
+	mainLabelId = "";
+	if (isCP){
+		mainLabelId = cpObj.labelId+"";
+	}
+	else{
+		if (typeof vodParam.labelId != "undefined"){
+			mainLabelId = vodParam.labelId;
+		} else {
+			for (var i = 0; i < globalLabelList.children.length; i++){
+				var tmpLabel = globalLabelList.children[i];
+				if (tmpLabel.style){
+					eval("var currStyle = " + tmpLabel.style);
+					if (currStyle.labelPosition && (currStyle.labelPosition == 1050 || currStyle.labelPosition == 2)){//爱点
+						mainLabelId = tmpLabel.id+"";
+						break;
+					}
+				}
+			}
+		}
+	}
+	iDebug("index_onShow_mainLabelId = " + mainLabelId);
+}
+
+/*
+ * @获取根栏目列表，这里主要用于快捷键进入到 vod首页时，可能此时根栏目还未取过，取一次用于获取爱点的labelId
+ */
+function getGlobalLabel(){
+	var ajaxUrl = slaveAddr + "/homed/programtype/get_list?accesstoken=" + access_token + "&label=0&depth=1";
+	iDebug("index_getGlobalLabel_ajaxUrl = " + ajaxUrl);
+	var ajaxObj = new AJAX_OBJ(ajaxUrl, globalLabelSuccess , globalLabelFail);
+	ajaxObj.requestData();
+}
+
+function globalLabelSuccess(_xmlResponse){
+	iDebug("index_globalLabelSuccess__" + _xmlResponse.responseText);
+	var searchType = eval('('+_xmlResponse.responseText+')');
+	if (searchType.ret == 0) {
+		if (searchType.type_list && searchType.type_list.length > 0){
+			var tmpTypeList = searchType.type_list[0];
+			if (tmpTypeList.children && tmpTypeList.children.length > 0){
+				//将栏目存储起来
+				if (navigatorFlag == "iPanel"){
+					iPanel.eventFrame.globalLabelList = tmpTypeList;
+				}
+				else{
+					sessionStorage.setItem("globalLabelList",JSON.stringify(tmpTypeList));
+				}
+				globalLabelList = tmpTypeList;
+				getMainLabelId();
+				getMainLabel();
+			}
+			else{
+				globalLabelFail(_xmlResponse,0);
+			}
+		}
+		else{
+			globalLabelFail(_xmlResponse,1);
+		}
+	}
+	else{
+		globalLabelFail(_xmlResponse,2);
+	}
+}
+
+function globalLabelFail(_xmlResponse,__str){
+	iDebug("index_globalLabelFail_str = " + __str);
+}
+
+/*
+ *@ 取爱点/cp的3级栏目列表，因为要求列表既要显示内容还得加上栏目下的栏目列表，以下所有的内容均基于只有三级栏目列表做的处理
+ */
+var currLabelList = [];
+var retainLabelList = [];			//用于保留多集栏目的点击过程
+var currLabelLen = 0;
+var mainLabelList = [];
+var currLabelAjaxObj = {requestAbort:function(){}};
+function getMainLabel(){
+	iDebug("index_getMainLabel_mainLabelId = " + mainLabelId);
+	if (mainLabelId == ""){
+		return ;
+	}
+	var ajaxUrl = slaveAddr + "/homed/programtype/get_list?accesstoken=" + access_token + "&label=" + mainLabelId + "&depth=3";
+	iDebug("index_getMainLabel_ajaxUrl = " + ajaxUrl);
+	currLabelAjaxObj.requestAbort();
+	currLabelAjaxObj = new AJAX_OBJ(ajaxUrl, mainLabelSuccess , mainLabelFail);
+	currLabelAjaxObj.requestData();
+}
+
+function mainLabelSuccess(_xmlResponse){
+	iDebug("index_mainLabelSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		if (resultInfo.type_list && resultInfo.type_list.length > 0){
+			if (isCP && cpObj.type == 2){
+				mainMenu = [];
+				mainLabelList = resultInfo.type_list;
+				currListId = cpObj.labelId;
+				showBgImg(mainLabelList[0]);
+			}
+			else {
+				if (resultInfo.type_list[0].children && resultInfo.type_list[0].children.length > 0){
+					mainMenu = resultInfo.type_list[0].children;
+					mainLabelList = resultInfo.type_list[0].children;
+					iDebug("index_mainLabelSuccess_mainMenu.length = " + mainMenu.length + "__vodParam.from = " + vodParam.from);
+					iDebug("index_mainLabelSuccess_focusRecordObj = " + focusRecordObj);
+					if (vodParam && vodParam.from == "indexAd" && vodParam.subjectLabelId){
+						// 从首页的广告进入，要求定位到专题，专题显示时需要隐藏主栏目和推荐
+						currLabelList = [];
+						retainLabelList = [];
+						initCurrLabelList(vodParam.subjectLabelId,mainLabelList,null);
+						if (currListId != "" && currListId != mainLabelList[mainMenuPos].id){
+							hideLabel(); // 如此时定位不在一级栏目则隐藏一级栏目，但是返回需要显示，所以这里只是隐藏，仍然填写内容
+							showMenu();
+							getLabelList(labelListPos,"init");
+							showBgImg(currListObj,2); // 显示对应的专题的海报图
+							getLabelRecommend();
+							return;
+						}
+					} else if (focusRecordObj){ // 焦点记忆功能
+						currLabelList = [];
+						retainLabelList = [];
+
+						initCurrLabelList(focusRecordObj.currListId,mainLabelList,null);
+						focusArea = focusRecordObj.focusArea;
+						labelListPos = focusRecordObj.labelListPos; // 内容的pos
+
+						if (focusArea == 0){ // 栏目
+							iDebug("index_mainLabelSuccess_currListId = " + currListId);
+							if (currListId != "" && currListId != mainLabelList[mainMenuPos].id){
+								hideLabel(); // 如此时定位不在一级栏目则隐藏一级栏目，但是返回需要显示，所以这里只是隐藏，仍然填写内容
+								showMenu();
+								getLabelList(labelListPos,"initFocus");
+								getLabelRecommend();
+								return;
+							} else {
+								showMenu();
+								currListId = mainMenu[mainMenuPos].id;
+								currLabelList = [];
+								retainLabelList = [];
+								getCurrLabelList();
+								getLabelList(labelListPos,"initFocus");
+								getLabelRecommend();
+								return;
+							}
+						} else if (focusArea == 1){ // 筛选 , 直接取筛选的数据
+							hideLabel(); // 如此时定位不在一级栏目则隐藏一级栏目，但是返回需要显示，所以这里只是隐藏，仍然填写内容
+							showMenu();
+							getLabelRecommend();
+
+							filterList = [];
+							filterListLen = -1;
+							filterListPos = focusRecordObj.filterListPos;
+							getFilterList(filterListPos,"initFocus");
+							return;
+						} else if (focusArea == 2){ // 喜爱 , 直接取喜爱的数据
+							hideLabel(); // 如此时定位不在一级栏目则隐藏一级栏目，但是返回需要显示，所以这里只是隐藏，仍然填写内容
+							showMenu();
+							getLabelRecommend();
+
+							favList = [];
+							favListLen = -1;
+							favListPos = focusRecordObj.favListPos;
+							getFavList(favListPos,"initFocus");
+							return;
+						}
+					}
+					showMenu();
+					currListId = mainMenu[mainMenuPos].id;
+				}
+				else{
+					mainLabelFail(_xmlResponse,1);
+					return;
+				}
+			}
+			currLabelList = [];
+			retainLabelList = [];
+			getCurrLabelList();
+			getLabelList(labelListPos,"init");
+			getLabelRecommend();
+		}
+		else{
+			mainLabelFail(_xmlResponse,2);
+		}
+	}
+	else{
+		mainLabelFail(_xmlResponse,3);
+	}
+}
+
+function mainLabelFail(_xmlResponse,__flag){
+	mainLabelList = [];
+	mainMenu = [];
+	iDebug("index_mainLabelFail___falg = " + __flag);
+}
+
+/*初始化当前栏目，初始进入需要定位到某个子栏目(昆广目前用于专题)上去*/
+function initCurrLabelList(_labelId,_labelList,_parentList){
+	for (var i = 0; i < _labelList.length ; i++){
+		_labelList[i].parent = _parentList;
+		if (_labelList[i].id == _labelId){ // 查找到对应的id
+
+			// 先查找到一级栏目对应的Id，找到一级栏目的pos
+			var tmpLabelList = [];
+			var tmpLabel = _labelList[i];
+			tmpLabelList.push(tmpLabel);
+			while (tmpLabel.parent){
+				tmpLabel = tmpLabel.parent;
+				tmpLabelList.push(tmpLabel);
+			}
+			iDebug("index_initCurrLabelList_tmpLabelId = " + tmpLabel.id + "__tmpLabelList.length = " + tmpLabelList.length);
+			
+			// 定位到主栏目的位置
+			for (var j = 0; j < mainLabelList.length ; j++){
+				if (tmpLabel.id == mainLabelList[j].id){
+					mainMenuPos = j;
+					iDebug("index_initCurrLabelList_mainMenuPos = " + mainMenuPos);
+					// 将前几级栏目的labelList进行填充
+					while (tmpLabelList.length > 0){
+						tmpLabel = tmpLabelList.pop();
+						currListId = tmpLabel.id;
+						currListObj = tmpLabel;
+						getCurrLabelList();
+					}
+					iDebug("index_initCurrLabelList_currListId = " + currListId);
+					break;
+				}
+			}
+			return true;
+		}
+		else {
+			if (_labelList[i].children && _labelList[i].children.length > 0){
+				var flag = initCurrLabelList(_labelId,_labelList[i].children,_labelList[i]);
+				if (flag){
+					return true;
+				}
+			}
+		}
+	}
+}
+
+/*获取当前栏目*/
+function getCurrLabelList(){
+	var findFlag = 0;
+	labelList = [];
+
+	for (var i = 0; i < mainLabelList.length ; i++){
+		if (isCP && cpObj.type == 2){
+			var tmpId = cpObj.labelId;
+		}
+		else{
+			var tmpId = mainMenu[mainMenuPos].id;
+		}
+		iDebug("index_getCurrLabelList_id = " + mainLabelList[i].id + "__tmpId = " + tmpId + "__currListId = " + currListId);
+
+		if (mainLabelList[i].id == tmpId){
+			if (currListId == tmpId){
+				currLabelList = [];
+				retainLabelList = [];
+				
+				//将栏目补进来, 这里比较特殊因为list没取到，所以总长度不知道
+				if (mainLabelList[i].children && mainLabelList[i].children.length > 0){
+					currLabelList = mainLabelList[i].children;
+					for (var i = 0; i < currLabelList.length ; i++){
+						currLabelList[i].specialType = "label";
+						labelList.push(currLabelList[i]);
+					}
+				}
+				currLabelLen = currLabelList.length;
+				iDebug("index_getCurrLabelList_currLabelList = " + currLabelLen);
+				if (isCP && cpObj.type == 2){
+					retainLabelList.push({"currListId":currListId,"list":currLabelList,"topObj":null});
+				}
+				else{
+					retainLabelList.push({"currListId":currListId,"list":currLabelList,"topObj":mainMenu[mainMenuPos]});
+				}
+				findFlag = 1;
+			}
+			else{
+				for (var j = 0; j < currLabelList.length ; j++){
+					if (currLabelList[j].id == currListId){
+						if (currLabelList[j].children && currLabelList[j].children.length > 0){
+							currLabelList = currLabelList[j].children;
+							for (var k = 0; k < currLabelList.length ; k++){
+								currLabelList[k].specialType = "label";
+								labelList.push(currLabelList[k]);
+							}
+						}
+						else{
+							currLabelList = [];
+						}
+						currLabelLen = currLabelList.length;
+						iDebug("index_getCurrLabelList_currLabelList = " + currLabelLen);
+						retainLabelList.push({"currListId":currListId,"list":currLabelList,"dataPos":j,"topObj":currLabelList[j]});
+						findFlag = 2;
+						break;
+					}
+				}
+			}
+			break;
+		}
+		else{
+			findFlag = -1;
+		}
+	}
+
+	iDebug("index_getCurrLabelList_findFlag = " + findFlag);
+	if (findFlag <= 0){
+		currLabelList = [];
+		currLabelLen = currLabelList.length;
+		retainLabelList.push({"currListId":currListId,"list":currLabelList});
+	}
+}
+
+/*获取上一级的栏目*/
+function getParentLabelList(){
+	iDebug("index_getParentLabelList_retainLabelList.length = " + retainLabelList.length);
+	var tmpObj = retainLabelList.pop();
+	if (retainLabelList.length > 0){
+		clearList();
+		labelList = [];
+		labelListLen = -1;
+		labelListPos = tmpObj.dataPos;
+		currListId = retainLabelList[retainLabelList.length - 1].currListId;
+		currLabelList = retainLabelList[retainLabelList.length - 1].list;
+		currLabelLen = currLabelList.length;
+		currListObj = retainLabelList[retainLabelList.length - 1].topObj;
+
+		for (var i = 0; i < currLabelList.length ; i++){
+			currLabelList[i].specialType = "label";
+			labelList.push(currLabelList[i]);
+		}
+		if (isCP && cpObj.type == 2 && !currListObj){
+			showBgImg(mainLabelList[0],3);
+		}
+		else{
+			showBgImg(currListObj,3);
+		}
+
+		if (mainMenu.length > 0 && currListObj && currListObj.id == mainMenu[mainMenuPos].id){
+			//返回到了主栏目了，需要显示主栏目和推荐了
+			showLabel();
+		}
+		return true;
+	}
+	else{
+		return false;
+	}
+}
+
+function showDate(){
+	clearTimeout(dateTimeout);
+	$("dateTime").innerText = util.date.format(new Date(),"hh:mm");
+	dateTimeout = setTimeout("showDate()",60*1000);
+}
+
+function showLabel(){
+	focusArea = 0;
+	labelFlag = true;
+	showLabelRecom();
+	$("label").style.visibility = "visible";
+	$("filterName").style.visibility = "hidden";
+	$("titleTips").style.visibility = "hidden";
+	$("favTips").style.visibility = "hidden";
+}
+
+function hideLabel(__flag){
+	if (__flag == 1){
+		//只隐藏推荐，不隐藏mainMenu，只能说奇葩
+		clearLabelRecom(1);
+	}
+	else{
+		if (menuObj){
+			menuObj.clear2DCss();
+		}
+		clearLabelRecom();
+		labelFlag = false;
+		$("label").style.visibility = "hidden";
+	}
+}
+
+/*
+ *@ 主栏目
+ */
+function showMenu(){
+	var mainMenuStyle = [
+		{"top":"-45px","fontSize":"24px","color":"#ffffff","opacity":0.3},
+		{"top":"-13px","fontSize":"24px","color":"#ffffff","opacity":0.3},
+		{"top":"17px","fontSize":"32px","color":"#ffffff","opacity":0.4},
+		{"top":"59px","fontSize":"48px","color":"#ffffff","opacity":1},
+		{"top":"103px","fontSize":"32px","color":"#ffffff","opacity":0.4},
+		{"top":"131px","fontSize":"24px","color":"#ffffff","opacity":0.3},
+		{"top":"168px","fontSize":"24px","color":"#ffffff","opacity":0.3}
+	];
+	if (mainMenuPos > mainMenu.length - 1){
+		mainMenuPos = 0;
+	}
+	showBgImg(mainMenu[mainMenuPos],1);//初始化第一次背景图
+	menuObj = new showCss2DCommon(mainMenu.length,mainMenuStyle,3,mainShowLen + 2,"menu");
+	menuObj.position = mainMenuPos;
+	menuObj.type = 1;
+	menuObj.times = "300ms";		// 改变动作变化时间
+	menuObj.limitTime = "350ms";	// 改变限定操作时间。
+	menuObj.showData = function(list){
+		$("menu" + list.objId).innerText = mainMenu[list.dataPos].name;
+	}
+	menuObj.clearData = function(__id){
+		$("menu" + __id).innerText = " ";
+		$("menu" + __id).style.color = "#9d9b9a";
+	}
+	menuObj.showFocus = function(list){
+		if(list.idPos == 1){
+			mainMenuPos = list.dataPos;
+			mainMenuFocusPos = list.objId;
+			//showBgImg(mainMenu[mainMenuPos],1);//影响切换栏目特效，且很慢很卡
+		}
+	}
+	menuObj.startShow();
+	setTimeout("preBgImg()",2000);
+}
+
+/*
+ *@ 将主栏目的背景图预加载一下,针对CP来说，不需要加载
+ */
+function preBgImg(){
+	if (isCP){
+		return;
+	}
+	for (var i = 0; i < mainMenu.length ; i++){
+		var tmpObj = mainMenu[i];
+		var imgUrl = showBgImg(tmpObj,99,1);
+		tmpObj.bgImgObj = new Image();
+		tmpObj.bgImgObj.src = imgUrl;
+	}
+}
+
+/*
+ *@ 显示主栏目的背景图，针对cp来说，背景图是固定的
+ */
+function showBgImg(__obj,__flag,__preFlag){
+	iDebug("index_showBgImg___flag = " + __flag + "____preFlag = " + __preFlag);
+
+	var imgUrl = "images/bg.jpg";
+	if (__obj.poster_list){
+		imgUrl = __obj.poster_list.dir;
+		if (ipanelTestFlag){
+			imgUrl = "images/bg_01.jpg";
+		}
+		else{
+			imgUrl += "bg.jpg";	
+		}
+		iDebug("index_showMenu_bg = " + imgUrl);
+	}
+
+	if (__preFlag != 1){
+		if(__obj.bgImgObj){
+			document.body.style.backgroundImage = "url(" + __obj.bgImgObj.src + ")";
+		}else{
+			document.body.style.backgroundImage = "url(" + imgUrl + ")";
+		}
+	}
+	return imgUrl;
+}
+
+function changeMenu(__num){
+	if (mainMenu.length <= 1){
+		return;
+	}
+	menuObj.changeList(__num);
+
+	clearTimeout(labelListTimeout);
+	clearTimeout(recommTimeout);
+	labelListTimeout = setTimeout(function(){
+		showBgImg(mainMenu[mainMenuPos],1);
+		clearList();
+		labelList = [];
+		labelListLen = -1;
+		labelListPos = 0;
+
+		currLabelList = [];
+		retainLabelList = [];
+		currListId = mainMenu[mainMenuPos].id;
+		getCurrLabelList();
+
+		getLabelList(labelListPos,"init");
+		clearLabelRecom();
+		recommTimeout = setTimeout("getLabelRecommend()",50);
+	},500);
+}
+
+/*
+主栏目的推荐
+*/
+function getLabelRecommend(){
+	if (showType == 3 || (isCP && (cpObj.type == 3 || cpObj.type == 2))){
+		//type==3 或者 == 2的不需要推荐
+		return;
+	}
+
+	if (labelRecomList.length > 0){
+		showLabelRecom();
+	}
+	else{
+		var __label = "";
+		var numStr = "";
+
+		for (var i = 0; i < mainMenu.length ; i++){
+			if (mainMenu[i].id != ""){
+				if(i>0){
+					__label += "|";
+					numStr += "|";
+				}
+				__label += ""+mainMenu[i].id;
+				numStr += ""+6;
+			}
+		}
+		if (__label != ""){
+			var ajaxUrl = slaveAddr + "/recommend/get_top_recommend?accesstoken=" + access_token + "&label=" + __label + "&num="+numStr+"&hdsize=160x200|246x138|375x210&sdsize=160x200|246x138|375x210&appsize=160x200|246x138|375x210&vodsize=160x200|246x138|375x210&chnlsize=160x200|100x100|240x300";
+			iDebug("index_getRecommend_ajaxUrl = " + ajaxUrl);
+			recomAjaxObj.requestAbort();
+			recomAjaxObj = new AJAX_OBJ(ajaxUrl, labelRecomSuccess , labelRecomFail);
+			recomAjaxObj.requestData();
+		}
+	}
+}
+
+function labelRecomSuccess(_xmlResponse){
+	iDebug("index_labelRecomSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		labelRecomList = resultInfo.recommend_list;
+	}
+	else{
+		labelRecomList = [];
+	}
+	showLabelRecom();
+}
+
+function labelRecomFail(){
+	labelRecomList = [];
+	showLabelRecom();
+}
+
+function showLabelRecom(){
+	if (!labelFlag){
+		return;
+	}
+
+	clearLabelRecom();
+	if (mainMenu.length <= 0){
+		return;
+	}
+
+	var tmpId = mainMenu[mainMenuPos].id;
+	iDebug("index_showLabelRecom_tmpId = " + tmpId);
+	for (var i = 0; i < labelRecomList.length; i++){
+		if (tmpId == labelRecomList[i].label){
+			var currRecommend = labelRecomList[i].list;
+			iDebug("index_showLabelRecom_currRecommend.length = " + currRecommend.length);
+			for (var i = 0; i < labelRecomLen; i++){
+				if (i < currRecommend.length){
+					$("labelRecom" + i).innerText = getStrChineseLen(currRecommend[i].subtitle?currRecommend[i].subtitle:currRecommend[i].name,14,"..");
+					$("labelRecom" + i).style.visibility = "visible";
+					$("numIcon" + i).style.visibility = "visible";
+
+					// 需要将推荐的海报置换一下
+					var dir = currRecommend[i].poster_list.dir;
+					var dirList = dir.split("/");
+					iDebug("index_showLabelRecom_dir = " + dir);
+					currRecommend[i].poster_list.dir = dir.replace(dirList[dirList.length - 2],currRecommend[i].series_id);
+				}
+				else{
+					$("labelRecom" + i).innerText = " ";
+					$("labelRecom" + i).style.visibility = "hidden";
+					$("numIcon" + i).style.visibility = "hidden";
+				}
+				
+			}
+			$("recommLeft").style.webkitTransitionDuration="250ms";
+			$("recommRight").style.webkitTransitionDuration="250ms";
+			setTimeout(function(){
+				$("recommLeft").style.left = "0px";
+				$("recommRight").style.left = "800px";
+			},10);
+			return;
+		}
+	}
+	
+}
+
+function clearLabelRecom(_flag){
+	clearTimeout(recommTimeout);
+	if(!_flag){
+		$("recommLeft").style.webkitTransitionDuration="0ms";
+		$("recommRight").style.webkitTransitionDuration="0ms";
+		for (var i = 0; i < labelRecomLen; i++){
+			$("labelRecom" + i).innerText = " ";
+			$("labelRecom" + i).style.visibility = "hidden";
+			$("numIcon" + i).style.visibility = "hidden";
+		}
+	}
+	$("recommLeft").style.left = "-480px";
+	$("recommRight").style.left = "1760px";
+}
+
+/*
+*获取最近观看列表
+*/
+var historyList = [];
+var historyAjaxObj = {requestAbort:function(){}};
+function getHistory(__status){
+	var ajaxUrl = slaveAddr + "/history/get_list?accesstoken=" + access_token + "&pageidx=1&pagenum=30&type=2";
+	iDebug("index_getHistory_ajaxUrl = " + ajaxUrl);
+	historyAjaxObj.requestAbort();
+	historyAjaxObj = new AJAX_OBJ(ajaxUrl, historySuccess , historyFail);
+	historyAjaxObj.callbackParams = __status;
+	historyAjaxObj.requestData();
+}
+
+function historySuccess(_xmlResponse,__param){
+	iDebug("index_historySuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		historyList = resultInfo.list;
+		for (var i = 0; i < historyList.length ; i++){
+			//需要将history中的剧集的海报改一下
+			if (historyList[i].poster_list){
+				var dir = historyList[i].poster_list.dir;
+				var dirList = dir.split("/");
+				iDebug("index_historySuccess_dir = " + dir);
+				historyList[i].poster_list.dir = dir.replace(dirList[dirList.length - 2],historyList[i].series_id);
+				iDebug("index_historySuccess_historyList[i].poster_list.dir = " + historyList[i].poster_list.dir);
+			}
+		}
+		if (mainMenu && mainMenu.length >0 && mainMenu[mainMenuPos].id == tmpHistoryLabelId){
+			labelList = historyList;
+			labelListLen = labelList.length;
+			/*if (__param == "initFocus"){
+				// 需要做焦点记忆
+				if (labelListPos >= labelListLen){
+					labelListPos = 0;
+				}
+				showList(labelListPos,"initFocus");
+			} else {
+				labelListPos = 0;
+				showList(labelListPos,"init");
+			}*/
+
+			// 这里最近观看，如果看过一个影片，那么返回的话在重新取列表影片的位置会发生变化，统一定为到第一个
+			labelListPos = 0;
+			if (__param == "initFocus"){
+				showList(labelListPos,"initFocus");
+			} else {
+				showList(labelListPos,"init");
+			}
+		}
+	}
+	else{
+		historyList = [];
+	}
+}
+
+function historyFail(){
+	historyList = [];
+}
+
+/*
+获取最新上线的30部影片
+*/
+var newList = [];
+var newListAjaxObj = {requestAbort:function(){}};
+function getNewList(__status){
+	if (DEBUG){
+		var ajaxUrl = slaveAddr + "/homed/program/get_list?" + sizeInfo + "&label=102&pagenum=30&pageidx=1";//&sortby=5";
+	}
+	else{
+		var tmpLabelId = aTVLabelId;
+		if (isCP){
+			tmpLabelId = cpObj.labelId;
+		}
+		var ajaxUrl = slaveAddr + "/homed/program/get_list?" + sizeInfo + "&label="+tmpLabelId+"&pagenum=30&pageidx=1";//&sortby=5";
+	}
+
+	iDebug("index_getNewList_ajaxUrl = " + ajaxUrl);
+
+	newListAjaxObj.requestAbort();
+	newListAjaxObj = new AJAX_OBJ(ajaxUrl, newListSuccess , newListFail);
+	newListAjaxObj.callbackParams = __status;
+	newListAjaxObj.requestData();
+}
+
+function newListSuccess(_xmlResponse,__param){
+	iDebug("index_newListSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		newList = resultInfo.list;
+		for (var i = 0; i < newList.length ; i++){
+			//需要将newList中的剧集的海报改一下
+			if (newList[i].poster_list){
+				var dir = newList[i].poster_list.dir;
+				var dirList = dir.split("/");
+				iDebug("index_newListSuccess_dir = " + dir);
+				newList[i].poster_list.dir = dir.replace(dirList[dirList.length - 2],newList[i].series_id);
+				iDebug("index_newListSuccess_newList[i].poster_list.dir = " + newList[i].poster_list.dir);
+			}
+		}
+		if (mainMenu && mainMenu.length >0 && mainMenu[mainMenuPos].id == tmpNewsLabelId){
+			labelList = newList;
+			labelListLen = labelList.length;
+			if (__param == "initFocus"){
+				// 需要做焦点记忆
+				if (labelListPos >= labelListLen){
+					labelListPos = 0;
+				}
+				showList(labelListPos,"initFocus");
+			} else {
+				labelListPos = 0;
+				showList(labelListPos,"init");
+			}
+			clearLabelRecom();
+		}
+	}
+	else{
+		newList = [];
+	}
+}
+
+function newListFail(){
+	newList = [];
+}
+
+/*
+子栏目
+*/
+//判断是否需要请求数据，返回需要取数据的页码
+var getDataFlag = [];			//用来标记该页数据是否已经请求过,兼容有时候返回数据条数不够导致的该页反复被请求
+function isNeedGetData(__tmpPos,__flag){
+	if (__flag == 1) {
+		var tmpListLen = labelListLen;
+		var tmpList = labelList;
+	}
+	else if (__flag == 2){
+		var tmpListLen = filterListLen;
+		var tmpList = filterList;
+	}
+	else if (__flag == 3){
+		var tmpListLen = favListLen;
+		var tmpList = favList;
+	}
+
+	iDebug("index_isNeedGetData___tmpPos = " + __tmpPos + "__tmpListLen = " + tmpListLen + "____flag = " + __flag);
+	if (tmpListLen < 0){
+		//从未获取数据,取第一页
+		getDataFlag = [];
+		return 1;
+	}
+
+	if (tmpListLen <= pageGetSize)return 0 ;		//说明已经获取过了
+
+	for (var i = ((__tmpPos - (pageShowFocus + 1) + tmpListLen)%tmpListLen), j = 0 ; j < (pageShowSize + 2) ; j++){
+		if (!tmpList[(i + j + tmpListLen) % tmpListLen]){
+			if (__flag == 1){
+				var tmpPage = Math.ceil((i+1+j-currLabelLen)/pageGetSize);
+				iDebug("index_isNeedGetData_tmpPage = " + tmpPage + "__getDataFlag[tmpPage - 1] = " + getDataFlag[tmpPage - 1]);
+				if (getDataFlag[tmpPage - 1] == 1){
+					return 0;
+				}
+				return tmpPage;
+			}
+			else{
+				var tmpPage = Math.ceil((i+1+j)/pageGetSize);
+				iDebug("index_isNeedGetData_tmpPage = " + tmpPage + "__getDataFlag[tmpPage - 1] = " + getDataFlag[tmpPage - 1]);
+				if (getDataFlag[tmpPage - 1] == 1){
+					return 0;
+				}
+				return tmpPage;
+			}
+		}
+	}
+	return 0;
+}
+
+function getLabelList(__pos,__status){
+	iDebug("index_getLabelList___pos = " + __pos + "__currListId = " + currListId + "____status = " + __status);
+
+	if (currListId == tmpHistoryLabelId || currListId == tmpNewsLabelId){//历史记录和最新上线
+		if (currListId == tmpHistoryLabelId){
+			var tmpList = historyList;
+		}
+		else if (currListId == tmpNewsLabelId){
+			var tmpList = newList;
+		}
+		if (tmpList.length > 0){
+			labelList = tmpList;
+			labelListLen = labelList.length;
+			showList(__pos,__status);
+		}
+		else{
+			if (currListId == tmpHistoryLabelId){
+				getHistory(__status);
+			}
+			else if (currListId == tmpNewsLabelId){
+				getNewList(__status);
+			}
+		}
+		return ;
+	}
+
+	var pageNum = isNeedGetData(__pos,1);
+	iDebug("index_getLabelList_pageNum = " + pageNum);
+	if (pageNum > 0){
+		$("loadTips").style.visibility = "visible";
+		var ajaxUrl = slaveAddr + "/homed/program/get_list" + "?" + sizeInfo + "&label=" + currListId + "&pagenum="+pageGetSize+"&pageidx="+pageNum;//+"&sortby=5";
+		favListAjaxObj.requestAbort();
+		labelListAjaxObj.requestAbort();
+		filterListAjaxObj.requestAbort();
+
+		labelListAjaxObj = new AJAX_OBJ(ajaxUrl, listSuccess , listFail);
+		labelListAjaxObj.callbackParams = [pageNum,__pos,__status];
+		labelListAjaxObj.requestData();
+	}
+	else{
+		showList(__pos,__status);
+	}
+}
+
+function listSuccess(_xmlResponse, __param){
+	$("loadTips").style.visibility = "hidden";
+
+	iDebug("index_listSuccess__param = " + __param);
+	iDebug("index_listSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		//将栏目的长度补进来
+		iDebug("index_listSuccess_resultInfo.total = " + resultInfo.total + "__currLabelLen = " + currLabelLen);
+		labelListLen = currLabelLen + resultInfo.total;
+		iDebug("index_listSuccess_labelListLen = " + labelListLen);
+		if (resultInfo.list && resultInfo.list.length > 0){
+			getDataFlag[__param[0] - 1] = 1;
+			for ( i = 0 ; i < resultInfo.list.length ; i++){
+				labelList[currLabelLen + (__param[0] - 1)*pageGetSize + i] = resultInfo.list[i];
+			}
+			getLabelList(__param[1],__param[2]);
+		}
+		else{
+			//表示list不存在，这里需要检测一下目录是否存在，如果目录存在则直接显示目录
+			if (currLabelLen > 0){
+				labelListLen = currLabelLen;
+				iDebug("index_listSuccess_labelListLen = " + labelListLen + "____param[1] = " + __param[1]);
+				if (__param[1] > labelListLen - 1){
+					getLabelList(0,__param[2])
+				}
+				else{
+					getLabelList(__param[1],__param[2]);
+				}
+			}
+		}
+	}
+	else{
+		listFail();
+	}
+}
+
+function listFail(){
+	$("loadTips").style.visibility = "hidden";
+	showTips("请求数据失败",true);
+}
+
+function showList(__pos,__status){
+	var tmpList = [];
+	var listLen = -1;
+	var tmpListPos = 0;
+	if (focusArea == 0){
+		//labelListPos = __pos;
+		if (labelListPos > labelListLen - 1){
+			labelListPos = 0;
+		}
+		tmpList = labelList;
+		listLen = labelListLen;
+		tmpListPos = __pos;
+	}
+	else if (focusArea == 1){
+		//filterListPos = __pos;
+		if (filterListPos > filterListLen - 1){
+			filterListPos = 0;
+		}
+		tmpList = filterList;
+		listLen = filterListLen;
+		tmpListPos = __pos;
+	}
+	else if (focusArea == 2){
+		//favListPos = __pos;
+		if (favListPos > favListLen - 1){
+			favListPos = 0;
+		}
+		tmpList = favList;
+		listLen = favListLen;
+		tmpListPos = __pos;
+	}
+	listList = tmpList;
+
+	if (listLen <= 0){
+		return;
+	}
+	
+	iDebug("index_listSuccess__tmpListPos = " + tmpListPos + "___status = " + __status);
+
+	if (__status == "init" || __status == "initFocus"){
+		var tmpObj = createList1("list",listLen);
+		var listStyle = tmpObj.listStyle;
+		var focusPos = tmpObj.focusPos;
+		var totalNum = tmpObj.totalNum;
+		listObj = new showCss2DCommon(listLen,listStyle,focusPos,totalNum,"list");
+		listObj.position = tmpListPos;
+		listObj.type = 1;
+		listObj.times = "300ms";		// 改变动作变化时间
+		listObj.limitTime = "350ms";	// 改变限定操作时间。
+		listObj.showData = showListData;
+		listObj.showFocus = function(list){
+			if(list.idPos == 1){
+				listFocusPos = list.objId;
+				showListData(list,true);
+				if (focusArea == 0){
+					labelListPos = list.dataPos;
+				}
+				else if (focusArea == 1){
+					filterListPos = list.dataPos;
+				}
+				else if (focusArea == 2){
+					favListPos = list.dataPos;
+				}
+				var dataObj = listList[list.dataPos];
+				if (dataObj && dataObj.type == 1) {
+					// 频道，如是频道则显示频道的当前节目或者下一个节目的名称
+					if (typeof dataObj.pf_info != "undefined" && dataObj.pf_info.length > 0) {
+						$("listName").innerText = dataObj.pf_info[0].name ? dataObj.pf_info[0].name : "";
+					} else {
+						$("listName").innerText = dataObj?dataObj.name:"";
+					}
+
+				} else {
+					// other
+					$("listName").innerText = dataObj?dataObj.name:"";
+				}
+
+				$("pageInfo").innerText = (list.dataPos + 1) + "/" + listLen;
+				$("number").innerText = dataObj?(dataObj.praise_num?(dataObj.praise_num) : 0):0;
+			}
+			else {
+				showListData(list,false);
+			}
+		}
+		listObj.startShow();
+
+		if (__status == "initFocus"){ // 焦点记忆，需要显示详情
+			currListObj = listList[tmpListPos];
+			getDetail();
+		}
+	}
+	/*移动的需要移动完毕之后，才能将焦点pos设置上去*/
+	else if (__status == "left"){
+		listObj.changeList(1);
+	}
+	else if (__status == "right"){
+		listObj.changeList(-1);
+	}
+
+	/*if (listLen < pageShowSize){
+		//整个数据的长度显示不满
+		$("list" + pageShowFocus).src = getImgUrl(tmpList,tmpListPos);
+		$("list" + pageShowFocus).style.visibility = "visible";
+		var leftFocus = pageShowFocus;
+		var	rightFocus = pageShowFocus;
+		var leftPos = tmpListPos;
+		var rightPos = tmpListPos;
+		var totalLen = listLen - 1;
+		var showLen = pageShowSize - 1;
+		while(showLen > 0){
+			leftFocus--;
+			if (totalLen > 0){
+				leftPos = (leftPos - 1 + listLen)%listLen;
+				$("list" + leftFocus).src = getImgUrl(tmpList,leftPos);
+				$("list" + leftFocus).style.visibility = "visible";
+				totalLen--;
+			}
+			else{
+				$("list" + leftFocus).src = "images/global_tm.gif";
+				$("list" + leftFocus).style.visibility = "hidden";
+			}
+			showLen--;
+			if (showLen == 0){
+				break;
+			}
+			rightFocus++;
+			if (totalLen > 0){
+				rightPos = (rightPos + 1 + listLen)%listLen;
+				$("list" + rightFocus).src = getImgUrl(tmpList,rightPos);
+				$("list" + rightFocus).style.visibility = "visible";
+				totalLen--;
+			}
+			else{
+				$("list" + rightFocus).src = "images/global_tm.gif";
+				$("list" + rightFocus).style.visibility = "hidden";
+			}
+			showLen--;
+		}
+	}
+	else{
+		for ( var i = 0 ; i < pageShowSize ; i++){
+			var tmpPos = (i + (tmpListPos - pageShowFocus) + listLen) % listLen ;
+			$("list" + i).src = getImgUrl(tmpList,tmpPos);
+			$("list" + i).style.visibility = "visible";
+		}
+	}
+	*/
+}
+
+function showListData(list,__focus){
+	var imgUrl = getImgUrl(listList,list.dataPos);
+	if (__focus){
+		//var imgStr = "<img src = " + imgUrl + " style = 'width:250px; height:370px; border: 5px #FFFFFF solid;'>";
+		$("list" + list.objId).src = imgUrl;
+		$("list" + list.objId).style.top = "209px";
+		$("list" + list.objId).style.border = "5px #FFFFFF solid"
+		$("list" + list.objId).style.width = "250px";
+		$("list" + list.objId).style.height = "370px";
+	}
+	else {
+		//var imgStr = "<img src = " + imgUrl + " style = 'width:170px; height:250px; border: 2px #FFFFFF solid;'>";
+		$("list" + list.objId).src = imgUrl;
+		$("list" + list.objId).style.top = "318px";
+		$("list" + list.objId).style.border = "2px #FFFFFF solid"
+		$("list" + list.objId).style.width = "170px";
+		$("list" + list.objId).style.height = "250px";
+	}
+	//$("list" + list.objId).innerHTML = imgStr;
+}
+
+function getImgUrl(tmpList,tmpPos){
+	if (tmpList[tmpPos] && tmpList[tmpPos].type == 1){
+		// 频道，直播的海报要跟现场确认看下显示什么
+		if (ipanelTestFlag){
+			imgUrl = "images/poster_default_0.jpg";//"images/global_tm.gif";
+		} else {
+			imgUrl = "channelImages/" + tmpList[tmpPos].id + ".jpg";
+		}
+	} else if (tmpList[tmpPos] && tmpList[tmpPos].poster_list){
+		var imgUrl = tmpList[tmpPos].poster_list.dir;
+		if (ipanelTestFlag){
+			if(tmpList[tmpPos].poster_list.list["160x200"]) {
+				imgUrl += tmpList[tmpPos].poster_list.list["160x200"];
+			}
+			else if(tmpList[tmpPos].poster_list.list["246x138"]) {
+				imgUrl += tmpList[tmpPos].poster_list.list["246x138"];
+			}
+			else{
+				var tmpUrl = "";
+				for (var i in tmpList[tmpPos].poster_list.list){
+					tmpUrl = tmpList[tmpPos].poster_list.list[i];
+					break;
+				}
+				if (tmpUrl == ""){
+					imgUrl = "images/global_tm.gif";
+				}
+				else{
+					imgUrl += tmpUrl;
+				}
+			}
+		}
+		else{
+			//局方要求用自己的海报
+			imgUrl += "big.jpg";	
+		}
+	}
+	else{
+		imgUrl = "images/poster_default_0.jpg";//"images/global_tm.gif";
+	}
+	return imgUrl;
+}
+
+function clearList(){
+	/*for (var i = 0 ; i < pageShowSize ; i++){
+		if (i == pageShowFocus){
+			//$("list" + i).src = "images/poster_default_1.jpg";
+			$("list" + i).src = "images/global_tm.gif";
+		}
+		else{
+			//$("list" + i).src = "images/poster_default_0.jpg";
+			$("list" + i).src = "images/global_tm.gif";
+		}
+		$("list" + i).style.visibility = "hidden";
+	}*/
+	removeAllChild("list");
+
+	$("listName").innerText = " ";
+	$("pageInfo").innerText = " ";
+	$("number").innerText = " ";
+}
+
+function changList(__num){
+	if ((focusArea == 0 && labelListLen <= 1) || (focusArea == 1 && filterListLen <= 1 || (focusArea == 2 && favListLen <= 1))){
+		return;
+	}
+	//检测看下需要显示的数据是否已经存在，存在则直接取显示 ， 这里后续要加上预取功能 -- sunnyfang
+	if (focusArea == 0){
+		var tmpPos = (labelListPos + __num + labelListLen) % labelListLen ;
+		if (__num < 0){
+			getLabelList(tmpPos,"left");	
+		}
+		else if (__num > 0){
+			getLabelList(tmpPos,"right");	
+		}
+	}
+	else if (focusArea == 1){
+		var tmpPos = (filterListPos + __num + filterListLen) % filterListLen ;
+		if (__num < 0){
+			getFilterList(tmpPos,"left");	
+		}
+		else if (__num > 0){
+			getFilterList(tmpPos,"right");	
+		}
+	}
+	else if (focusArea == 2){
+		var tmpPos = (favListPos + __num + favListLen) % favListLen ;
+		if (__num < 0){
+			getFavList(tmpPos,"left");	
+		}
+		else if (__num > 0){
+			getFavList(tmpPos,"right");	
+		}
+	}
+}
+
+function listPageUD(__num){
+	if (detailFlag || filterFlag || favDelTips || priceInfoFlag || authFlag || qrcodeObj.payTipsFlag){
+		return;
+	}
+	if ((focusArea == 0 && labelListLen <= pageShowSize) || (focusArea == 1 && filterListLen <= pageShowSize) || (focusArea == 2 && favListLen <= pageShowSize)){
+		return;
+	}
+	if (focusArea == 0){
+		var tmpPos = (labelListPos + pageShowSize * __num + labelListLen) % labelListLen ;
+		if (__num > 0){
+			getLabelList(tmpPos,"init");
+		}
+		else if (__num < 0){
+			getLabelList(tmpPos,"init");
+		}
+	}
+	else if (focusArea == 1){
+		var tmpPos = (filterListPos + pageShowSize * __num + filterListLen) % filterListLen ;
+		if (__num > 0){
+			getFilterList(tmpPos,"init");
+		}
+		else if (__num < 0){
+			getFilterList(tmpPos,"init");
+		}
+	}
+	else if (focusArea == 2){
+		var tmpPos = (favListPos + pageShowSize * __num + favListLen) % favListLen ;
+		if (__num > 0){
+			getFavList(tmpPos,"init");
+		}
+		else if (__num < 0){
+			getFavList(tmpPos,"init");
+		}
+	}
+}
+
+function changeUD(__num){
+	if (filterFlag){
+		filterChangeUD(__num * -1);
+		return;
+	}
+	if (priceInfoFlag || favDelTips){
+		return;
+	}
+
+	if (detailFlag){
+		operatorUD(__num * -1);
+	}
+	else if (focusArea == 2 && __num < 0){
+		//喜爱上键要求删除喜爱列表
+		doFavorite(2,favList[favListPos].id);
+	}
+	else if (focusArea == 2 && __num > 0){
+		//喜爱下键要求弹出选择提示
+		showDelTips();
+	}
+	else if (focusArea == 0){
+		if (labelFlag){
+			changeMenu(__num * -1);
+		}
+	}
+}
+
+function changeLR(__num){
+	if (filterFlag){
+		filterChangeLR(__num);
+	}
+	else if (qrcodeObj.payTipsFlag){
+		changePayTipsBtn(__num);
+	}
+	else if (priceInfoFlag || favDelTips){
+		changeTipsBtn(__num*-1);
+	}
+	else if (detailFlag){
+		//要求隐藏掉详情页面，然后同时要滚动覆盖的下面的内容
+		hideDetail();
+		//这里如果是列表中的栏目点击后进入的详情则不显示一级栏目菜单，否则需要显示
+		if (focusArea == 0){
+			if (retainLabelList.length == 1){
+				showLabel();
+			}
+		}
+		changeLR(__num);
+	}
+	else{
+		changList(__num);
+	}
+}
+
+function doSelect(){
+	iDebug("index_doSelect_filterFlag = " + filterFlag + "__detailFlag = " + detailFlag);
+	if (filterFlag){
+		filterList = [];
+		filterListLen = -1;
+		filterListPos = 0;
+		getFilterList(filterListPos,"init");
+	}
+	else if (qrcodeObj.payTipsFlag){
+		if (qrcodeObj.payTipsBtnPos == 0) { // 支付失败
+			hidePayTips();
+		} else if (qrcodeObj.payTipsBtnPos == 1) { // 支付成功
+			// checkPay(2); // 核查
+			getAuth();
+		}
+	}
+	else if (priceInfoFlag){
+		if ((tipsBtnLen == 2 && tipsBtnPos == 1) || (tipsBtnLen == 3 && tipsBtnPos > 0)){
+			// 这里有很奇怪的需求，要求电影的付费的这里要购买才能看，而电视剧的直接显示播放进入可以进行试看
+			// 小于5分钟的未付费的剧集直接显示购买按钮,要购买才能看 2017/03/13
+			if (currListObj.isRecommFlag == 1){
+				var tmpLabel = mainMenu[mainMenuPos].id;
+				var fromType = "numberRecommend";
+			}
+			else{
+				if (focusArea == 0){//列表
+					var tmpLabel = currListId;
+					var fromType = "vodLabel";
+				}
+				else if (focusArea == 1){//筛选
+					var tmpLabel = 0;
+					var fromType = "select";
+				}
+				else if (focusArea == 2){//喜爱列表
+					var tmpLabel = 0;
+					var fromType = "favList";
+				}
+			}
+			if (tipsBtnLen == 3 && tipsBtnPos == 2){
+				var firstSeek = 1;
+			}
+			else{
+				var firstSeek = 0;
+			}
+	
+			if (selectFlag){
+				//电影询价
+				var tmpPriceObj = checkPrice();
+				if (tmpPriceObj.price == 0){
+					//价格为0 的直接进入播放
+					var playParam = {"type":"vod","from":"vodIndex","id":detailObj.id,"detailObj":detailObj,"priceObj":vodPriceInfo,"firstSeek":firstSeek,"currLabel":tmpLabel,"fromType":fromType,"backParam":{"isCP":isCP,"cpObj":cpObj,"favFlag":favFlag,"showType":showType,"labelId":mainLabelId,"focusRecordObj":getRecordFocusObj()}};
+				}
+				else{
+					if (tipsBtnPos == 2) {   //订购
+						gotoOrder();
+					} else {
+						//购买按钮
+						getAuth();
+					}
+					return;
+				}
+			}
+			else if (seriesFlag){
+				// 电视剧询价 , < 5 分钟的付费节目 需要进行购买 2017/03/13
+
+				var tmpPriceObj = checkPrice();
+				if (tmpPriceObj.price == 0 || (seriesVideoObj.duration >= 5 * 60 && tipsBtnPos != 2)){
+					// 价格为0 的直接进入播放\价格不为0 的 > 5分钟的进行试看
+					var currId = seriesList[operatorPos].video_id;
+					iDebug("index.htm_doselect_currId="+currId);
+					var playParam = {"type":"vod","from":"vodIndex","id":currId,"detailObj":seriesVideoObj,"priceObj":vodPriceInfo,"firstSeek":firstSeek,"currLabel":tmpLabel,"fromType":fromType,"backParam":{"isCP":isCP,"cpObj":cpObj,"favFlag":favFlag,"showType":showType,"labelId":mainLabelId,"focusRecordObj":getRecordFocusObj()}};
+				}
+				else {
+					if (tipsBtnPos == 2) {   //订购
+						gotoOrder();
+					} else {
+						//购买按钮
+						getAuth();
+					}
+					return;
+				}
+			}
+
+			doBack();
+			if(navigatorFlag == "iPanel"){
+				iPanel.eventFrame.playParam = playParam;
+				gotoPage(vodPlayAddr);
+			}
+			else{
+				sessionStorage.setItem("playParam",JSON.stringify(playParam));
+				window.location.href = "../newPlay/vodPlay.htm";
+			}
+		}
+		else{
+			doBack();
+		}
+	}
+	else if (favDelTips){
+		if (tipsBtnPos == 1){//确定
+			hideDelTips();
+			doFavorite(4);
+		}
+		else if (tipsBtnPos == 0){//取消
+			hideDelTips();
+		}
+	}
+	else if (detailFlag) {
+		if (selectFlag) {
+			// 正在操作
+			if (operatorList[operatorPos] == "点赞") {
+				doPraise(1);
+			} else if (operatorList[operatorPos] == "已点赞") {
+				doPraise(0);
+			} else if (operatorList[operatorPos] == "收藏") {
+				doFavorite(1);
+			} else if (operatorList[operatorPos] == "已收藏") {
+				if (focusArea == 2) {
+					doFavorite(3);
+				} else {
+					doFavorite(0);
+				}
+			} else if (operatorList[operatorPos] == "选集" || operatorList[operatorPos] == "节目列表") {
+				var flag = getSeries();
+				iDebug("index_doSelect_getSeries_flag = " + flag + "__seriesList.length = " + seriesList.length);
+				if (seriesList.length > 0) {
+					operatorPos = flag;
+					seriesFlag = true;
+					selectFlag = false;
+					initOperator();
+				}
+			} else if (operatorList[operatorPos]== "进入直播" && detailObj.detailType == "channel") {
+				gotoLiveTV();
+			}
+			else if (operatorList[operatorPos] == "播放") {
+				initPriceInfo();
+			} else if (operatorList[operatorPos] == "预约直播") {
+				doOrder();
+			} else if (operatorList[operatorPos] == "取消预约") {
+				cancelOrder();
+			}
+		} else if (seriesFlag) {
+			//正在选集
+			initPriceInfo();
+		}
+	}
+	else{
+		if (focusArea == 0 && labelList.length > 0){
+			currListObj = labelList[labelListPos];
+			if (currListObj.specialType && currListObj.specialType == "label"){
+				//点击的是栏目,这里要求改变背景图,并且隐藏一级栏目
+				clearList();
+				labelList = [];
+				labelListLen = -1;
+				labelListPos = 0;
+				currListId = currListObj.id;
+				getCurrLabelList();
+				getLabelList(labelListPos,"init");
+				showBgImg(currListObj,2);
+
+				//隐藏一级栏目
+				hideLabel();
+			}
+			else{
+				getDetail();
+			}
+		}
+		else if (focusArea == 1 && filterList.length > 0){
+			currListObj = filterList[filterListPos];
+			getDetail();
+		}
+		else if (focusArea == 2 && favList.length > 0){
+			favAjaxObj.requestAbort();//取消收藏的操作需要停止
+			currListObj = favList[favListPos];
+			getDetail();
+		}
+	}
+}
+
+function gotoOrder() {
+	
+	var orderParam = {"from":"vodIndex","targetName":vodPriceInfo.list[0].target_name,"backParam":{"isCP":isCP,"cpObj":cpObj,"favFlag":favFlag,"showType":showType,"labelId":mainLabelId,"focusRecordObj":getRecordFocusObj()}};
+	if (navigatorFlag == "iPanel") {
+		iPanel.eventFrame.orderParam = orderParam;
+		gotoPage(productIntrAddr,1,true);
+	} else {
+		sessionStorage.setItem("orderParam",JSON.stringify(orderParam));
+		window.location.href = "productIntr.htm";
+	}
+}
+
+function doNumber(__num){
+	if (focusArea == 0){//栏目状态下
+		var currRecommend = [];
+		if (mainMenu.length > 0){
+			var tmpId = mainMenu[mainMenuPos].id;
+			iDebug("index_doNumber_mainMenuPos = " + mainMenuPos + "__labelRecomList.length = " + labelRecomList.length);
+			for (var i = 0; i < labelRecomList.length; i++){
+				if (tmpId == labelRecomList[i].label){
+					currRecommend = labelRecomList[i].list;
+					break;
+				}
+			}
+		}
+
+		iDebug("index_doNumber__num = " + __num + "__currRecommend.length = " + currRecommend.length);
+		if (__num <= currRecommend.length){
+			var tmpObj = currRecommend[__num - 1];
+			//要求直接去播或者进入相应的应用地址
+			if (tmpObj.type == 2){
+				currListObj = tmpObj;
+				currListObj.isRecommFlag = 1;
+				getDetail();
+			}
+		}
+	}
+}
+
+
+function doBack(){
+	if (filterFlag){
+		hideFilter();
+	}
+	else if (qrcodeObj.payTipsFlag) {
+		hidePayTips();
+	}
+	else if (priceInfoFlag){
+		hidePriceInfo();
+	}
+	else if (favDelTips){
+		hideDelTips();
+	}
+	else if (detailFlag){
+		hideDetail();
+
+		//这里如果是列表中的栏目点击后进入的详情则不显示一级栏目菜单，否则需要显示
+		if (focusArea == 0){
+			if (retainLabelList.length == 1){
+				showLabel();
+			}
+		}
+	}else if(favFlag){//喜爱列表返回到portal
+		if (gotoPortal){
+			gotoPortal(iPanel.eventFrame.webUiUrl);
+		}else{
+			window.location.href = iPanel.eventFrame.webUiUrl;
+		}
+	}else if (focusArea == 1 || focusArea == 2){
+		if (focusArea == 2){
+			favAjaxObj.requestAbort();
+			clearTimeout(noFavTimeout);
+		}
+		focusArea = 0;
+		clearList();
+		getLabelList(labelListPos,"init");
+		$("favBgDiv").style.visibility = "hidden";
+		
+		//这里返回的时候，可能正好显示的列表中的栏目内容，这里要隐藏掉fav内容，并不显示一级栏目
+		if (focusArea == 0){
+			if (retainLabelList.length == 1){
+				showLabel();
+			}
+			else{
+				$("filterName").style.visibility = "hidden";
+				$("titleTips").style.visibility = "hidden";
+				$("favTips").style.visibility = "hidden";
+			}
+		}
+	}
+	else{
+		if (focusArea == 0){
+			var flag = getParentLabelList();
+		
+			if (flag){//返回上一级栏目
+				$("favBgDiv").style.visibility = "hidden";
+				getLabelList(labelListPos,"init");
+			}
+			else{
+				if (gotoPortal){
+					if (isCP && cpObj.name == "flyz"){
+						var gotoUrl = cpObj.backUrl;
+						gotoPage(gotoUrl,1,true);
+					}
+					else{
+						gotoPortal(iPanel.eventFrame.webUiUrl);
+					}
+				}
+				else{
+					window.location.href = iPanel.eventFrame.webUiUrl;
+				}
+			}
+		}
+		else{
+			if (gotoPortal){
+				if (isCP && cpObj.name == "flyz"){
+					var gotoUrl = cpObj.backUrl;
+					gotoPage(gotoUrl,1,true);
+				}
+				else{
+					gotoPortal(iPanel.eventFrame.webUiUrl);
+				}
+			}
+			else{
+				window.location.href = iPanel.eventFrame.webUiUrl;
+			}
+		}
+	}
+}
+
+/*
+ * 获取焦点记忆的参数对象
+ */
+function getRecordFocusObj() {
+	var tmpObj = {};
+	tmpObj.mainMenuPos = mainMenuPos;
+	tmpObj.currListId = currListId;
+	tmpObj.focusArea = focusArea;
+	tmpObj.labelListPos = labelListPos;
+	if (focusArea == 1){
+		tmpObj.filterStr = filterStr;
+		tmpObj.filterName = filterName;
+		tmpObj.filterListPos = filterListPos;
+	} else if (focusArea == 2){
+		tmpObj.favListPos = favListPos;
+	}
+	return tmpObj;
+}
+
+/*
+*购买处理
+*/
+var authFlag = false;				//鉴权的时候不能再进行鉴权
+var authAjaxObj = {requestAbort:function(){}};
+function getAuth(){
+	iDebug("index_getAuth_authFlag = " + authFlag);
+	if (authFlag){
+		return;
+	}
+	authFlag = true;
+	if (selectFlag){//电影购买
+		var tmpObj = detailObj;
+	}
+	else if (seriesFlag){//电视剧购买
+		var tmpObj = seriesVideoObj;
+	}
+	var ajaxUrl = slaveAddr + "/media/get_authority_info?accesstoken=" + access_token + "&programid=" + tmpObj.id + "&playtype=demand&verifycode=" + deviceid ;
+	ajaxUrl += "&packageid=" + vodPriceInfo.list[0].target_id + "&boughtflag=1";
+	iDebug("index_getAuth_ajaxUrl = " + ajaxUrl);
+
+	authAjaxObj = new AJAX_OBJ(ajaxUrl,authSuccess,authFail);
+	authAjaxObj.requestData();
+}
+
+function authSuccess(_xhr){
+	iDebug("index_authSuccess__xhr.responseText = " + _xhr.responseText);
+	authFlag = false;
+	var res = eval('('+_xhr.responseText+')');
+	if (res.ret == 0){//鉴权/购买成功，直接播放
+		if (selectFlag){//电影
+			var tmpObj = detailObj;
+		}
+		else if (seriesFlag){//电视剧
+			var tmpObj = seriesVideoObj;
+		}
+		tmpObj.play_token = res.play_token;
+		tmpObj.demand_url = res.play_url;  // 这里因为<5分钟的付费节目是不容许试看的，所以detail接口返回的demand_url为空，需要在购买后拿返回的play_url
+
+		if (currListObj.isRecommFlag == 1){
+			var tmpLabel = mainMenu[mainMenuPos].id;
+			var fromType = "numberRecommend";
+		}
+		else{
+			if (focusArea == 0){//列表
+				var tmpLabel = currListId;
+				var fromType = "vodLabel";
+			}
+			else if (focusArea == 1){//筛选
+				var tmpLabel = 0;
+				var fromType = "select";
+			}
+			else if (focusArea == 2){//喜爱列表
+				var tmpLabel = 0;
+				var fromType = "favList";
+			}
+		}
+		var playParam = {"type":"vod","from":"vodIndex","detailObj":tmpObj,"priceObj":vodPriceInfo,"firstSeek":0,"is_purchased":true,"currLabel":tmpLabel,"fromType":fromType,"backParam":{"isCP":isCP,"cpObj":cpObj,"favFlag":favFlag,"showType":showType,"labelId":mainLabelId,"focusRecordObj":getRecordFocusObj()}};
+		doBack();
+		if(navigatorFlag == "iPanel"){
+			iPanel.eventFrame.playParam = playParam;
+			gotoPage(vodPlayAddr);
+		}
+		else{
+			sessionStorage.setItem("playParam",JSON.stringify(playParam));
+			window.location.href = "../newPlay/vodPlay.htm";
+		}
+	}
+	else{
+		showTips("购买失败！",true);
+	}
+}
+
+function authFail(_xhr){
+	iDebug("index_authFail__param = " + _param);
+	authFlag = false;
+	showTips("购买失败！",true);
+}
+
+/*************************** 筛选的处理  start ***************************/
+
+var filterRequest = false;		//filter是否正在请求数据
+var filterFlag = false;			//filter是否显示状态
+
+/*
+ *@ 筛选框的变量
+ */
+var filterObjMgr = {
+	contentType: [], //contenttype映射的关键字,一级筛选条件
+	showContentType: {
+		"1101": "电影",
+		"1100": "电视剧",
+		"1102": "综艺", 
+		"1104": "其他",// 这里显示时资讯要改成其他
+		"1105": "动漫",
+		"1106": "纪实"
+	}, //需要显示的一级筛选项
+	keyword: [], //筛选条件关键字，对应于一级筛选条件的二级条件,一一匹配
+	type: {
+		"0": "contenttype",
+		"1": "subtype",
+		"2": "country",
+		"3": "years",
+		"4": "age",
+		"5": "actor",
+		"6": "director"
+	},
+	filterAjaxObj: {
+		requestAbort: function() {}
+	},
+	filterStyle: [{
+		"top": "-45px",
+		"fontSize": "30px"
+	}, {
+		"top": "-2px",
+		"fontSize": "30px"
+	}, {
+		"top": "36px",
+		"fontSize": "30px"
+	}, {
+		"top": "94px",
+		"color": "#f0f0f0",
+		"fontSize": "40px"
+	}, {
+		"top": "152px",
+		"fontSize": "30px"
+	}, {
+		"top": "192px",
+		"fontSize": "30px"
+	}, {
+		"top": "264px",
+		"fontSize": "30px"
+	}],
+	filterObj: [], //filter显示对象
+	filterShowLen: 5, //filter显示长度
+	filterFocus: 0, //filter显示区域焦点位置
+	filterTimeout: -1 //filter预取的timeout
+}
+
+/*
+ *@ 筛选的结果的变量
+ */
+var filterListAjaxObj = {requestAbort:function(){}};
+var filterList = [];			//筛选的结果list
+var filterListLen = -1;			//筛选结果的长度
+var filterListPos = 0;			//筛选显示结果的第一个位置
+var filterStr = "";
+var filterName = "";
+/*
+ *@ 获取筛选项的配置文件信息
+ */
+function getFilterConfig() {
+	clearTimeout(filterObjMgr.filterTimeout);
+	filterObjMgr.filterAjaxObj.requestAbort();
+	var ajaxUrl = slaveAddr + "/config/filter/get_list";
+	var ajaxData = JSON.stringify({
+		"accesstoken": access_token
+	});
+	iDebug("index_getFilterConfig_ajaxUrl = " + ajaxUrl);
+
+	filterObjMgr.filterAjaxObj = new AJAX_OBJ(ajaxUrl, function(_xmlResponse) {
+		iDebug("index__getFilterConfig___xmlResponse.responseText = " + _xmlResponse.responseText);
+		var resultInfo = eval('(' + _xmlResponse.responseText + ')');
+		if (resultInfo.ret == 0 && resultInfo.list.length > 0) {
+			for (var i = 0; i < resultInfo.list.length; i++) {
+				var filterInfo = resultInfo.list[i].filter_info;
+				var tmpContentType = resultInfo.list[i].contenttype;
+				if (!filterObjMgr.showContentType[tmpContentType]) {
+					continue;
+				}
+				var findFlag = false; // 是否有查找到内容类型，内容类型为第一级筛选条件
+				var tmpItems = [];
+				if (filterInfo && filterInfo.length > 0) {
+					for (var j = 0; j < filterInfo.length; j++) {
+
+						if (!findFlag && filterInfo[j].type.id == 0 && filterInfo[j].items && filterInfo[j].items.length > 0) {
+							// 内容类型
+							findFlag = true;
+							var tmpObj = {
+								"id" : filterInfo[j].items[0].id ,
+								"name" : filterObjMgr.showContentType[tmpContentType]
+							}
+							filterObjMgr.contentType.push(tmpObj);
+						} else if (filterInfo[j].type.id != 0 && filterInfo[j].items && filterInfo[j].items.length > 0) {
+							if (tmpItems.length < 3) { // 这里只显示3个二级筛选项
+								// 补充一个名称进入
+								filterInfo[j].items.splice(0,0,filterInfo[j].type);
+								tmpItems.push(filterInfo[j]);
+							}
+						}
+					};
+				};
+				if (findFlag) { // 这里只显示
+					filterObjMgr.keyword[filterObjMgr.contentType.length - 1] = tmpItems;
+				};
+			};
+
+			if (filterObjMgr.contentType.length > 0) {
+				if (filterFlag) {
+					// 显示一级筛选条件
+					showFilterContent(0);
+				}
+				return ;
+			}
+		}
+
+		filterObjMgr.contentType = [];
+		filterObjMgr.keyword = [];
+		if (filterFlag) {
+			showTips("未获取到筛选条件！", true);
+			hideFilter();
+		}
+	},
+	function() {
+		filterObjMgr.contentType = [];
+		if (filterFlag) {
+			showTips("未获取到筛选条件！", true);
+			hideFilter();
+		}
+	});
+	filterObjMgr.filterAjaxObj.urlParameters = ajaxData;
+	filterObjMgr.filterAjaxObj.requestData("post");
+}
+
+/*
+ *@ 判断并显示筛选的条件，无筛选的条件，则重新去获取
+ */
+function showFilter(){
+	if (filterObjMgr.contentType.length > 0){
+		// 显示一级筛选条件
+		showFilterContent(0);
+	}
+	else{
+		getFilterConfig();
+	}
+
+	$("filter").style.visibility = "visible";
+	filterFlag = true;
+	filterObjMgr.filterFocus = 0;
+	showFilterFocus();
+}
+
+/*
+ *@ 显示对应的筛选条件，筛选的第一列 为content内容(第一级筛选条件)，other为 keyword内容(第二级筛选条件)
+ *@ __showPos为显示第几列的内容
+ */
+function showFilterContent(__showPos){
+	var tmpValueList = [];
+	if (__showPos == 0){
+		//显示第一列数据，表示第一级筛选条件
+		tmpValueList = filterObjMgr.contentType;
+	}
+	else{
+		//显示其他列数据，表示第二级筛选条件
+		var tmpPos = filterObjMgr.filterObj[0].dataPos;
+		iDebug("index_showFilterContent_tmpPos = " + tmpPos);
+		
+		if (filterObjMgr.keyword[tmpPos].length < __showPos) {
+			if (filterObjMgr.filterObj[__showPos]) {
+				filterObjMgr.filterObj[__showPos].clear2DCss();
+				$("filter" + __showPos).style.visibility = "hidden";
+			};
+			return ;
+		};
+		tmpValueList = filterObjMgr.keyword[tmpPos][__showPos-1].items;
+	}
+	$("filter" + __showPos).style.visibility = "visible";
+	
+	var tmpObj = createList("filter" + __showPos,tmpValueList.length,1);
+	var listStyle = tmpObj.listStyle;
+	var focusPos = tmpObj.focusPos;
+	var totalNum = tmpObj.totalNum;
+
+	filterObjMgr.filterObj[__showPos] = new showCss2DCommon(tmpValueList.length,listStyle,focusPos,totalNum,"filter" + __showPos);
+	filterObjMgr.filterObj[__showPos].position = 0;
+	filterObjMgr.filterObj[__showPos].type = 1;
+	filterObjMgr.filterObj[__showPos].times = "300ms";		// 改变动作变化时间
+	filterObjMgr.filterObj[__showPos].limitTime = "350ms";	// 改变限定操作时间。
+	filterObjMgr.filterObj[__showPos].index = __showPos;
+	filterObjMgr.filterObj[__showPos].dataList = tmpValueList;
+	filterObjMgr.filterObj[__showPos].showData = function(list){
+		$("filter" + this.index + list.objId).innerText = this.dataList[list.dataPos].name;
+	}
+	filterObjMgr.filterObj[__showPos].clearData = function(__id){
+		$("filter" + this.index + __id).innerText = " ";
+	}
+	filterObjMgr.filterObj[__showPos].showFocus = function(list){
+		if(list.idPos == 1){
+			this.dataPos = list.dataPos;
+			$("filter" + this.index + list.objId).style.fontSize = "40px";
+		}
+		else{
+			$("filter" + this.index + list.objId).style.fontSize = "30px";
+		}
+
+		if (this.index == 0) {
+			// 显示二级筛选条件
+			for (var i = 0; i < 3; i++ ){
+				showFilterContent(i + 1);
+			}
+		}
+	}
+	filterObjMgr.filterObj[__showPos].startShow();
+}
+
+function showFilterFocus(){
+	$("filterFocusBg").src = "images/" + colorValue + "_focus_select_" + filterObjMgr.filterFocus + ".png";
+	for (var i = 0; i < 4; i++){
+		if (i == filterObjMgr.filterFocus){
+			$("filter" + i).style.color = "#f0f0f0";
+			$("filterFocus").src = "images/" + colorValue + "_focus_select_01.png";
+			$("filterFocus").style.left = [280,460,640,820][i] + "px";
+		}
+		else{
+			$("filter" + i).style.color = "#999999";
+		}
+	}
+}
+
+function hideFilter(){
+	for (var i = 0; i < 4 ; i++){
+		if (filterObjMgr.filterObj[i]){
+			filterObjMgr.filterObj[i].clear2DCss();
+			$("filter" + i).style.visibility = "hidden";
+		}
+	}
+	$("filter").style.visibility = "hidden";
+	filterFlag = false;
+}
+
+function filterChangeUD(__num){
+	filterObjMgr.filterObj[filterObjMgr.filterFocus].changeList(__num);
+}
+
+function filterChangeLR(__num){
+	var tmpPos = filterObjMgr.filterObj[0].dataPos;
+	if (filterObjMgr.keyword[tmpPos].length > 0){ 
+		filterObjMgr.filterFocus = (filterObjMgr.filterFocus + __num + filterObjMgr.keyword[tmpPos].length + 1)%(filterObjMgr.keyword[tmpPos].length + 1);
+		showFilterFocus();
+	}
+}
+
+function getFilterList(__pos,__status){
+	iDebug("index_getFilterList__pos = " + __pos + "__status = " + __status);
+	var pageNum = isNeedGetData(__pos,2);
+	iDebug("index_getFilterList__pageNum = " + pageNum);
+	if (pageNum > 0){
+		filterRequest = true;
+		$("loadTips").style.visibility = "visible";
+		filterStr = {};
+		filterName = "";
+		if (filterObjMgr.contentType.length > 0){ // 普通的按键出来进行筛选框，选择后进行筛选
+			var tmpPos = filterObjMgr.filterObj[0].dataPos;
+			filterStr.contenttype = (filterObjMgr.contentType[tmpPos].id + "");
+			filterName += (filterObjMgr.contentType[tmpPos].name + "  ");
+
+			for (var i = 0; i < filterObjMgr.keyword[tmpPos].length; i++){
+				var tmpKeywordPos = filterObjMgr.filterObj[i+1].dataPos;
+				if (tmpKeywordPos == 0) {
+					// 这里是补进来的全部，不用传
+					continue;
+				};
+				var tmpId = filterObjMgr.keyword[tmpPos][i].type.id;
+				var tmpFilterId = filterObjMgr.keyword[tmpPos][i].items[tmpKeywordPos].id;
+				filterName += filterObjMgr.keyword[tmpPos][i].items[tmpKeywordPos].name + "  ";
+				if (filterObjMgr.type[tmpId]) {
+					filterStr[filterObjMgr.type[tmpId]] = (tmpFilterId + "");
+				};
+			}
+		} else {
+			// 从筛选点击播放进入播放后返回，而B窗口又被销毁，此时需要记录焦点的筛选情况
+			if (focusRecordObj){
+				filterStr = focusRecordObj.filterStr;
+				filterName = focusRecordObj.filterName;
+			} else {
+				return;
+			}
+		}
+
+		var ajaxUrl = slaveAddr + "/filter/filter";
+		var ajaxStr = {
+			accesstoken: access_token,
+			type: 2,
+			label: mainLabelId,
+			pageidx: pageNum,
+			pagenum: pageGetSize,
+			asc: 0
+		};
+		for (var tmp in filterStr) {
+			ajaxStr[tmp] = filterStr[tmp];
+		};
+		ajaxStr = JSON.stringify(ajaxStr);
+
+		favListAjaxObj.requestAbort();
+		labelListAjaxObj.requestAbort();
+		filterListAjaxObj.requestAbort();
+		
+		iDebug("index_getFilterList_ajaxUrl = " + ajaxUrl + "___ajaxStr = " + ajaxStr);
+		filterListAjaxObj = new AJAX_OBJ(ajaxUrl, filterSuccess , filterFail);
+		filterListAjaxObj.callbackParams = [pageNum,__pos,__status];
+		filterListAjaxObj.urlParameters = ajaxStr;
+		filterListAjaxObj.requestData("post");
+
+		$("filterName").innerText = filterName;
+	}
+	else{
+		hideTips();
+		showList(__pos,__status);
+	}
+}
+
+function filterSuccess(_xmlResponse,__param){
+	filterRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	iDebug("index__filterSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		filterListLen = resultInfo.total;
+		if (resultInfo.list && resultInfo.list.length > 0){
+			getDataFlag[__param[0] - 1] = 1;
+			for ( i = 0 ; i < resultInfo.list.length ; i++){
+				filterList[(__param[0] - 1) * pageGetSize + i] = resultInfo.list[i];
+			}
+			if (__param[0] == 1){
+				focusArea = 1;
+				hideLabel();
+				clearList();
+				hideFilter();
+				$("filterName").style.visibility = "visible";
+				$("favTips").style.visibility = "hidden";
+				$("titleTips").innerHTML = "筛选<br>select";
+				$("titleTips").style.visibility = "visible";
+
+				if (detailFlag){
+					hideDetail();
+				}
+			}
+			getFilterList(__param[1],__param[2]);
+		}
+		else{
+			showTips("未筛选到节目！",true);
+		}
+	}
+	else{
+		showTips("筛选节目失败！",true);
+	}
+}
+
+function filterFail(){
+	filterRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	showTips("筛选节目失败！",true);
+}
+/*
+*筛选处理end
+*/
+
+
+/*
+*收藏列表处理
+*/
+var favPageNum = 30;			//要求喜爱只显示30部影片
+function getFavList(__pos,__status){
+	iDebug("index_getFavList__pos = " + __pos + "__status = " + __status);
+	var pageNum = isNeedGetData(__pos,3);
+	iDebug("index_getFavList__pageNum = " + pageNum);
+	
+	if (pageNum > 0){
+		favRequest = true;
+		$("loadTips").style.visibility = "visible";
+		var ajaxUrl = slaveAddr + "/favorite/get_list?accesstoken=" + access_token + "&type=2&pageidx=" + pageNum + "&pagenum=" + pageGetSize;
+		//var ajaxUrl = slaveAddr + "/favorite/get_list?accesstoken=" + access_token + "&type=2&pageidx=" + pageNum + "&pagenum=" + favPageNum;
+
+		favListAjaxObj.requestAbort();
+		labelListAjaxObj.requestAbort();
+		filterListAjaxObj.requestAbort();
+
+		favListAjaxObj = new AJAX_OBJ(ajaxUrl, favSuccess , favFail);
+		favListAjaxObj.callbackParams = [pageNum,__pos,__status];
+		favListAjaxObj.requestData();
+	}
+	else{
+		$("favBgDiv").style.visibility = "visible";
+		hideTips();
+		showList(__pos,__status);
+	}
+}
+
+function favSuccess(_xmlResponse,__param){
+	favRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	iDebug("index__favSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0) {
+		
+		//这里只取30条即可，其他不再取
+		/*if (resultInfo.total > favPageNum){
+			favListLen = favPageNum;
+		}
+		else{*/
+			favListLen = resultInfo.total;
+		//}
+		if (resultInfo.favorite_list && resultInfo.favorite_list.length > 0){
+			getDataFlag[__param[0] - 1] = 1;
+			$("favBgDiv").style.visibility = "visible";
+			for ( i = 0 ; i < resultInfo.favorite_list.length ; i++){
+				favList[(__param[0] - 1) * pageGetSize + i] = resultInfo.favorite_list[i];
+
+				var tmpObj = favList[(__param[0] - 1) * pageGetSize + i];
+				//需要将favList中的单集的海报改一下，剧集的不需要
+				if (tmpObj.poster_list && tmpObj.series_total <= 1){
+					var dir = tmpObj.poster_list.dir;
+					var dirList = dir.split("/");
+					iDebug("index_favSuccess_dir = " + dir);
+					tmpObj.poster_list.dir = dir.replace(dirList[dirList.length - 2],tmpObj.series_id);
+					iDebug("index_favSuccess_tmpObj.poster_list.dir = " + tmpObj.poster_list.dir);
+				}
+			}
+			if (__param[0] == 1){
+				focusArea = 2;
+				hideLabel();
+				clearList();
+				hideFilter();
+				$("filterName").style.visibility = "hidden";
+				$("favTips").style.visibility = "visible";
+				$("titleTips").innerHTML = "喜爱<br>Favorites";
+				$("titleTips").style.visibility = "visible";
+				if (detailFlag){
+					hideDetail();
+				}
+			}
+			getFavList(__param[1],__param[2]);
+		}
+		else{
+			showTips("没有喜爱节目！",true);
+		}
+	}
+	else{
+		showTips("获取喜爱节目失败！",true);
+	}
+}
+
+function favFail(){
+	favRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	showTips("获取喜爱节目失败！",true);
+}
+
+var noFavTimeout = -1;
+var favMove = false;				//要求上键移动取消收藏的海报，这里移动没完成不响应按键
+var favDelTips = false;				//清除提示框
+function delFav(__flag){
+	if (__flag == 2){//要求上键删除
+		favMove = true;
+		$("list" + listFocusPos).style.webkitTransitionProperty = "all";
+		$("list" + listFocusPos).style.webkitTransitionDuration = "300ms";
+		$("list" + listFocusPos).style.top = "-375px";
+		favList.splice(favListPos,1);
+
+		setTimeout(function(){
+			favMove = false;
+			if (favList.length > 0){
+				clearList();
+				getFavList(favListPos,"init");
+			}
+		},300);
+
+		if (favList.length > 0){
+			favListLen = favList.length;
+			if (favListPos >= favList.length){
+				favListPos = 0;
+			}
+		}
+		else{
+			delAllFav();
+		}
+	}
+	else if (__flag == 3){//要求确定键删除
+		hideDetail();
+		favList.splice(favListPos,1);
+		if (favList.length > 0){
+			favListLen = favList.length;
+			if (favListPos >= favList.length){
+				favListPos = 0;
+			}
+			clearList();
+			getFavList(favListPos,"init");
+		}
+		else{
+			delAllFav();
+		}
+	}
+}
+
+function delAllFav(){
+	//删除所有的喜爱列表
+	clearList();
+	showTips("无喜爱列表！",true);
+	clearTimeout(noFavTimeout);
+	noFavTimeout = setTimeout("doBack()",2000);
+}
+
+function showDelTips(){//清空喜爱列表，焦点默认在取消上
+	tipsBtnLen = 2;
+	tipsBtnPos = 0;
+	showBtn(2);	
+	favDelTips = true;
+}
+
+function hideDelTips(){
+	favDelTips = false;
+	$("btnTips").style.visibility = "hidden";
+	$("btnTipsAd").src = "ui://global_tm.gif";
+}
+/*
+*收藏列表处理__end
+*/
+
+
+/*
+详情操作参数和处理
+*/
+var currListObj = null;				//当前列表对象
+var detailAjaxObj = {requestAbort:function(){}};
+var detailObj = null;				//当前显示的详情对象
+var detailFlag = false;				//是否详情正在被显示
+
+var operatorList = [];				//列表
+var operatorPos = 0;					
+var operatorFocusPos = 0;
+var operatorObj = null;				//列表对象
+
+var seriesFlag = false;				//是否正在选集
+var seriesList = [];
+var selectFlag = false;				//是否正在操作
+var selectList = [];
+var seriesVideoObj = null;			//剧集中的单集的详情
+
+/*
+*获取详情数据
+*/
+function getDetail(__videoId){
+	detailRequest = true;
+	$("loadTips").style.visibility = "visible";
+	detailObj = null;
+	var callbackParams = [];
+	if (__videoId){
+		//这里表示取剧集的单集的详情
+		var ajaxUrl = slaveAddr+"/media/video/get_info?accesstoken=" + access_token + "&videoid=" + __videoId;
+		callbackParams = ["seriesVideo",__videoId];
+	}
+	else{
+		if (currListObj.type == 1){
+			// 频道,直接显示播放或者预约即可
+			if (currListObj.pf_info && currListObj.pf_info.length > 0){
+				var eventId = currListObj.pf_info[0].id;
+				var ajaxUrl = slaveAddr+"/media/event/get_info?accesstoken=" + access_token + "&eventid=" + eventId;
+				callbackParams = ["channel",eventId];
+			} else {
+				detailRequest = false;
+				showSmallTips("直播已结束",true,5000);
+				return;
+			}
+		}
+		else if (currListObj.series_total && currListObj.series_total > 1){
+			//电视剧，取电视剧详情
+			var ajaxUrl = slaveAddr + "/media/series/get_info?accesstoken=" + access_token + "&seriesid=" + (currListObj.series_id?currListObj.series_id:currListObj.id) + "&pageidx=1&pagenum=" + currListObj.series_total;
+			callbackParams = ["series",(currListObj.series_id?currListObj.series_id:currListObj.id)];
+		}
+		else{
+			//电影，取电影详情
+			var ajaxUrl = slaveAddr+"/media/video/get_info?accesstoken=" + access_token + "&videoid=" + currListObj.id;
+			callbackParams = ["video",currListObj.id];
+		}
+	}
+	iDebug("index_getDetail_ajaxUrl = " + ajaxUrl);
+	detailAjaxObj.requestAbort();
+	detailAjaxObj = new AJAX_OBJ(ajaxUrl, detailSuccess , detailFail);
+	detailAjaxObj.callbackParams = callbackParams;
+	detailAjaxObj.requestData();
+}
+
+function detailSuccess(_xmlResponse,__param){
+	detailRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	iDebug("index_detailSuccess__param = " + __param);
+	iDebug("index_detailSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0){
+		if (__param[0] != "seriesVideo"){
+			detailObj = resultInfo;
+			detailObj.id = __param[1];
+			if (__param[0] == "channel"){
+				detailObj.detailType = "channel";
+				detailObj.event_id = __param[1];
+				detailObj.chnl_name = __param[2];
+			} else {
+				detailObj.detailType = "vod";
+			}
+			if(currListObj && currListObj.isRecommFlag && detailObj.series_total && detailObj.series_total > 1 && currListObj.id != currListObj.series_id){ 
+				// 推荐内容如果是剧集中的某一个集，要求左边显示这一集的具体内容，右边需要定位到具体的某一集
+				iDebug("index_detailSuccess_currListObj.series_id = " + currListObj.series_id);
+				var flag = getSeries(currListObj.series_idx);
+				iDebug("index_detailSuccess_getSeries_flag = " + flag + "__seriesList.length = " + seriesList.length);
+				if (seriesList.length > 0) {
+					operatorPos = flag;
+					seriesFlag = true;
+					selectFlag = false;
+					showDetail();
+					initOperator();
+				}
+			} else {
+				getSelectList();
+				operatorPos = 0;
+				selectFlag = true;
+				seriesFlag = false;
+				initOperator();
+				showDetail();
+			}
+		}
+		else {
+			seriesVideoObj = resultInfo;
+			seriesVideoObj.id = __param[1];
+			showPriceInfo();
+		}
+	}
+	else{
+		showTips("详情数据获取失败！",true);
+	}
+}
+
+function detailFail(){
+	iDebug("index_detailFail");
+	$("loadTips").style.visibility = "hidden";
+	detailRequest = false;
+	showTips("详情数据获取失败！",true);
+}
+
+/*
+*显示详情内容
+*/
+function showDetail(){
+	iDebug("index_showDetail_detailObj.series_total = " + detailObj.series_total);
+	if(currListObj && currListObj.isRecommFlag){//推荐节目详情信息显示
+		$("recommImg").style.opacity = 1;
+		if (ipanelTestFlag){
+			$("recommImg").src = currListObj.poster_list.dir + currListObj.poster_list.list["160x200"];
+		}else{
+			$("recommImg").src = currListObj.poster_list.dir + "big.jpg";
+		}
+
+		$("listName").innerText = detailObj.video_name?detailObj.video_name:detailObj.series_name;
+	}
+	if (detailObj.series_total && detailObj.series_total > 1){
+		// 电视剧
+		if(currListObj && currListObj.isRecommFlag && currListObj.id != currListObj.series_id){ 
+			// 推荐的剧集的某一集【单集】,要求不显示更新至某一集，而直接显示单集的名称
+			$("seriesTips").innerText = getStrChineseLen(currListObj.name ? currListObj.name : " ", 12, "..");
+			$("seriesTips").style.visibility = "visible";
+		} else {
+			if (detailObj.video_list && detailObj.video_list.length > 0){
+				var tmpList = detailObj.video_list;
+				var current_idx = detailObj.current_idx;
+				var idx_type = detailObj.idx_type;
+				iDebug("index_showDetail_detailObj.current_idx = " + detailObj.current_idx + "__idx_type = " + idx_type);
+				var series_num = detailObj.series_num;
+				var str = "";
+				if (idx_type == 1 || idx_type == 4){
+					if (series_num == detailObj.series_total){
+						//已经更新完毕
+						str = "共" + series_num + "集  已完结" ;
+					}
+					else{
+						str = "更新至" + series_num + "集" ;
+					}
+				}
+				else if (idx_type == 2){//综艺类
+					str = "更新至" + current_idx + "期" ;
+				}
+				else if (idx_type == 3){//新闻类
+					str = "更新至" + util.date.format(new Date(parseInt(current_idx) * 1000),"yyyyMMdd") + "期";
+				}
+				$("seriesTips").innerText = str;
+				$("seriesTips").style.visibility = "visible";
+			} else {
+				$("seriesTips").innerText = " ";
+				$("seriesTips").style.visibility = "hidden";
+			}
+		}
+	}
+	else{
+		$("seriesTips").style.visibility = "hidden";
+	}
+	hideLabel(1);
+	detailFlag = true;
+
+	if (detailObj.detailType == "channel") {
+		$("detailInfo0").innerText = "开始时间：" + (detailObj.start_time ? util.date.format(new Date(parseInt(detailObj.start_time) * 1000), "yyyy-MM-dd hh:mm:ss") : "暂无");
+		$("detailInfo1").innerText = "结束时间：" + (detailObj.end_time ? util.date.format(new Date(parseInt(detailObj.end_time) * 1000), "yyyy-MM-dd hh:mm:ss") : "暂无");
+	} else {
+		$("detailInfo0").innerText = "导演：" + getStrChineseLen(detailObj.director ? detailObj.director : "暂无", 17, "..");
+		$("detailInfo1").innerText = "主演：" + getStrChineseLen(detailObj.actors ? detailObj.actors : "暂无", 17, "..");
+	}
+	
+	if (currListObj.isRecommFlag == 1){
+		$("desc").innerText = getStrChineseLen(currListObj.desc?currListObj.desc:detailObj.series_desc?detailObj.series_desc:detailObj.desc?detailObj.desc:"简介：暂无",150,"..");
+	} else {
+		$("desc").innerText = getStrChineseLen(detailObj.series_desc?detailObj.series_desc:detailObj.desc?detailObj.desc:"简介：暂无",150,"..");
+	}
+
+	$("detailLeft").style.left = "0px";
+	$("detailRight").style.left = "770px";
+}
+
+function hideDetail(){
+	//将点赞和收藏的request停掉
+	favAjaxObj.requestAbort();
+	praiseAjaxObj.requestAbort();
+	if(currListObj && currListObj.isRecommFlag){
+		$("listName").innerText = listList[listObj.position].name;
+		$("recommImg").style.opacity = 0;
+		$("recommImg").src = "images/global_tm.gif";
+	}
+	detailFlag = false;
+	$("detailLeft").style.left = "-515px";
+	$("detailRight").style.left = "1280px";
+	seriesFlag = false;
+	seriesList = [];
+	selectFlag = false;
+	selectList = [];
+}
+
+/*
+*获取操作列表
+*/
+function getSelectList(){
+	selectList = [];
+	iDebug("index_getOperator_detailObj.is_favourite = " + detailObj.is_favourite);
+	if (detailObj.detailType == "channel") {
+		// 频道
+		var currTime = Math.ceil((new Date()).getTime()/1000);
+		iDebug("index_getSelectList_currTime = " + currTime + "__detailObj.start_time = " + detailObj.start_time);
+		if (currTime < detailObj.start_time){
+			// 还未开始播放的节目，需要判断是否已经被预约了
+			if (typeof detailObj.is_order != "undefined" && detailObj.is_order >= 0){
+				selectList.push("取消预约");
+			} else {
+				selectList.push("预约直播");
+			}
+		} else {
+			selectList.push("进入直播");
+		}
+
+		// 暂时注释掉，后面再补进来
+		/*if (detailObj.is_favourite){
+			selectList.push("已收藏");
+		}
+		else{
+			selectList.push("收藏");
+		}
+		if (detailObj.my_praise_record == 1){
+			selectList.push("已点赞");
+		}
+		else{
+			selectList.push("点赞");
+		}*/
+	}
+	else if (detailObj.series_total && detailObj.series_total > 1){
+		//电视剧
+		var idx_type = detailObj.idx_type;
+		iDebug("index_getOperator_detailObj.idx_type = " + idx_type);
+		if (idx_type == 2 || idx_type == 3){
+			selectList.push("节目列表");
+		}
+		else {
+			selectList.push("选集");
+		}
+		if (detailObj.is_favourite){
+			selectList.push("已收藏");
+		}
+		else{
+			selectList.push("收藏");
+		}
+		if (detailObj.my_praise_record == 1){
+			selectList.push("已点赞");
+		}
+		else{
+			selectList.push("点赞");
+		}
+	}
+	else {
+		//电影
+		selectList.push("播放");
+		if (detailObj.is_favourite){
+			selectList.push("已收藏");
+		}
+		else{
+			selectList.push("收藏");
+		}
+		if (detailObj.my_praise_record == 1){
+			selectList.push("已点赞");
+		}
+		else{
+			selectList.push("点赞");
+		}
+	}
+}
+/*
+*显示操作列表，剧集列表
+*/
+function initOperator(){
+	operatorList = [];
+	if (selectFlag){
+		operatorList = selectList;
+	}
+	else if (seriesFlag){
+		operatorList = seriesList;
+	}
+
+	var tmpObj = createList("operList",operatorList.length);
+	var listStyle = tmpObj.listStyle;
+	var focusPos = tmpObj.focusPos;
+	var totalNum = tmpObj.totalNum;
+	operatorObj = new showCss2DCommon(operatorList.length,listStyle,focusPos,totalNum,"operList");
+	operatorObj.position = operatorPos;
+	operatorObj.type = 1;
+	operatorObj.times = "300ms";		// 改变动作变化时间
+	operatorObj.limitTime = "350ms";	// 改变限定操作时间。
+	operatorObj.showData = function(list){
+		if (selectFlag){
+			$("operList" + list.objId).innerText = operatorList[list.dataPos];
+		}
+		else if (seriesFlag){
+			var tmpIdx = seriesList[list.dataPos].series_idx;
+			var tmpStr = "";
+			if (tmpIdx.length < 8){
+				if (isNaN(parseInt(tmpIdx))){//上中下
+					tmpStr = tmpIdx + "集";
+				}
+				else{
+					tmpStr = "第" + tmpIdx + "集";
+				}
+			}
+			else if (tmpIdx.length == 8){
+				tmpStr = tmpIdx;
+			}
+			else if (tmpIdx.length > 8){
+				tmpStr = util.date.format(new Date(parseInt(tmpIdx*1000)),"yyyyMMdd");
+			}
+			$("operList" + list.objId).innerText = tmpStr;		
+		}
+		$("operList" + list.objId).style.fontSize = "40px";
+		$("operList" + list.objId).style.color = "#FFFFFF";
+		$("operList" + list.objId).style.opacity = 0.4;
+	}
+	operatorObj.showFocus = function(list){
+		if(list.idPos == 1){
+			operatorFocusPos = list.objId;
+			operatorPos = list.dataPos;
+			$("operList" + list.objId).style.fontSize = "48px"; 
+			$("operList" + list.objId).style.color = "#FFFFFF";
+			$("operList" + list.objId).style.opacity = 1;
+			if (seriesFlag){
+				$("seriesTips").innerText = getProToSeriesName(seriesList[operatorPos].video_name,listList[listObj.position].name);
+			}
+		}
+		else{
+			$("operList" + list.objId).style.fontSize = "40px";
+			$("operList" + list.objId).style.opacity = 0.4;
+		}
+	}
+	operatorObj.startShow();
+}
+/*统一剧集中单集名称的显示规范*/
+function getProToSeriesName(_proName,_seriesName){
+	if(_proName.indexOf(_seriesName+"-")>=0){
+		return 	_proName.replace(_seriesName+"-","");
+	}else if(_proName.indexOf(_seriesName)>=0){
+		if(_proName.indexOf("日-")>0){
+			return 	_proName.substring(_proName.indexOf("日-")+2);
+		}else if(_proName.indexOf("日－")>0){
+			return 	_proName.substring(_proName.indexOf("日－")+2);
+		}else{
+			return 	_proName.replace(_seriesName,"");
+		}
+	}else{
+		return _proName;
+	}
+}
+function operatorUD(__num){
+	if (operatorList.length <= 1){
+		return;
+	}
+	operatorObj.changeList(__num);
+}
+
+/**
+ * @desc 获取剧集内容，_idx如存在则定位到对应的_idx这一集，否则的话就定位到last_viewed_idx
+ */
+function getSeries(_idx){
+	iDebug("index_getSeries__idx = " + _idx); 
+	seriesList = [];
+	var lastPos = 0;
+	if (detailObj.video_list && detailObj.video_list.length > 0){
+		seriesList = detailObj.video_list;
+		lastPos = seriesList.length - 1;  // 要求默认定位到最后一集 2016/12/29
+		var idx_type = detailObj.idx_type;
+		iDebug("index_getSeries_idx_type = " + idx_type);
+		/*if (idx_type == 2 || idx_type == 3){
+			//默认焦点到最后一个
+			lastPos = seriesList.length - 1;
+		}
+		else{*/
+			var last_viewed_idx = detailObj.last_viewed_idx;//最后观看的集数
+			if (typeof _idx != "undefined"){
+				last_viewed_idx = _idx;
+			}
+			iDebug("index_getSeries_last_viewed_idx = " + last_viewed_idx);
+			for (var i = 0; i < seriesList.length ; i++ ){
+				var tmpIdx = seriesList[i].series_idx;
+				iDebug("index_getSeries_series_idx = " + tmpIdx);
+				if (tmpIdx == last_viewed_idx){
+					lastPos = i;
+					break;
+				}
+			}
+		//}
+		iDebug("index_getSeries_lastPos = " + lastPos);
+		return lastPos;
+	}
+	else{
+		showTips("剧集获取失败！",true);
+	}
+	return -1;
+}
+
+/*
+点赞
+*/
+var praiseAjaxObj = {requestAbort:function(){}};
+function doPraise(__flag){
+	if (focusArea == 0){//列表
+		var tmpLabel = currListId;
+	}
+	else if (focusArea == 1){//筛选
+		var tmpLabel = 0;
+	}
+	else if (focusArea == 2){//喜爱列表
+		var tmpLabel = 0;
+	}
+
+	praiseAjaxObj.requestAbort();
+	if (__flag == 0){
+		var ajaxUrl = slaveAddr + "/score/cancel_praise?accesstoken=" + access_token + "&id=" + detailObj.id;
+	}
+	else if (__flag == 1){
+		var ajaxUrl = slaveAddr + "/score/praise?accesstoken=" + access_token + "&id=" + detailObj.id + "&praise=1";
+	}
+	praiseAjaxObj = new AJAX_OBJ(ajaxUrl, praiseSuccess , praiseFail);
+	praiseAjaxObj.callbackParams = [__flag,detailObj.id,tmpLabel];
+	praiseAjaxObj.requestData();
+}
+
+function praiseSuccess(_xmlResponse,__param){
+	iDebug("index_doPraiseSuccess__param" + __param);
+	iDebug("index_doPraiseSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0){
+		$("number").innerText = resultInfo.praise_num;
+		currListObj.praise_num = resultInfo.praise_num;//当前列表节目记录最新点赞结果
+		if (__param[0] == 0 && selectFlag && __param[1] == detailObj.id){
+			detailObj.my_praise_record = 0;
+			operatorList[operatorPos] = "点赞";
+			$("operList" + operatorFocusPos).innerText = "点赞";
+		}
+		else if (__param[0] == 1 && selectFlag && __param[1] == detailObj.id){
+			detailObj.my_praise_record = 1;
+			operatorList[operatorPos] = "已点赞";
+			$("operList" + operatorFocusPos).innerText = "已点赞";
+		}
+
+		if (__param[0] == 1){//表示点赞
+			collectDate("praise",__param[1],__param[2]);
+		}
+	}
+	else{
+		praiseFail(_xmlResponse,__param);
+	}
+}
+
+function praiseFail(_xmlResponse,__param){
+	if (__param[0] == 0 && selectFlag && __param[1] == detailObj.id){
+		showTips("取消点赞失败！",true);
+	}
+	else if (__param[0] == 1 && selectFlag && __param[1] == detailObj.id){
+		showTips("点赞失败！",true);
+	}
+}
+
+/*
+收藏或者取消收藏 , __flag = 0: 表示取消喜爱  __flag = 1表示收藏  __flag = 2表示喜爱上键取消收藏 __flag = 3表示喜爱列表确定取消收藏
+*/
+var favAjaxObj = {requestAbort:function(){}};
+function doFavorite(__flag,__id){
+	if (focusArea == 0){//列表
+		var tmpLabel = currListId;
+	}
+	else if (focusArea == 1){//筛选
+		var tmpLabel = 0;
+	}
+	else if (focusArea == 2){//喜爱列表
+		var tmpLabel = 0;
+	}
+
+	var callbackParams = [__flag];
+	if (__flag == 0 || __flag == 3){
+		var ajaxUrl = slaveAddr + "/favorite/cancel?accesstoken=" + access_token + "&id=" + detailObj.id;
+		callbackParams.push(detailObj.id);
+	}
+	else if (__flag == 1){
+		var ajaxUrl = slaveAddr + "/favorite/set?accesstoken=" + access_token + "&id=" + detailObj.id;
+		callbackParams.push(detailObj.id);
+	}
+	else if (__flag == 2){
+		var ajaxUrl = slaveAddr + "/favorite/cancel?accesstoken=" + access_token + "&id=" + __id;
+		callbackParams.push(__id);
+	}
+	else if (__flag == 4){//全部删除
+		var ajaxUrl = slaveAddr + "/favorite/cancel?accesstoken=" + access_token + "&id=0";
+		callbackParams.push(0);
+	}
+	callbackParams.push(tmpLabel);
+
+	favAjaxObj.requestAbort();
+	favAjaxObj = new AJAX_OBJ(ajaxUrl, setFavSuccess , setFavFail);
+	favAjaxObj.callbackParams = callbackParams;
+	favAjaxObj.requestData();
+}
+
+function setFavSuccess(_xmlResponse,__param){
+	iDebug("index_setFavSuccess__param = " + __param);
+	iDebug("index_setFavSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0){
+		if (__param[0] == 0){
+			if (selectFlag && __param[1] == detailObj.id){
+				detailObj.is_favourite = 0;
+				operatorList[operatorPos] = "收藏";
+				$("operList" + operatorFocusPos).innerText = "收藏";
+			}
+			collectDate("cancelFav",__param[1],__param[2]);
+		}
+		else if (__param[0] == 1){
+			if (selectFlag && __param[1] == detailObj.id){
+				detailObj.is_favourite = 1;
+				operatorList[operatorPos] = "已收藏";
+				$("operList" + operatorFocusPos).innerText = "已收藏";
+			}
+			collectDate("setFav",__param[1],__param[2]);
+		}
+		else if (__param[0] == 2){
+			if (focusArea == 2 && !detailFlag){//喜爱列表状态
+				delFav(__param[0]);
+			}
+			collectDate("cancelFav",__param[1],__param[2]);
+		}
+		else if (__param[0] == 3){
+			if (focusArea == 2 && selectFlag && __param[1] == detailObj.id){
+				delFav(__param[0]);
+			}
+			collectDate("cancelFav",__param[1],__param[2]);
+		}
+		else if (__param[0] == 4){
+			if (focusArea == 2){//喜爱列表状态
+				delAllFav();
+			}
+		}
+	}
+	else{
+		setFavFail(_xmlResponse,__param);
+	}
+}
+
+function setFavFail(_xmlResponse,__param){
+	if (__param == 0 && selectFlag && __param[1] == detailObj.id){
+		showTips("取消收藏失败！",true);
+	}
+	else if (__param == 1 && selectFlag && __param[1] == detailObj.id){
+		showTips("收藏失败！",true);
+	}
+	else if (__param == 2 && focusArea == 2 && !detailFlag){
+		showTips("取消收藏失败！",true);
+	}
+	else if (__param == 3 && focusArea == 2 && selectFlag && __param[1] == detailObj.id){
+		showTips("取消收藏失败！",true);
+	}
+}
+
+/*
+*询价
+*/
+var priceAjaxObj = {requestAbort:function(){}};
+var vodPriceInfo = null;
+
+function initPriceInfo(){
+	var videoId;
+	if (selectFlag){
+		//电影询价
+		videoId = detailObj.id;
+	}
+	else if (seriesFlag){
+		//电视剧询价
+		videoId = seriesList[operatorPos].video_id;
+	}
+	priceRequest = true;
+	$("loadTips").style.visibility = "visible";
+	var ajaxUrl = slaveAddr+"/feemanager/ordermanager/get_price_info?accesstoken="+access_token+"&programid="+videoId+"&programtype=2";
+	iDebug("index_iniPriceInfo_ajaxUrl = " + ajaxUrl);
+	priceAjaxObj.requestAbort();
+	priceAjaxObj = new AJAX_OBJ(ajaxUrl, priceSuccess , priceFail);
+	priceAjaxObj.callbackParams = videoId;
+	priceAjaxObj.requestData();
+}
+
+function priceSuccess(_xmlResponse,__param){
+	priceRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	iDebug("index_priceSuccess__param = " + __param);
+	iDebug("index_priceSuccess__" + _xmlResponse.responseText);
+	var resultInfo = eval('('+_xmlResponse.responseText+')');
+	if (resultInfo.ret == 0){
+		vodPriceInfo = resultInfo;
+		var tmpPriceObj = checkPrice();
+
+		if (tmpPriceObj.is_free === -1){ // 未进入套餐
+			showTips("暂无权限观看！",true);
+		} else {
+			iDebug("index_priceSuccess_price = " + tmpPriceObj.price + "__is_free = " + tmpPriceObj.is_free);
+			$("price").innerText = (parseInt(tmpPriceObj.price,10))/100 + "元";
+
+			if (selectFlag){
+				showPriceInfo();
+			}
+			else if (seriesFlag){
+				//电视剧,这里还得再拿一次剧集的详情，否则拿不到续播点 
+				getDetail(__param);
+			}
+		}
+		return;
+	}
+	showTips("询价失败",true);
+}
+
+function priceFail(){
+	priceRequest = false;
+	$("loadTips").style.visibility = "hidden";
+	iDebug("index_priceFail");
+	showTips("询价失败！",2);	
+}
+
+/*
+ * @检测和判断价格，返回{"price":,"is_free":}
+ * @ price为返回的价格(页面需要显示的价格，并非本身价格，如已经付费的，则返回价格为0)，
+ * @ is_free是否是免费的，= 1表示免费，= 0表示付费 ， = -1表示未进入套餐
+ */
+function checkPrice(){
+	var returnObj = {};
+	if (vodPriceInfo.is_purchased == 1){
+		//表示已经购买，这里有可能是免费的，有可能是未进入套餐的，也有可能是付费的已经购买的
+		returnObj.price = 0;
+		if (vodPriceInfo.list.length > 0){
+			var tmpPrice = vodPriceInfo.list[0];
+			if (tmpPrice.price && tmpPrice.price.length > 0){
+				var tmpObj = tmpPrice.price[0];
+				var price = tmpObj.amount;			//单位为分
+				if (price == 0){
+					//价格为0，本身是免费的
+					returnObj.is_free = 1;
+				}
+				else{
+					//付费的，但是已经购买
+					returnObj.is_free = 0;
+				}
+			}
+			else{
+				//没有价格的
+				returnObj.is_free = 1;
+			}
+		}
+		else{
+			//未进入套餐
+			returnObj.is_free = -1;
+		}
+	}
+	else if (vodPriceInfo.list.length > 0){
+		//未购买的，但是存在套餐包的
+		var tmpPrice = vodPriceInfo.list[0];
+		if (tmpPrice.price && tmpPrice.price.length > 0){
+			var tmpObj = tmpPrice.price[0];
+			var price = tmpObj.amount;			//单位为分
+			if (price == 0){
+				//进入这里应该已经出现错误了，这个是免费的，is_purchased 应该为1，万一出现这种，就认为是免费的
+				returnObj.price = 0;
+				returnObj.is_free = 1;
+			}
+			else{
+				//付费的，未购买
+				returnObj.price = price;
+				returnObj.is_free = 0;
+			}
+		}
+		else{
+			//没有价格的
+			returnObj.price = 0;
+			returnObj.is_free = 1;
+		}
+	}
+	else{
+		//表示未购买，而且未进入套餐包
+		returnObj.price = 0;
+		returnObj.is_free = -1;
+	}
+	return returnObj;
+}
+
+/*
+*询价弹出窗口处理
+*/
+var priceInfoFlag =	false;				//询价窗口是否显示
+var tipsBtnLen = 0;						//询价窗口的提示botton的个数
+var tipsBtnPos = 0;						//询价窗口的button焦点位置
+
+function showPriceInfo(){
+	if (selectFlag){
+		//电影
+		var tmpObj = detailObj;
+	}
+	else if (seriesFlag){
+		//电视剧
+		var tmpObj = seriesVideoObj;
+	}
+	var tmpPriceObj = checkPrice();
+	if (tmpPriceObj.price == 0){
+		//价格为0，显示播放或者续播按钮
+		var off_time = tmpObj.off_time;
+		if (off_time == 0 || off_time == tmpObj.duration){
+			tipsBtnLen = 2;
+			tipsBtnPos = tipsBtnLen - 1;
+		}
+		else{
+			tipsBtnLen = 3;
+			tipsBtnPos = tipsBtnLen - 1;
+		}
+		showBtn(1,tmpObj);
+	}
+	else{
+		tipsBtnLen = 2;
+		tipsBtnPos = tipsBtnLen - 1;
+
+		//付费节目，电影显示购买按钮，电视剧显示试看按钮
+		if (selectFlag){
+			if (iPanel.eventFrame.userStatus == 2 || iPanel.eventFrame.userStatus == 3){
+				// 酒店用户，只显示取消按钮
+				// 要求党校用户跟酒店用户一样
+				tipsBtnLen = 1;
+				tipsBtnPos = 0;
+				showBtn(5,tmpObj);
+			}
+			else {
+				if (cpObj.needOrder) {
+					tipsBtnLen = 3;
+					tipsBtnPos = 1;
+				}
+				showBtn(3,tmpObj);
+			}
+		}
+		else if (seriesFlag){
+			// 小于5分钟的未付费的剧集直接显示购买按钮,不给试看 2017/03/13
+			iDebug("index.htm__showPriceInfo__tmpObj.duration =" + tmpObj.duration);
+			if (tmpObj.duration	< 5 * 60){
+				if (cpObj.needOrder) {
+					tipsBtnLen = 3;
+					tipsBtnPos = 1;
+				}
+				showBtn(3,tmpObj);
+			} else {
+				if (cpObj.needOrder) {
+					tipsBtnLen = 3;
+					tipsBtnPos = 1;
+				}
+				showBtn(4,tmpObj);
+			}
+		}
+		getQrcode();
+	}
+	priceInfoFlag = true;
+}
+
+function hidePriceInfo(){
+	priceInfoFlag = false;
+	$("btnTips").style.visibility = "hidden";
+	$("btnTipsAd").src = "ui://global_tm.gif";
+	resetQrcodeObj();
+}
+
+var qrcodeObj = {
+	ajaxObj: {requestAbort: function(){}},
+	params: {
+		order_number: "", // 订单号
+		total: 0, // 订单总金额
+		title: "",	// 影片名称
+		caid: "",	// Ca卡号
+		mpid: "10871001001", // 商户id
+		code_type: "0", // 二维码类型
+		is_physical: "0", // 是否为实物商品、0为虚拟业务
+		order_resource: "10", // 订单来源
+		return_type: "1" // 二维码返回方式：0 图片；1 地址
+	},
+	checkTimeout: -1, // 定时器
+	checkTimes: 0, // 查询次数
+	payTipsFlag: false, // 支付提示是否显示
+	payTipsBtnPos: 1, // 支付提示焦点位置
+	payTipsTimeout: -1 // 支付提示参数
+};
+
+/**
+ * 重置二维码对象
+ */
+function resetQrcodeObj() {
+	$("qrcodeImg").src = "";
+	$("qrcode").style.visibility = "hidden";
+	qrcodeObj.ajaxObj.requestAbort();
+	clearTimeout(qrcodeObj.checkTimeout);
+	clearTimeout(qrcodeObj.payTipsTimeout);
+	qrcodeObj = {
+		ajaxObj: {requestAbort: function(){}},
+		params: {
+			order_number: "", // 订单号
+			total: 0, // 订单总金额
+			title: "",	// 影片名称
+			caid: "",	// Ca卡号
+			mpid: "10871001001", // 商户id
+			code_type: "0", // 二维码类型
+			is_physical: "0", // 是否为实物商品、0为虚拟业务
+			order_resource: "10", // 订单来源
+			return_type: "1" // 二维码返回方式：0 图片；1 地址
+		},
+		checkTimeout: -1, // 结果查询定时器
+		checkTimes: 0, // 查询次数
+		payTipsFlag: false, // 支付提示是否显示
+		payTipsBtnPos: 1, // 支付提示焦点位置
+		payTipsTimeout: -1 // 支付提示定时器
+	};
+}
+
+/**
+ * 获取二维码
+ */
+function getQrcode() {
+	iDebug("index.htm__getQrcode()__CA=" + CA.card.cardStatus);
+
+	if (CA.card.cardStatus != 1) return; // 如未插CA卡，则取消后续流程
+	
+	// 3位毫秒数
+	var tmpDate = new Date();
+	var ms = tmpDate.getMilliseconds();
+	ms += "";
+	if (ms.length == 1) {
+		ms = "00" + ms;
+	}else if (ms.length == 2) {
+		ms = "0" + ms;
+	}
+	iDebug("index.htm__getQrcode()__ms=" + ms);
+
+	// 4位随机数
+	var randNum = Math.floor(Math.random() * 10000);
+	randNum += "";
+	if (randNum.length == 1) {
+		randNum = "000" + randNum;
+	}else if (randNum.length == 2) {
+		randNum = "00" + randNum;
+	}else if (randNum.length == 3) {
+		randNum = "0" + randNum;
+	}
+	iDebug("index.htm__getQrcode()__randNum=" + randNum);
+
+	var tmpPriceObj = checkPrice();
+	qrcodeObj.params.total = parseInt(tmpPriceObj.price)/100; // 分换算为元
+	
+	if (selectFlag){
+		qrcodeObj.params.title = encodeURIComponent(detailObj.video_name);
+	}
+	else if (seriesFlag){
+		qrcodeObj.params.title = encodeURIComponent(seriesVideoObj.video_name);
+	}
+
+	qrcodeObj.params.caid = CA.card.serialNumber.replace(/\(|\)/ig,""); // 去掉最后检索位的"（）"
+	iDebug("index.htm--getQrcode--total="+qrcodeObj.params.total);
+	iDebug("index.htm--getQrcode--caid="+qrcodeObj.params.caid);
+	qrcodeObj.params.order_number = util.date.format(tmpDate,"yyyyMMddhhmm") + ms + randNum + hardware.STB.serialNumber + network.ethernets[0].MACAddress.replace(/\-/ig,"") + qrcodeObj.params.caid;
+	iDebug("index.htm__getQrcode()__order_number=" + qrcodeObj.params.order_number);
+
+	qrcodeObj.ajaxUrl = qrcodeAddr + "?order_number=" + qrcodeObj.params.order_number + "&total=" + qrcodeObj.params.total + "&mpid=" + qrcodeObj.params.mpid + "&code_type=" + qrcodeObj.params.code_type + "&is_physical=" + qrcodeObj.params.is_physical + "&order_resource=" + qrcodeObj.params.order_resource + "&return_type=" + qrcodeObj.params.return_type + "&title=" + qrcodeObj.params.title + "&caid=" + qrcodeObj.params.caid;
+	iDebug("index.htm__getQrcode()__ajaxUrl=" + qrcodeObj.ajaxUrl);
+
+	qrcodeObj.ajaxObj.requestAbort();
+	qrcodeObj.ajaxObj = new AJAX_OBJ(qrcodeObj.ajaxUrl, qrSuccess, qrFail);
+	qrcodeObj.ajaxObj.requestData();
+}
+
+function qrSuccess(xhr) {
+	iDebug("index.htm__qrSuccess");
+	iDebug("index.htm__qrSuccess()" + xhr.responseText);
+	var data = eval("(" + xhr.responseText + ")");
+	if (data.code == 0) {
+		if (data.url2 && data.url2.indexOf("http://") != -1) {
+			iDebug("index.htm__qrSuccess()__url=" + data.url2);
+			$("qrcodeImg").src = data.url2;
+			$("qrcode").style.visibility = "visible";
+			qrcodeObj.checkTimeout = setTimeout("checkPay(1)",3000); // 3s查一次 一直查询
+		}
+	}
+}
+
+function qrFail(xhr) {
+	iDebug("index.htm__qrFail");
+}
+
+/**
+ * 查询是否已经支付成功
+ * @param   _flag  1：正常查询 2：提示付费失败后核查
+ */
+function checkPay(_flag) {
+	iDebug("index.htm__checkPay()___flag=" + _flag);
+	clearTimeout(qrcodeObj.checkTimeout);
+	if (_flag == 1) qrcodeObj.checkTimes++;
+
+	qrcodeObj.ajaxUrl = qrcodeCheckAddr + "?order_number=" + qrcodeObj.params.order_number;
+	iDebug("index.htm__checkPay()___ajaxUrl=" + qrcodeObj.ajaxUrl);
+	qrcodeObj.ajaxObj.requestAbort();
+	qrcodeObj.ajaxObj = new AJAX_OBJ(qrcodeObj.ajaxUrl, paySuccess, payFail);
+	qrcodeObj.ajaxObj.callbackParams = _flag;
+	qrcodeObj.ajaxObj.frequency = "";
+	qrcodeObj.ajaxObj.requestTimes = 0;
+	qrcodeObj.ajaxObj.requestData();
+	iDebug("index.htm__checkPay()___checkTimes=" + qrcodeObj.checkTimes);
+}
+
+/**
+ * 查询请求成功
+ * @param  _flag  1：正常查询 2：提示付费失败后核查
+ */
+function paySuccess(xhr, _flag) {
+	iDebug("index.htm__paySuccess__flag=" + _flag);
+	iDebug("index.htm__paySuccess()" + xhr.responseText);
+	var data = eval("(" + xhr.responseText + ")");
+	if (data.code == 0) { // 调用接口成功
+		// 判断返回的数据对象是否为空
+		var hasProp = false;
+		if (data.data) {
+			for(var x in data.data){
+				hasProp = true;
+				break;
+			}
+		}
+		iDebug("index.htm__paySuccess()__hasProp=" + hasProp);
+		if (hasProp) { // 支付成功，1s后播放影片
+			// clearTimeout(qrcodeObj.checkTimeout);
+			// showPayTips(1);	// 不提示支付成功 直接播放
+			// qrcodeObj.checkTimeout = setTimeout("getAuth()", 1000);
+			getAuth();
+		}else{ // 未检测到支付信息
+			// if (_flag == 1) { // 正常检测
+				// if (qrcodeObj.checkTimes >= 60) { // 10min超时，弹出提示框
+					// clearTimeout(qrcodeObj.checkTimeout);
+				// 	showPayTips(2);
+				// } else {
+					qrcodeObj.checkTimeout = setTimeout("checkPay(1)",3000); // 10s查一次 一直查询
+				// }
+			/*} else if (_flag == 2) { // 核查，支付失败
+				hidePayTips();
+				showPayTips(3);
+			}	*/	
+		}
+	} else { // 接口调用失败
+		// if (qrcodeObj.checkTimes >= 60) { // 10min超时，弹出提示框
+			// clearTimeout(qrcodeObj.checkTimeout);
+		// 	showPayTips(2);
+		// } else {
+			qrcodeObj.checkTimeout = setTimeout("checkPay(1)",3000);
+		// }
+	}
+}
+
+function payFail(xhr) {
+	iDebug("index.htm__payFail");
+	// if (qrcodeObj.checkTimes >= 60) { // 10min超时，弹出提示框
+		// clearTimeout(qrcodeObj.checkTimeout);
+	// 	showPayTips(2);
+	// } else {
+		qrcodeObj.checkTimeout = setTimeout("checkPay(1)",3000);
+	// }
+}
+
+/**
+ * 支付结果提示
+ * @param  _flag 1：支付成功 2：支付超时 3：支付失败
+ */
+function showPayTips(_flag) {
+	iDebug("index.htm__showPayTips()__flag=" + _flag);
+	qrcodeObj.payTipsFlag = true;
+	clearTimeout(qrcodeObj.payTipsTimeout);
+	if (ipanelTestFlag) { //公司集群默认本地广告
+		$("payTips_Ad").src = "images/banner00_1.jpg";
+	} else {
+		getTipsAd(function(_src) {
+			$("payTips_Ad").src = _src;
+		}, rootLabel, adTipsObj.vodTipsAdId);
+	}
+
+	if (_flag == 1) {
+		$("payTips_Text").innerText = "付费成功，即将为您播放影片！";
+		qrcodeObj.payTipsTimeout = setTimeout("hidePayTips()",3000);
+	}else if (_flag == 2) {
+		$("payTips_Text").innerText = "查询超时，请确定是否付费成功：";
+		$("payTips_Text").style.width = "610px";
+		$("payTips_Btn1").innerText = "支付成功";
+		$("payTips_Btn0").innerText = "支付失败";
+		$("payTips_BtnList").style.display = "block";
+		$("payTips_Focus").style.visibility = "visible";
+		showPayTipsFocus();
+	}else if (_flag == 3) {
+		$("payTips_Text").innerText = "付费失败，请重新支付！";
+		qrcodeObj.payTipsTimeout = setTimeout("hidePayTips()",3000);
+	}
+	$("payTips").style.visibility = "visible";
+}
+
+function showPayTipsFocus() {
+	iDebug("index.htm__showPayTipsFocus()__BtnPos=" + qrcodeObj.payTipsBtnPos);
+	if (qrcodeObj.payTipsBtnPos == 1){
+		$("payTips_Focus").style.left = "651px";
+		$("payTips_FocusBg").style.width = "314px";
+	}
+	else if (qrcodeObj.payTipsBtnPos == 0){
+		$("payTips_Focus").style.left = "966px";
+		$("payTips_FocusBg").style.width = "314px";
+	}
+}
+
+function changePayTipsBtn(_num){
+	iDebug("index.htm__changePayTipsBtn()__num=" + _num);
+	qrcodeObj.payTipsBtnPos = Math.abs((qrcodeObj.payTipsBtnPos + _num)%2);
+	showPayTipsFocus();
+}
+
+function hidePayTips() {
+	iDebug("index.htm__hidePayTips()");
+	clearTimeout(qrcodeObj.payTipsTimeout);
+	$("payTips_Ad").src = "ui://global_tm.gif";
+	$("payTips_Text").innerText = "";
+	$("payTips_Text").style.width = "1206px";
+	$("payTips_Btn1").innerText = "";
+	$("payTips_Btn0").innerText = "";
+	$("payTips_BtnList").style.display = "none";
+	$("payTips").style.visibility = "hidden";
+	$("payTips_Focus").style.visibility = "hidden";
+	qrcodeObj.payTipsFlag = false;
+}
+
+/*
+*__flag = 1表示是询价框， =2 表示删除喜爱提示框 , =3表示是购买框, =4表示是试看框, =5表示只显示取消按钮
+*/
+function showBtn(__flag,__tmpObj){
+	var tmpPriceObj = checkPrice();
+	iDebug("showBtn_cpObj.needOrder="+cpObj.needOrder+" tmpPriceObj.is_free="+tmpPriceObj.is_free);
+	var nameLen = 15;
+	if (__flag == 5){
+		$("btn2").innerText = "&nbsp;";
+		$("btn1").innerText = "&nbsp;";
+		$("btn0").innerText = "取消";
+	}
+	else if (tipsBtnLen == 2){
+		$("btn2").innerText = "&nbsp;";
+
+		if (__flag == 1){
+			$("btn0").innerText = "取消";
+			$("btn1").innerText = "播放";
+		}
+		else if (__flag == 2){
+			$("btn1").innerText = "确定";
+			$("btn0").innerText = "取消";
+		}
+		else if (__flag == 3){
+			$("btn1").innerText = "购买";
+			$("btn0").innerText = "取消";
+		}
+		else if (__flag == 4){
+			$("btn1").innerText = "试看";
+			$("btn0").innerText = "取消";
+		}
+	}
+	else if (tipsBtnLen == 3){
+		if (__flag == 1){
+			var off_time = __tmpObj.off_time;
+			$("btn2").innerHTML = "续播<br><font style='font-size:20px'>" + util.date.secondToStringTime(off_time) + "</font>";
+			$("btn1").innerText = "重看";
+			$("btn0").innerText = "取消";
+		}else if (__flag == 3){
+			$("btn2").innerText = "订购";
+			$("btn1").innerText = "购买";
+			$("btn0").innerText = "取消";
+		}else if (__flag == 4){
+			$("btn2").innerText = "订购";
+			$("btn1").innerText = "试看";
+			$("btn0").innerText = "取消";
+		}
+	}
+	if (__flag == 1 || __flag == 3 || __flag == 4 || __flag == 5){
+		if (getStrChineseLen(__tmpObj.video_name,nameLen) == __tmpObj.video_name){
+			$("tipsName").innerText = __tmpObj.video_name;
+		}
+		else{
+			$("tipsName").innerHTML = "<marquee>" + __tmpObj.video_name + "</marquee>";
+		}
+		
+	}
+	else if (__flag == 2){
+		$("tipsName").innerText = "清空收藏夹";
+		$("price").innerHTML = "&nbsp;";
+	}
+
+	$("btnTips").style.visibility = "visible";
+
+	if (ipanelTestFlag) { //公司集群默认本地广告
+		$("btnTipsAd").src = "images/banner00_1.jpg";
+	} else {
+		getTipsAd(function(_src) {
+			$("btnTipsAd").src = _src;
+		}, rootLabel, adTipsObj.vodTipsAdId);
+	}
+
+	showBtnFocus();
+}
+
+function changeTipsBtn(__num){
+	if (tipsBtnLen == 1){
+		return;
+	}
+
+	tipsBtnPos = (tipsBtnPos + __num + tipsBtnLen)%tipsBtnLen;
+	showBtnFocus();
+}
+
+function showBtnFocus(){
+	if (tipsBtnPos == 2){
+		$("tipsFocus").style.left = "801px";
+		$("tipsFocusBg").style.width = "149px";
+	}
+	else if (tipsBtnPos == 1){
+		$("tipsFocus").style.left = "951px";
+		$("tipsFocusBg").style.width = "149px";
+	}
+	else if (tipsBtnPos == 0){
+		$("tipsFocus").style.left = "1101px";
+		$("tipsFocusBg").style.width = "179px";
+	}
+}
+
+/*
+ * 进入点播的直播频道播放
+ */
+function gotoLiveTV(){
+	// 获取频道的详情
+	var ajaxUrl = slaveAddr + "/media/channel/get_info?accesstoken=" + access_token + "&chnlid=" + detailObj.chnl_id;
+	iPanel.debug("index_gotoLiveTV_url = " + ajaxUrl);
+	var channelAjaxObj = new AJAX_OBJ(ajaxUrl, function(_xmlResponse,_param){
+		var resultInfo = eval('('+_xmlResponse.responseText+')');
+		if (resultInfo.ret == 0) {	
+			var channelInfo = resultInfo;
+			channelInfo.chnl_id = _param;
+			doBack();
+			channelInfo.pEvent =  {"start_time":detailObj.start_time,"end_time":detailObj.end_time,"event_name":detailObj.event_name,"event_id":detailObj.event_id};
+			var playParam = {"type":"tstv","from":"vodIndex","tstvObj":channelInfo,"playType":"begin","priceInfo":""};
+			if(navigatorFlag == "iPanel"){
+				iPanel.eventFrame.playParam = playParam;
+				gotoPage(vodPlayAddr);
+			}
+			else{
+				sessionStorage.setItem("playParam",JSON.stringify(playParam));
+				window.location.href = vodPlayAddr;//"../newPlay/vodLiveTVPlay.htm";
+			}
+		} else {
+			showTips("请求频道数据失败",true);
+		}
+	} , function(){
+		showTips("请求频道数据失败",true);
+	});
+	channelAjaxObj.callbackParams = detailObj.chnl_id;
+	channelAjaxObj.requestData();
+}
+
+/*
+ * 直播频道的预定,预定完毕后进行回调
+ */
+function doOrder(){
+	iDebug("index_doorder");
+	if (iPanel.eventFrame.orderObj){
+		var orderObj = iPanel.eventFrame.orderObj;
+		iDebug("doOrder_currListObj.name="+currListObj.name + " listList[listObj.position].name="+listList[listObj.position].name);
+		var tmpObj = {
+			"event_id": detailObj.event_id,
+			"event_name": detailObj.event_name,
+			"start_time": detailObj.start_time,
+			"end_time": detailObj.end_time,
+			"chnl_id": detailObj.chnl_id,
+			"chnl_name": currListObj.name
+		}
+		iDebug("index_doorder_JSON.stringify(tmpObj)="+JSON.stringify(tmpObj));
+		orderObj.add(tmpObj,function(_obj){
+			if (_obj.ret == "success"){
+				iDebug("index_doOrder__obj = " + JSON.stringify(_obj));
+				if (detailObj.chnl_id == _obj.orderObj.chnl_id && detailObj.event_id == _obj.orderObj.event_id){
+					$("operList" + operatorFocusPos).innerText = "取消预约";
+					operatorList[operatorPos] = "取消预约";
+				}
+			}
+		});
+	} else {
+		iDebug("index_doOrder_orderObj is null");
+	}
+}
+
+/*
+ * 取消直播频道的预定,预定完毕后进行回调
+ */
+function cancelOrder(){
+	if (iPanel.eventFrame.orderObj){
+		var orderObj = iPanel.eventFrame.orderObj;
+		var tmpObj = {
+			"event_id": detailObj.event_id,
+			"event_name": detailObj.event_name,
+			"start_time": detailObj.start_time,
+			"end_time": detailObj.end_time,
+			"chnl_id": detailObj.chnl_id,
+			"chnl_name": detailObj.chnl_name
+		}
+		orderObj.cancel(tmpObj,function(_obj){
+			iDebug("index_cancelOrder__obj = " + JSON.stringify(_obj));
+			if (_obj.ret == "success"){
+				if (detailObj.chnl_id == _obj.orderObj.chnl_id && detailObj.event_id == _obj.orderObj.event_id){
+					$("operList" + operatorFocusPos).innerText = "预约直播";
+					operatorList[operatorPos] = "预约直播";
+				}
+			}
+		});
+	} else {
+		iDebug("index_doOrder_cancelOrder is null");
+	}
+}
+
+/*
+*恢复所有的状态
+*/
+function resetAll(){
+	focusArea = 0;
+	/*
+	*列表参数恢复
+	*/
+	labelList = [];
+	labelListLen = -1;
+	labelListPos = 0;
+	labelListAjaxObj.requestAbort();
+	labelFlag = true;
+	$("label").style.visibility = "visible";
+	clearList();
+
+	historyList = [];
+	historyAjaxObj.requestAbort();
+
+	newList = [];
+	newListAjaxObj.requestAbort();
+	/*
+	*推荐部分
+	*/
+	clearLabelRecom();
+	recomAjaxObj.requestAbort();
+
+	clearTimeout(noFavTimeout);
+	favMove = false;
+	favRequest = false;
+	favListAjaxObj.requestAbort();
+	hideDelTips();
+
+	detailAjaxObj.requestAbort();
+	detailRequest = false;
+	hideDetail();
+
+	filterRequest = false;
+	filterListAjaxObj.requestAbort();
+	hideFilter();
+
+	priceRequest = false;
+	priceAjaxObj.requestAbort();
+	hidePriceInfo();
+
+	$("filterName").style.visibility = "hidden";
+	$("titleTips").style.visibility = "hidden";
+	$("favTips").style.visibility = "hidden";
+
+	currListId = "";
+	currLabelList = [];
+	retainLabelList = [];
+	currLabelLen = 0;
+	mainLabelList = [];
+}
+
+/*
+ *@ 数据采集
+ *@ __str : 采集事件的名称
+ *@ __id : 对应的vod id
+ *@ __label : 对应的栏目
+ */
+function collectDate(__str,__id,__label){
+	iDebug("index_collectDate_data = __str " + __str + "__id" + __id + "__label = " + __label);
+	if (tvRate){
+		var __obj = {T : "demand"};
+		__obj.ID = __id;
+		__obj.CL = __label?__label:rootLabel;
+
+		if (__str == "praise"){
+			__obj.A = 4 ;
+		}
+		else if (__str == "setFav"){
+			__obj.A = 2 ;
+		}
+		else if (__str == "cancelFav"){
+			__obj.A = 3 ;
+		}
+
+		tvRate.postRate("demand",__obj);
+	}
+	else {
+		iDebug("index_collectDate tvRate = null!!");
+	}
+}
+
+/*
+*DOM 操作
+*/
+function createList(__id,__showLen,__flag){
+	var showListLen = 5;			//最多显示的列表的长度
+	var showListPos = 3;			//对应的焦点位置
+	var originalTop = 28;			//列表的原始top值
+	var originalHeight = 64;		//列表项非焦点的高度
+	var originalFocusHeight = 72;	//列表项焦点处的高度
+	
+	if (__flag == 1){
+		originalTop = 20;			//列表的原始top值
+		originalHeight = 45;		//列表项非焦点的高度
+		originalFocusHeight = 72;	//列表项焦点处的高度
+	}
+
+	removeAllChild(__id);
+	var tmpObj = document.getElementById(__id);
+	var createListNum = showListLen + 2;
+	if (__showLen < showListLen){
+		createListNum = __showLen + 2;
+	}
+
+	for (var i = 0; i < createListNum; i++){
+		var divObj = document.createElement("div");
+		divObj.className = __id + "Style";
+		divObj.id = __id + i;
+		document.getElementById(__id).appendChild(divObj);
+	}
+	
+	var tmpFocus = Math.floor(createListNum/2);
+	iDebug("originalTop + (showListPos - tmpFocus)*originalHeight="+originalTop + (showListPos - tmpFocus)*originalHeight);
+	document.getElementById(__id).style.top = (originalTop + (showListPos - tmpFocus)*originalHeight) + "px";
+	document.getElementById(__id).style.height = originalFocusHeight + (createListNum - 2 - 1) * originalHeight + "px";
+
+	var tmpListStyle = [];
+	var tmpTop = -1 * originalHeight;
+	for (var i = 0; i < createListNum; i++){
+		if (i == tmpFocus){
+			tmpListStyle[i] = {top:tmpTop+"px",height:originalFocusHeight+"px",lineHeight:originalFocusHeight+"px"};
+			tmpTop += originalFocusHeight;
+		}
+		else{
+			tmpListStyle[i] = {top:tmpTop+"px",height:originalHeight+"px",lineHeight:originalHeight+"px"};
+			tmpTop += originalHeight;
+		}
+	}
+	return {"listStyle":tmpListStyle,"focusPos":tmpFocus,"totalNum":createListNum};
+}
+
+function createList1(__id,__showLen){
+	var showListLen = pageShowSize;			//最多显示的列表的长度
+	var showListPos = pageShowFocus + 1;	//对应的焦点位置
+	var originalLeft = -6;					//列表的原始top值
+	var originalWidth = 170;				//列表项非焦点的高度
+	var originalFocusWidth = 250;			//列表项焦点处的高度
+	var originalBorder = 2;
+	var originalFocusBorder = 5;
+
+	removeAllChild(__id);
+	var tmpObj = document.getElementById(__id);
+	var createListNum = showListLen + 2;
+	if (__showLen < showListLen){
+		createListNum = __showLen + 2;
+	}
+
+	for (var i = 0; i < createListNum; i++){
+		var divObj = document.createElement("img");
+		divObj.className = __id+"Style";
+		divObj.id = __id + i;
+		document.getElementById(__id).appendChild(divObj);
+	}
+	
+	var tmpFocus = Math.floor(createListNum/2);
+	document.getElementById(__id).style.left = originalLeft + (showListPos - tmpFocus)*(originalWidth + originalBorder) + "px";
+	document.getElementById(__id).style.width = (originalFocusWidth + originalFocusBorder * 2) + (createListNum - 2 - 1) * (originalWidth+ originalBorder)+ "px";
+
+	var tmpListStyle = [];
+	var tmpLeft = -1 * (originalWidth + originalBorder);
+	for (var i = 0; i < createListNum; i++){
+		if (i == tmpFocus){
+			tmpListStyle[i] = {left:tmpLeft+"px",width:originalFocusWidth+"px"};
+			tmpLeft += (originalFocusWidth + originalFocusBorder * 2 - originalBorder);
+		}
+		else{
+			tmpListStyle[i] = {left:tmpLeft+"px",width:originalWidth+"px"};
+			tmpLeft += (originalWidth + originalBorder);
+		}
+	}
+	return {"listStyle":tmpListStyle,"focusPos":tmpFocus,"totalNum":createListNum};
+}
+
+
+function removeAllChild(__id){
+    var tmpObj = document.getElementById(__id);
+    while(tmpObj.hasChildNodes()){
+        tmpObj.removeChild(tmpObj.firstChild);
+    }
+}
+
+/*提示*/
+function showTips(__str,__flag){
+	tipsFlag = true;
+	$("tipsTxt").innerHTML = __str;
+	
+	if (ipanelTestFlag) { //公司集群默认本地广告
+		$("reminderAd").src = "images/banner00_1.jpg";
+	} else {
+		getTipsAd(function(_src) {
+			$("reminderAd").src = _src;
+		}, rootLabel, adTipsObj.vodTipsAdId);
+	}
+
+	$("tips").style.visibility = "visible";
+	clearTimeout(tipsTimeout);
+	if (__flag){
+		tipsTimeout = setTimeout(function (){
+			hideTips();
+		},2000);
+	}
+}
+
+function hideTips(){
+	$("reminderAd").src = "ui://global_tm.gif";
+	$("tipsTxt").innerText = " ";
+	$("tips").style.visibility = "hidden";
+	tipsFlag = false;
+}
+
+
+/*小提示*/
+var smallTipsTimeout = -1;
+function showSmallTips(__str,__flag,__time){
+	$("smallTipsTxt").innerHTML = __str;
+	$("smallTips").style.visibility = "visible";
+	$("smallTips").style.webkitTransitionDuration="250ms";
+	$("smallTips").style.left = "0px";
+	clearTimeout(smallTipsTimeout);
+	if (__flag){
+		if (__time){
+			smallTipsTimeout = setTimeout("hideSmallTips()",__time);
+		}
+		else{
+			smallTipsTimeout = setTimeout("hideSmallTips()",2000);
+		}
+	}
+}
+
+function hideSmallTips(){
+	clearTimeout(smallTipsTimeout);
+	$("smallTips").style.webkitTransitionDuration="0ms";
+	$("smallTips").style.visibility = "hidden";
+	$("smallTipsTxt").innerHTML = " ";
+	$("smallTips").style.left = "-421px";
+}
+
+function onHide(){
+	initFlag = false;
+
+	// 关闭获取广告提示框
+	if (tipsAdAjaxObj){
+		tipsAdAjaxObj.requestAbort();
+	}
+
+	clearTimeout(dateTimeout);
+	clearTimeout(labelListTimeout);
+	clearTimeout(tipsTimeout);
+	clearTimeout(recommTimeout);
+	hidePayTips();
+	resetQrcodeObj();
+	hideTips();
+	hideSmallTips();
+
+	clearTimeout(filterObjMgr.filterTimeout);
+}
+
+//-->
+</script>
+<style type="text/css">
+	.menuStyle{position:absolute;height:38px; width: 300px; left: -1px; text-align:center;height:54px; line-height:54px}
+	.filter0Style{font-size: 30px; line-height: 60px;position:absolute;height:60px;left: 0px;text-align:center; width:180px}
+	.filter1Style{font-size: 30px; line-height: 60px;position:absolute;height:60px;left: 0px;text-align:center; width:180px}
+	.filter2Style{font-size: 30px; line-height: 60px;position:absolute;height:60px;left: 0px;text-align:center; width:180px}
+	.filter3Style{font-size: 30px; line-height: 60px;position:absolute;height:60px;left: 0px;text-align:center; width:180px}
+	.operListStyle{color: #FFFFFF; /*line-height: 65px;height:65px;*/position:absolute;left:0px;text-align:left; width:471px}
+</style>
+</head>
+
+<body topmargin="0" bottommargin="0" onload = "init()" onHide = "onHide()" onShow = "onShow()" bgcolor="#000000">
+<!--喜爱背景图-->
+<div style="width:1280px; height:720px; position:absolute; left:0px; top:0px; background-image:url(images/fav_bg.jpg);visibility:hidden ;" id="favBgDiv"></div>
+<div style="background-image:url(images/cover_black.png); position:absolute;left:0px; width:1280px; height:150px; top:570px"></div>
+<!--<div style="width:180px; height:34px; position:absolute; left:51px; top:35px;"><img src="images/logo.png" width="180" height="34"></div>-->
+<div style="font-size:39px; color:#b1b1b1; position:absolute; left:1106px; top:37px; width:130px; height:39px;" id = "dateTime"> </div>
+
+<div style="position:absolute; left:0px ; top:0px ; width:1280px; height: 265px" id="label">
+	<!--主栏目-->
+	<div style="position:absolute; left:489px; top:34px; width:300px; height:176px; text-align:center; color:#b1b1b1; overflow:hidden ;" id = "menu">
+		<div class = "menuStyle" style="top:-45px " id="menu0"></div>
+		<div class = "menuStyle" style="top:-15px; font-size:24px; color:#555555" id="menu1"> </div>
+		<div class = "menuStyle" style="top:15px; font-size : 32px ; color:#777777" id="menu2"> </div>
+		<div class = "menuStyle" style="top:61px; font-size: 48px ; color:#f0f0f0;" id="menu3"> </div>
+		<div class = "menuStyle" style="top:103px; font-size : 34px ; color:#777777" id="menu4"> </div>
+		<div class = "menuStyle" style="top:131px; font-size:24px; color:#555555" id="menu5"> </div>
+		<div class = "menuStyle" style="top:168px; " id="menu6"> </div>
+  </div>
+
+	<!--推荐-->
+   <div style="position:absolute; left:-480px ; top:0px ; width:480px; height: 265px" id="recommLeft">
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:84px;font-size:24px; color:#f0f0f0; text-align:right; line-height:75px; visibility : hidden ; padding-right:90px;" id = "labelRecom0"></div>
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:159px;font-size:24px; color:#f0f0f0; text-align:right; line-height:75px; visibility : hidden ; padding-right:90px;" id = "labelRecom1"></div>
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:237px;font-size:24px; color:#f0f0f0; text-align:right; line-height:75px; visibility : hidden ; padding-right:90px;" id = "labelRecom2"> </div>
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 396px; top: 59px; visibility : hidden" id="numIcon0">
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 394px; top: 133px; visibility : hidden" id="numIcon1">
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 394px; top: 212px; visibility : hidden" id="numIcon2">
+   </div>
+   <div style="position:absolute; left:1760px ; top:0px ; width:480px; height: 265px" id="recommRight">
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:84px;font-size:24px; color:#f0f0f0; text-align:left; line-height:75px; visibility : hidden ; padding-left:90px;" id = "labelRecom3"> </div>
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:159px;font-size:24px; color:#f0f0f0; text-align:left; line-height:75px; visibility : hidden;  padding-left:90px;" id = "labelRecom4"> </div>
+	<div style=" position:absolute; width:390px; height:75px; background-image:url();left:0px; top:237px;font-size:24px; color:#f0f0f0; text-align:left; line-height:75px; visibility : hidden ;  padding-left:90px;" id = "labelRecom5"> </div>
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 18px; top: 58px; visibility : hidden" id="numIcon3">
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 18px; top: 134px; visibility : hidden" id="numIcon4">
+	<img src="" style="width: 68px; height: 83px; position: absolute; left: 18px; top: 212px; visibility : hidden" id="numIcon5">
+   </div>
+</div>
+<div style = "position:absolute; left:0px ; width:1280px ; height:5px; top:570px ; background-color:#FFF; opacity:0.45"></div>
+<!--内容-->
+<div style="position:absolute; left:-4px; top:0px; width:1280px; height:589px; overflow:hidden; visibility:visible" id = "list"></div>
+
+<div style="width:84px; height:43px; position:absolute; left:225px; top:37px; height:36px; font-size:18px; line-height:18px; color:#cccccc; visibility:hidden; text-align:right" id="titleTips">收藏<br>Favorites
+</div>
+<div style="width:465px; height:43px; position:absolute; left:323px; top:32px;font-size:36px; color:#F0F0F0; visibility:hidden; text-align:left" id="filterName"></div>
+<div style="width:563px; height:34px; position:absolute; left:64px; top:79px; font-size:24px; color:#dcdcdc; visibility:hidden; text-align:left; line-height:34px; background-image:url(images/icon_fav.png); background-repeat:no-repeat; background-position:left center; padding-left:28px;" id="favTips">遥控器上键取消收藏当前节目，下键清空收藏夹</div>
+
+<div style="position: absolute; left: 30px; top: 595px;font-size: 48px; color: #f0f0f0; width: 1220px; text-align: center; height: 60px; line-height: 60px;" id="listName"></div>
+<div style = "position:absolute; left:0px ; width:1280px ; height:70px; top:650px ;">
+<div style="position: absolute; left: 547px; top: 0px; width: 228px; height: 27px; ">
+	<table width="100%" border="0" cellspacing="0" cellpadding="0" style="font-size: 30px; color: #cccccc;">
+    	<tr>
+        	<td width = "34px"><img src="images/icon_page.png" width="34" height="34"></td>
+            <td width = "80px" id="pageInfo"> </td>
+            <td width = "34"><img src="images/icon_like.png" width="34" height="34"></td>
+            <td width = "80px" id="number"> </td>
+        </tr>
+    </table>
+</div>
+<!--tips-->
+<div style="width:200px; height:34px; position:absolute; left:50px; top:1px;"><img src="" id="fiterTips"></div>
+<div style="width:200px; height:34px; position:absolute; left:1029px; top:1px;"><img src="images/tip_02.png" width="200" height="34"></div>
+</div>
+
+<div style="position:absolute; background-image:url(); width:510px; height:380px; left:-515px; top:209px;-webkit-transition-duration:300ms" id="detailLeft">
+	<div style="position:absolute; left:50px; top:10px;width:440px; height:64px;overflow:hidden;white-space:normal;word-break:break-all;">
+       <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0"><tr>
+       	<td id="seriesTips" style="font-size:32px; line-height:32px; font-weight:bold; color:#cccccc; "></td>
+        </tr></table>
+    </div>
+    <table border="0" cellspacing="0" cellpadding="0" style="position:absolute; left:50px; top:74px; color:#cccccc; height: 60px; width:440px; font-size:20px">
+    	<tr><td width="100%" id="detailInfo0">&nbsp;</td>
+    	</tr>
+        <tr><td width="100%" id="detailInfo1">&nbsp;</td>
+		</tr>
+  </table>
+  <div style="font-size:20px;color:#cccccc; line-height:28px; height:219px; position:absolute; left:50px; top:141px; width:440px; font-weight:bold" id="desc"></div>
+</div>
+<img src="" style="position:absolute; width:250px; height:370px; left:515px; top:214px; -webkit-transition-duration:300ms; opacity:0;" id="recommImg"></div>
+<div style="position:absolute; background-image:url(); width:510px; height:380px; left:1795px; top:209px; -webkit-transition-duration:300ms" id="detailRight">
+	<div style="position:absolute; top:28px; left:19px; width:471px; height:328px; background-image: url(); visibility:visible; overflow:hidden" id="operList">
+	</div>
+</div>
+
+<!--提示框-->
+<div style="position:absolute; left:0px; top:430px; width:1280px; height:310px; visibility:hidden ; background-color:#000000; border-top: 1px #999 solid;" id = "btnTips">
+	<div style="width: 114px; height: 123px; position: absolute; left: 801px; top: 0px;" id="tipsFocus"><img src="" width="148" height="90" id="tipsFocusBg"></div>
+    <div style="position: absolute; left: 650px; top: 12px; width: 630px; height: 66px;" id="btnList">
+		<table height="100%" width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+            	<td width="149" id = "price" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+                <td width="149" id = "btn2" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+                <td width="149" id = "btn1" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+                <td width="149" id = "btn0" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+                <td></td>
+            </tr>
+      </table>
+  </div>
+  <div style="width:1280px; height:200px; position:absolute; left:0px; top:90px;"><img src="" width="1280" height="200" id="btnTipsAd"></div>
+  <div style="font-size: 36px; color: #fff; position: absolute; left: 37px; top: 22px; width: 610px; height: 36px; text-align:center" id = "tipsName"></div>
+  <div id="qrcode" style="position: absolute;left: 950px;top: -222px;width: 205px;height: 222px;text-align: center; visibility: hidden; font-size: 30px;line-height: 40px;color: #0761a9;background-color: #fff;">扫码立即观看<img src="" height="168" id="qrcodeImg" style="width: 200px;height: 180px;background-color: #edf3ed;"></div>
+</div>
+<!--提示框-->
+
+<div style="width:1280px; height:300px; position:absolute; left:0px; top:420px;visibility:hidden; background-image:url(images/pop_select.png)" id="filter">
+	<div style="width: 1280px; height: 110px; position: absolute; left: 0px; top: 90px;"><img src="" width="1280" height="110" id="filterFocusBg"></div>
+	<img src="" style="position:absolute; left:280px; top:21px; width:180px;height:280px;" id="filterFocus"></img>
+	<div style="position:absolute; left:280px; top:21px; width:180px;height:280px; overflow:hidden" id="filter0">
+		<div class="filter" style="top:-41px" id="filter00"> </div>
+		<div class="filter" style="top:0px;" id="filter01"> </div>
+		<div class="filter" style="top:36px;" id="filter02"> </div>
+		<div class="filter" style="top:94px; font-size:40px" id="filter03"> </div>
+		<div class="filter" style="top:152px" id="filter04"> </div>
+		<div class="filter" style="top:188px" id="filter05"> </div>
+		<div class="filter" style="top:262px" id="filter06"> </div>
+	</div>
+	
+	<div style="position:absolute; left:460px; top:21px; width:180px;height:280px; overflow:hidden" id="filter1">
+		<div class="filter" style="top:-41px" id="filter10"> </div>
+		<div class="filter" style="top:0px;" id="filter11"> </div>
+		<div class="filter" style="top:36px;" id="filter12"> </div>
+		<div class="filter" style="top:94px; font-size:40px" id="filter13"> </div>
+		<div class="filter" style="top:152px" id="filter14"> </div>
+		<div class="filter" style="top:188px" id="filter15"> </div>
+		<div class="filter" style="top:262px" id="filter16"> </div>
+  	</div>
+	
+	<div style="position:absolute; left:640px; top:21px; width:180px;height:280px; overflow:hidden" id="filter2">
+		<div class="filter" style="top:-41px" id="filter20"> </div>
+		<div class="filter" style="top:0px;" id="filter21"> </div>
+		<div class="filter" style="top:36px;" id="filter22"> </div>
+		<div class="filter" style="top:94px; font-size:40px" id="filter23"> </div>
+		<div class="filter" style="top:152px" id="filter24"> </div>
+		<div class="filter" style="top:188px" id="filter25"> </div>
+		<div class="filter" style="top:262px" id="filter26"> </div>
+  	</div>
+	
+	<div style="position:absolute; left:820px; top:21px; width:180px;height:280px; overflow:hidden" id="filter3">
+		<div class="filter" style="top:-41px" id="filter30"> </div>
+		<div class="filter" style="top:0px;" id="filter31"> </div>
+		<div class="filter" style="top:36px;" id="filter32"> </div>
+		<div class="filter" style="top:94px; font-size:40px" id="filter33"> </div>
+		<div class="filter" style="top:152px" id="filter34"> </div>
+		<div class="filter" style="top:188px" id="filter35"> </div>
+		<div class="filter" style="top:262px" id="filter36"> </div>
+  	</div>
+</div>
+
+<!--<div style="position:absolute; left:430px; top:210px; width:480px; height:220px; background-color:#30312c; opacity:0.8;visibility:hidden" id="tips">
+ 	<div style="position: absolute; left: 0px; top: 75px; width: 480px; height: 48px; line-height: 48px; color: #ffffff; font-size: 40px; text-align: center;" id="tipsTxt"></div>
+</div>-->
+<div style="position:absolute; left:0px; top:433px; width:1280px; height:287px; visibility:hidden ; background-color:#000000" id = "tips">
+  <div style = "position:absolute; left:0px ; width:1280px ; height:2px; top:0px ; background-color:#FFF; opacity:0.4"></div>
+  <div style="width:1280px; height:200px; position:absolute; left:1px; top:86px;"><img src="" width="1280" height="200" id="reminderAd"></div>
+  <table style="position: absolute; left: 65px; top: 2px; width: 1150px; height: 85px;">
+		<tr><td width="100%" height="100%" style="font-size: 36px; color: #fff; text-align:center;" id = "tipsTxt"></td></tr>
+  </table>
+</div>
+<img src="images/loadingIcon.gif" width="130px" height="130px" style="position:absolute; left:573px; height:0px; top: 315px; visibility:hidden; z-index:99" id="loadTips">
+
+<!-- 支付提示 -->
+<div style="position: absolute;left: 0px;top: 430px;width: 1280px;height: 310px;visibility: hidden;background-color: #000000;border-top: 1px #999 solid;" id = "payTips">
+	<div style="width: 114px; height: 123px; position: absolute; left: 801px; top: 0px; visibility: hidden;" id="payTips_Focus"><img src="" width="148" height="90" id="payTips_FocusBg"></div>
+    <div style="position: absolute; left: 650px; top: 12px; width: 630px; height: 66px; display: none;" id="payTips_BtnList">
+		<table height="100%" width="100%" border="0" cellspacing="0" cellpadding="0">
+        	<tr>
+                <td width="149" id = "payTips_Btn1" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+                <td width="149" id = "payTips_Btn0" align="center" style="color: #fff; font-size: 36px;border-left: 1px #333 solid;"> </td>
+            </tr>
+    	</table>
+	</div>
+	<div style="width:1280px; height:200px; position:absolute; left:0px; top:90px;"><img src="" width="1280" height="200" id="payTips_Ad"></div>
+	<div style="font-size: 36px; color: #fff; position: absolute; left: 37px; top: 22px; width: 1206px; height: 36px; text-align:center" id = "payTips_Text"></div>
+</div>
+
+<div style="position:absolute; left:-421px; top:77px; text-align:center; width:421px; height:84px; -webkit-transition-duration:200ms; visibility:hidden" id = "smallTips">
+	<div style="position:absolute; left:0px; top:0px; width:421px; height:84px;"><img src="../newPlay/images/text_top_border.png" width="421" height="84"></div>
+    <div style="font-size:24px; color:#fff; width:421px; height:84px; line-height:84px; position:absolute; left:0px; top:0px;" id="smallTipsTxt"></div>
+</div>
+
+</body>
+</html>

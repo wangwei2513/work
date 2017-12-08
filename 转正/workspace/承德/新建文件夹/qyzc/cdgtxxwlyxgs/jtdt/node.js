@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"jtdt","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://192.168.129.161:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"集团动态","navigator":"企业之窗>承德广通信息网络有限公司>集团动态","newAdd":0,"nodePath":"qyzc/cdgtxxwlyxgs/jtdt","subNodeFocusCombinedImage":"http://192.168.129.161:80/appcmsFiles_4.0/"}

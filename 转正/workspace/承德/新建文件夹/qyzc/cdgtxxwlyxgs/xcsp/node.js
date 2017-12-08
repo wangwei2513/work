@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"xcsp","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://192.168.129.161:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"宣传视频","navigator":"企业之窗>承德广通信息网络有限公司>宣传视频","newAdd":0,"nodePath":"qyzc/cdgtxxwlyxgs/xcsp","subNodeFocusCombinedImage":"http://192.168.129.161:80/appcmsFiles_4.0/"}

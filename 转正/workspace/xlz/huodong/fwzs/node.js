@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"fwzs","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1496386916824155955.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"免费、好玩，你家附近的文化服务中心","navigator":"南朗镇>活动>免费、好玩，你家附近的文化服务中心","newAdd":0,"nodePath":"xlz/huodong/fwzs"}

@@ -1,0 +1,19 @@
+{
+	messageInfo:"1",
+	totlePeople:"30",
+	totleVote:"59",
+	question_title:"您最关注北京数字学校的哪些问题？",
+	option_list:[
+		{option_id:"3",option_content:"1是否收费",option_vote:"17"},
+		{option_id:"9",option_content:"2如何观看",option_vote:"20"},
+		{option_id:"15",option_content:"3是否有相关教材出售",option_vote:"13"},
+		{option_id:"3",option_content:"4是否收费",option_vote:"17"},
+		{option_id:"9",option_content:"5如何观看",option_vote:"29"},
+		{option_id:"15",option_content:"6是否有相关教材出售",option_vote:"54"},
+		{option_id:"3",option_content:"7是否收费",option_vote:"12"},
+		{option_id:"9",option_content:"8如何观看",option_vote:"21"},
+		{option_id:"15",option_content:"9是否有相关教材出售",option_vote:"24"},
+		{option_id:"3",option_content:"10是否收费",option_vote:"14"},
+		{option_id:"9",option_content:"11如何观看",option_vote:"22"},
+		{option_id:"15",option_content:"12是否有相关教材出售",option_vote:"13"}]
+}

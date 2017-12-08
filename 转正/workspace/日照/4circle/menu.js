@@ -1,0 +1,53 @@
+[{
+	"blurImageUrl": "images/menu01.png",
+	"clickable": 1,
+	"enName": "subNode",
+	"entryWord": "",
+	"focusImageUrl": "images/menu01.png",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "",
+	"name": "学习",
+	"navigator": "",
+	"newAdd": 0,
+	"nodePath": "xx"
+}, {
+	"blurImageUrl": "images/menu02.png",
+	"clickable": 1,
+	"enName": "subNode",
+	"entryWord": "",
+	"focusImageUrl": "images/menu02.png",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "",
+	"name": "会议",
+	"navigator": "",
+	"newAdd": 0,
+	"nodePath": "hy"
+}, {
+	"blurImageUrl": "images/menu03.png",
+	"clickable": 1,
+	"enName": "subNode",
+	"entryWord": "",
+	"focusImageUrl": "images/menu03.png",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "",
+	"name": "督查",
+	"navigator": "",
+	"newAdd": 0,
+	"nodePath": "dc"
+}, {
+	"blurImageUrl": "images/menu04.png",
+	"clickable": 1,
+	"enName": "subNode",
+	"entryWord": "",
+	"focusImageUrl": "images/menu04.png",
+	"isManaged": "managed",
+	"linkUrl": "",
+	"listType": "",
+	"name": "网上办事",
+	"navigator": "",
+	"newAdd": 0,
+	"nodePath": "wsbs"
+}]

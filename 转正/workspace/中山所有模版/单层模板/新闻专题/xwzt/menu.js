@@ -1,0 +1,61 @@
+[{
+	"blurImageUrl": "",
+	"enName": "dqfwtx",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "notManaged",
+	"listType": "list",
+	"name": "党群服务体系",
+	"newAdd": 0,
+	"nodePath": "lqjysq/ccjy/dqfw/dqfwtx",
+	"clickable": 1,
+	"linkUrl": ""
+},{
+	"blurImageUrl": "",
+	"enName": "swgk",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "managed",
+	"listType": "list",
+	"name": "三务公开",
+	"newAdd": 0,
+	"nodePath": "lqjysq/ccjy/dqfw/swgk",
+	"clickable ":1,
+	"linkUrl ":""
+},{
+	"blurImageUrl":"",
+	"enName":"wsjs ",
+	"entryWord ":"",
+	"focusImageUrl":"",
+	"isManaged":"notManaged ",
+	"listType":"list ",
+	"name":"卫生计生",
+	"newAdd":0,
+	"nodePath":"lqjysq/ccjy/dqfw/wsjs ",
+	"clickable": 1,
+	"linkUrl":""
+},{
+	"blurImageUrl": "",
+	"enName": "slfw",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "managed",
+	"listType": "list",
+	"name":"三农服务三农服务三农服务三农服务三农服务",
+	"newAdd": 0,
+	"nodePath":"lqjysq/ccjy/dqfw/slfw",
+	"clickable":1,
+	"linkUrl":""
+},{
+	"blurImageUrl":"",
+	"enName":"rsmz ",
+	"entryWord":"",
+	"focusImageUrl":"",
+	"isManaged":"managed ",
+	"listType":"list ",
+	"name":"人社民政",
+	"newAdd":0,
+	"nodePath":"lqjysq/ccjy/dqfw/rsmz ",
+	"clickable": 1,
+	"linkUrl": ""
+}]

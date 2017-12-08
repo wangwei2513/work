@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>专题-视频列表</title>
+<script src="js/common.js"></script>
+<script src="js/mediaPlayer.js"></script>
+<script>
+var videoID = "";			// 播放id
+var prePageUrl = "http://localhost:8080/nxdj_model/dj_portal/index.htm";		//上一页地址
+var enName = "";
+var label = "";
+var listPos = 0;
+var maxListLen = 5;
+var listData = [];
+var listBox = null;
+var maxWord = 18;
+var file = "content.js"
+var httpInstance = null;
+var timer = -1;
+var off_time = 0;			//上次播放的截止时间
+var duration = 0;			// 总时长，毫秒
+var playUrl = "";			//播放地址
+var isPlay = false;			//是否播放成功
+
+function eventHandler(eventObj){
+	iDebug("[min_window index.htm] eventObj.code ===" + eventObj.code);
+	switch(eventObj.code){
+		case "KEY_UP":
+			changeUD(-1);
+			return false;
+			break;
+		case "KEY_DOWN":
+			changeUD(1);
+			return false;
+			break;
+		case "KEY_LEFT":
+		case "KEY_RIGHT":
+			return false;
+			break;
+		case "KEY_SELECT":
+			doSelect();
+			return false;
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+		case "KEY_MENU":
+			goBack();
+			return false;
+			break;
+		case "MSG_MEDIA_URL_VALID":  //媒体源路径有效
+		// case "EIS_VOD_PREPAREPLAY_SUCCESS":  //媒体源路径有效
+			httpInstance.play();				
+			return false;
+			break;
+		case "EIS_VOD_PLAY_SUCCESS":
+		case "MSG_MEDIA_PLAY_SUCCESS":
+		case "MSG_BACKGROUND_VIDEO_PLAY_SUCCESS":
+			// if(!isPlay&&off_time!=0){
+			// 	httpInstance.seek(1,off_time);
+			// 	isPlay = true;
+			// }
+			return false;
+			break;
+	}
+}
+
+function goBack() {
+	window.location.href = prePageUrl;
+}
+
+function changeUD(_num) {
+	clearTimeout(timer);
+	loseFocus();
+	listBox.changeList(_num);
+	onFocus();
+	timer = setTimeout(function(){
+		isPlay = false;
+		getVideoDetail();
+	},300);
+}
+
+function onFocus() {
+	$("videoName" + listBox.focusPos).style.color = "#3a3838";
+	$("videoDuration" + listBox.focusPos).style.color = "#3a3838";
+	$("playCover" + listBox.focusPos).style.visibility = "visible";
+	$("downArrow").style.visibility = listBox.position+maxListLen-listBox.focusPos>listData.length-1?"hidden":"visible";
+	$("upArrow").style.visibility = listBox.position-listBox.focusPos<=0?"hidden":"visible";
+	$("currVideoName").innerHTML = marqueeStr(listData[listBox.position].title,maxWord);
+	$("focusImg").src = listData[listBox.position].entryImage.imageUrl;
+}
+
+function loseFocus() {
+	$("videoName" + listBox.focusPos).style.color = "#fafafa";
+	$("videoDuration" + listBox.focusPos).style.color = "#fafafa";
+	$("playCover" + listBox.focusPos).style.visibility = "hidden";
+}
+
+function doSelect() {
+	if(typeof iPanel!="undefined"){
+		off_time = httpInstance.elapsed();
+	}
+	iDebug("[min_window index.htm] doSelect off_time="+off_time);
+	setGlobalVar("minWindowBack","listPos="+listBox.position);
+	setGlobalVar("minWindow_playParam",'{"playUrl":"'+playUrl+'","duration":'+duration+',"off_time":'+off_time+',"title":"'+listData[listBox.position].title+'"}');
+	if(typeof iPanel!="undefined"){
+		iPanel.eventFrame.openPage(playAddr,{type:"vod",vodid:videoID,backUrl:window.location.href});
+	}else{
+		window.location.href = playAddr;
+	}
+}
+
+function init() {
+	newInstance();
+	var url = checkStrNull(getGlobalVar("minWindowBack"));
+	delGlobalVar("minWindowBack");
+	iDebug("[min_window index.htm] init url::"+url);
+	if(url!=""){
+		listPos = parseInt(getParam("listPos",url),10);
+	}
+	getNode();
+	getData();		
+}
+
+function getNode() {
+	var ajaxObj = new ajaxClass("node.js",function(_xmlHttp){
+		var jsonData = eval('('+_xmlHttp.responseText+')');
+		$("nodeImg").src = jsonData.focusImageUrl;
+		enName = jsonData.enName;
+		var tempUrl = checkStrNull(getGlobalVar(enName+"_backUrl"));
+		if(window.location.href.indexOf("backUrl=")!=-1){
+			prePageUrl = window.location.href.split("backUrl=")[1];
+			setGlobalVar(enName+"_backUrl",prePageUrl);
+		}else if(tempUrl!=""){
+			prePageUrl = tempUrl;
+		}
+		iDebug("min_window--index--prePageUrl="+prePageUrl+";  listPos="+listPos);
+	},function(_xmlHttp){
+		iDebug("[min_window index.htm] getNode fail !");
+	});
+	ajaxObj.charset = "gbk";
+	ajaxObj.requestData();
+}
+
+function getData() {
+	var ajaxObj = new ajaxClass(file,function(_xmlHttp){
+		listData = eval('('+_xmlHttp.responseText+')');
+		iDebug("[min_window index.htm] getData listData.length="+listData.length);
+		initList();
+	},function(_xmlHttp){
+		iDebug("[min_window index.htm] getData fail !");
+	});
+	ajaxObj.charset = "gbk";
+	ajaxObj.requestData();
+}
+
+function initList() {
+	listBox = new showList(maxListLen,listData.length,listPos,53,window);
+	listBox.focusDiv = "listFocus";
+	listBox.listHigh = 120;
+	listBox.focusLoop = false;
+	listBox.pageLoop = true;
+	listBox.haveData = function(_list){
+		$("videoImg" + _list.idPos).style.opacity = 1;
+		$("videoImg" + _list.idPos).src = listData[_list.dataPos].entryImage.imageUrl;
+		$("videoName" + _list.idPos).innerHTML = getStrChineseLen(listData[_list.dataPos].title,maxWord);
+		$("videoDuration" + _list.idPos).innerHTML = listData[_list.dataPos].date;
+	};
+	listBox.notData = function(_list){
+		$("videoImg" + _list.idPos).style.opacity = 0;
+		$("videoImg" + _list.idPos).src = "";
+		$("videoName" + _list.idPos).innerHTML = "";
+		$("videoDuration" + _list.idPos).innerHTML = "";
+	};
+	listBox.startShow();
+	onFocus();
+	var tempParam = checkStrNull(getGlobalVar("minWindow_playParam"));
+	iDebug("[min_window index.htm]  initList tempParam="+tempParam);
+	if(tempParam!=""){
+		delGlobalVar("minWindow_playParam");
+		tempParam = eval('('+decodeURI(tempParam)+')');
+		playUrl = tempParam.playUrl;
+		iDebug("[min_window index.htm]  initList playUrl="+playUrl);
+		off_time = parseInt(tempParam.off_time,10);
+		duration = parseInt(tempParam.duration,10);
+		playVideo();
+	}      
+}
+
+function playVideo(playUrl) {
+	httpInstance.setSource(playUrl);
+	setTimeout(function (){
+		if(typeof DRMPlayer != "undefined" && DRMPlayer != null){//安卓
+			var openFlag = DRMPlayer.isOpen();
+			iDebug("[min_window index.htm] openFlag==" + openFlag);
+			if(openFlag){
+				// httpInstance.seek(1,off_time);
+			}
+		}			
+	},1500);
+}
+
+function newInstance(){
+	httpInstance = new PlayObj();
+	httpInstance.init();
+	httpInstance.bindID();
+	httpInstance.setMode(0);
+	httpInstance.setPosition(55,172,698,390);
+}
+
+function closeVideo(){
+	httpInstance.stop(1);
+	httpInstance.close();
+	httpInstance = null;
+}
+
+</script>
+</head>
+<body bgcolor="transparent" leftmargin="0" topmargin="0" onload="init()" onShow="init()" onunload="closeVideo()" onhide="closeVideo()">
+	<div id="notFullDiv" style="position: absolute;left: 0;top: 0;width: 1280px;height: 720px;background: url(images/bg1.png);">
+		<div style="position:absolute; left:123px; top:95px;;">
+			<img id="nodeImg" src="images/logo.png" height="70" />
+		</div>
+		<div style="position:absolute; left:55px; top:172px; width:698px; height:390px; ">
+			<img src="" width="698" height="390" />
+		</div>
+		<div id="currVideoName" style="position:absolute; left:55px; top:574px; width:698px; font-size:38px; color:#fff;">
+			牢记总书记嘱托：与祖国和人民同行
+		</div>
+
+		<!--列表-->
+		<div style="position:absolute; left:793px; top:59px; width:450px; height:119px; background:url(images/list_bg.png);">
+			<div style="position:absolute; left:6px; top:4px; width:437px; height:111px;">
+				<div style="position:absolute; left:0px; top:0px; width:198px; height:111px;">
+					<img id="videoImg0" src="" width="198" height="111" />
+				</div>
+				<div id="playCover0" style="position:absolute; left:0px; top:0px; width:198px; height:111px;visibility: hidden; z-index:9;">
+					<img src="images/pic2_02bg.png" width="198" height="111" />
+				</div>
+				<div id="videoName0" style="position:absolute; left:215px; top:9px; font-size:24px; color:#fafafa; z-index:9;"></div>
+				<div id="videoDuration0" style="position:absolute; left:215px; top:89px; font-size:20px; color:#fafafa; z-index:9;"></div>
+			</div>
+		</div>
+		<div style="position:absolute; left:793px; top:179px; width:450px; height:119px; background:url(images/list_bg.png);">
+			<div style="position:absolute; left:6px; top:4px; width:437px; height:111px;">
+				<div style="position:absolute; left:0px; top:0px; width:198px; height:111px;">
+					<img id="videoImg1" src="" width="198" height="111" />
+				</div>
+				<div id="playCover1" style="position:absolute; left:0px; top:0px; width:198px; height:111px;visibility: hidden;z-index:9;">
+					<img src="images/pic2_02bg.png" width="198" height="111" />
+				</div>
+				<div id="videoName1" style="position:absolute; left:215px; top:9px; font-size:24px; color:#fafafa;z-index:9;"></div>
+				<div id="videoDuration1" style="position:absolute; left:215px; top:89px; font-size:20px; color:#fafafa;z-index:9;"></div>
+			</div>
+		</div>
+		<div style="position:absolute; left:793px; top:299px; width:450px; height:119px; background:url(images/list_bg.png);">
+			<div style="position:absolute; left:6px; top:4px; width:437px; height:111px;">
+				<div style="position:absolute; left:0px; top:0px; width:198px; height:111px;">
+					<img id="videoImg2" src="" width="198" height="111" />
+				</div>
+				<div id="playCover2" style="position:absolute; left:0px; top:0px; width:198px; height:111px;visibility: hidden;z-index:9;">
+					<img src="images/pic2_02bg.png" width="198" height="111" />
+				</div>
+				<div id="videoName2" style="position:absolute; left:215px; top:9px; font-size:24px; color:#fafafa;z-index:9;"></div>
+				<div id="videoDuration2" style="position:absolute; left:215px; top:89px; font-size:20px; color:#fafafa;z-index:9;"></div>
+			</div>
+		</div>
+		<div style="position:absolute; left:793px; top:419px; width:450px; height:119px; background:url(images/list_bg.png);">
+			<div style="position:absolute; left:6px; top:4px; width:437px; height:111px;">
+				<div style="position:absolute; left:0px; top:0px; width:198px; height:111px;">
+					<img id="videoImg3" src="" width="198" height="111" />
+				</div>
+				<div id="playCover3" style="position:absolute; left:0px; top:0px; width:198px; height:111px;visibility: hidden;z-index:9;">
+					<img src="images/pic2_02bg.png" width="198" height="111" />
+				</div>
+				<div id="videoName3" style="position:absolute; left:215px; top:9px; font-size:24px; color:#fafafa;z-index:9;"></div>
+				<div id="videoDuration3" style="position:absolute; left:215px; top:89px; font-size:20px; color:#fafafa;z-index:9;"></div>
+			</div>
+		</div>
+		<div style="position:absolute; left:793px; top:539px; width:450px; height:119px; background:url(images/list_bg.png);">
+			<div style="position:absolute; left:6px; top:4px; width:437px; height:111px;">
+				<div style="position:absolute; left:0px; top:0px; width:198px; height:111px;">
+					<img id="videoImg4" src="" width="198" height="111" />
+				</div>
+				<div id="playCover4" style="position:absolute; left:0px; top:0px; width:198px; height:111px;visibility: hidden;z-index:9;">
+					<img src="images/pic2_02bg.png" width="198" height="111" />
+				</div>
+				<div id="videoName4" style="position:absolute; left:215px; top:9px; font-size:24px; color:#fafafa;z-index:9;"></div>
+				<div id="videoDuration4" style="position:absolute; left:215px; top:89px; font-size:20px; color:#fafafa;z-index:9;"></div>
+			</div>
+		</div>
+
+		<!--焦点-->
+		<div id="listFocus" style="position:absolute; left:788px; top:53px; width:460px; height:129px;background: url(images/focus01.png); z-index:3;">
+			<img id="focusImg" src="" width="198" height="111" style="position: absolute;left: 12px;top: 10px;" />
+		</div>
+
+		<!-- 小箭头 -->
+		<div id="upArrow" style="position:absolute; left:1031px; top:23px;">
+			<img src="images/icon1_06.png"  width="14" height="9"/>
+		</div>
+		<div id="downArrow" style="position:absolute; left:1031px; top:674px;">
+			<img src="images/icon1_07.png" width="14" height="9" />
+		</div>
+	</div>
+
+	<div id="logDebug" style="position: absolute;left: 20px;top: 20px;width: 1200px;height: 680px;background: rgba(0,0,0,0.7);color: #fff;font-size: 20px;z-index: 10;visibility: hidden;">
+		<div id="logTxt" style="position: absolute;width: 100%;left: 0;bottom: 0;"></div>
+	</div>
+</body>
+</html>

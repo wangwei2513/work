@@ -1,0 +1,41 @@
+var menuData = [{
+	name : "今日潮河",
+	imageUrl : "images/pop_img0_01.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 0
+},{
+	name : "党务政务",
+	imageUrl : "images/pop_img0_02.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 1
+},{
+	name : "监督管理",
+	imageUrl : "images/pop_img0_03.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 2
+},{
+	name : "学习教育",
+	imageUrl : "images/pop_img0_04.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 3
+},{
+	name : "时代先锋",
+	imageUrl : "images/pop_img0_05.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 4
+},{
+	name : "平安潮河",
+	imageUrl : "images/pop_img0_06.jpg",
+	linkUrl : "./index.htm",
+	portalPos : 5
+}];
+
+var videoData = {
+	videoUrl : "http://10.191.150.105/spwj/chaohespwj/日照市北经济开发区招商宣传片1026DEMO.ts",
+	pos : {
+		width:560,
+		height:340,
+		left:638,
+		top:198
+	}	
+}

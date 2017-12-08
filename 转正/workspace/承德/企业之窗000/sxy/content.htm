@@ -1,0 +1,1097 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+
+  <title>社区舞台-视频播放页</title>
+
+</head>
+
+<script language="javascript" src="js/common.js"></script>
+
+<script type="text/javascript" src="js/CMediaPlayer.js"></script>
+
+<script>
+  var dataAjaxPath = "content.js";
+
+  var ajaxObj = null;
+
+  var itemPos = 0;
+
+  var playUrl = "";
+
+  var duration = 0;
+
+  var elapsed = 0;
+
+  var pfBarShowFlag = true;
+
+  var pfTimeOut = -1;
+
+  var totalVolume = 31;
+
+  var currVolume = 5;
+
+  var volumeShowFlag = false;
+
+  var volumeTimeOut = -1;
+
+  var isStop = false;
+
+  var muteFlag = false;
+
+
+
+  var menuData = [];
+
+  var backUrl = "index.htm?itemPos=";
+
+  var navigatorFlag = navigator.appName.indexOf("iPanel");
+
+  var access_token = (navigatorFlag != -1) ? (iPanel.eventFrame.access_token ? iPanel.eventFrame.access_token :
+    "TOKEN50001002") : (GP.get("access_token") ? GP.get("access_token") : "TOKEN50001002");
+
+
+
+  document.onkeydown = eventHandler;
+
+  document.onsystemevent = eventHandler;
+
+  function eventHandler(key) {
+
+    var e = key || event;
+
+    var keycode = e.keyCode || e.which || e.charCode;
+
+    iDebug("list_video_ad--content.htm--eventHandler--keycode=" + keycode);
+
+    //快进 34 快退 33 暂停 19
+
+    if (BrowserType != "Inspur" && keycode != 8) {
+      return;
+    }
+
+    if (!pfBarShowFlag && keycode != 13) {
+
+      clearTimeout(pfTimeOut);
+
+      showPlayProcess();
+
+      pfTimeOut = setTimeout(function () {
+
+        hidePlayProcess();
+
+      }, 8000);
+
+      return;
+
+    } else {
+
+      clearTimeout(pfTimeOut);
+
+      pfTimeOut = setTimeout(function () {
+
+        hidePlayProcess();
+
+      }, 8000);
+
+    }
+
+    switch (keycode) {
+
+      case 3:
+
+      case 37:
+
+        changeVolume(-1); //音量减
+
+        return false;
+
+        break;
+
+      case 4:
+
+      case 39:
+
+        changeVolume(1); //音量加
+
+        return false;
+
+        break;
+
+      case 339:
+      case 27: //exit
+        goPortal();
+        event.returnValue = false;
+
+        return false;
+
+        break;
+
+      case 33:
+
+        changePlayProgress(-5); //快退
+
+        return false;
+
+        break;
+
+      case 34:
+
+        changePlayProgress(5); //快进
+
+        return false;
+
+        break;
+
+      case 19:
+
+      case 13:
+
+        stopAndPlay();
+
+        return false;
+
+        break;
+
+      case 8:
+
+        goBack();
+
+        event.returnValue = false;
+
+        return false;
+
+        break;
+
+      case 77: //静音键
+
+        if (muteFlag == false) {
+
+          muteFlag = true;
+
+          document.getElementById("mute_div").style.visibility = "visible";
+
+          if (navigatorFlag != -1) {
+
+            AudioSetting.mute();
+
+          } else if (navigatorFlag == -1) {
+
+            top.iSTB.player.mute();
+          }
+
+        } else {
+
+          muteFlag = false;
+
+          document.getElementById("mute_div").style.visibility = "hidden";
+
+          if (navigatorFlag != -1) {
+
+            AudioSetting.unMute();
+
+          } else if (navigatorFlag == -1) {
+
+            top.iSTB.player.unmute();
+
+          }
+
+        }
+
+        return false;
+
+        break;
+
+      case 13001: //媒体源路径有效
+
+        iDebug("index.htm------13001-----MSG_MEDIA_URL_VALID=");
+
+        if (navigatorFlag != -1) {
+
+          MPlayer.play();
+
+          MPlayer.setPosition(0, 0, 1280, 720);
+
+        }
+
+        event.returnValue = false;
+
+        return false;
+
+        break;
+
+      case 13002: //媒体源路径无效
+
+        iDebug("index.htm--eventHandler----13002----MSG_MEDIA_URL_INVALID");
+
+        return false;
+
+        break;
+
+      case 13003: //开始播放成功
+
+        iDebug("index.htm--eventHandler----13003-----MSG_MEDIA_PLAY_SUCCESS");
+
+        if (navigatorFlag != -1) {
+
+          MPlayer.setMode(0);
+
+        }
+
+        event.returnValue = false;
+
+        return false;
+
+        break;
+
+      case 13004: //开始播放失败
+
+        iDebug("index.htm---eventHandler---13004-----MSG_MEDIA_PLAY_FAILED");
+
+        return false;
+
+        break;
+
+      case 6256: //应用下载进度提示
+
+        iDebug("content.htm--eventHandler--EIS_VOD_PROGRAM_END--6256--EIS_APP_DOWNLOADMGR_PRESS");
+
+        getDuration();
+
+        showPlayProcess();
+
+        playProcess();
+
+        pfTimeOut = setTimeout(function () {
+          hidePlayProcess();
+        }, 8000);
+
+        return false;
+
+        break;
+
+      case 5210: ////时移频道或VOD影片播放到了点播结束的位置
+
+        window.location.href = backUrl;
+
+        return false;
+        break;
+
+
+      default:
+
+        return true;
+
+
+    }
+
+  }
+
+
+
+  function goBack() {
+
+    window.location.href = backUrl + itemPos;
+
+  }
+
+
+
+
+
+  function init() {
+
+    iDebug("list_video_ad--init()");
+
+    if (navigatorFlag != -1) {
+
+      var flag = MPlayer.init();
+    }
+
+    getParms();
+
+    ajaxLoadMenuData();
+
+  }
+
+
+
+  function getParms() {
+
+    var currLocation = window.location.href;
+
+    var tempItemPos = getUrlParams("itemPos", currLocation);
+
+    if (tempItemPos != "") {
+
+      itemPos = parseInt(tempItemPos, 10);
+
+    }
+
+    //iDebug(">>>getParms--itemPos="+itemPos);
+
+  }
+
+
+
+
+
+  function ajaxLoadMenuData() {
+
+    if (ajaxObj != null) {
+
+      ajaxObj.requestAbort();
+
+    }
+
+    ajaxObj = new AjaxClass();
+
+    ajaxObj.frame = window;
+
+    ajaxObj.charset = "gbk";
+
+    ajaxObj.successCallback = function (_xmlHttp, _params) {
+
+      ////iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+
+      var jsonData = eval('(' + _xmlHttp.responseText + ')');
+
+      if (typeof (jsonData) != "undefined" && jsonData.length > 0) {
+
+        menuData = jsonData;
+
+        iDebug("list_video_ad--ajaxLoadMenuData()--menuData=" + menuData);
+
+        iDebug("list_video_ad--ajaxLoadMenuData()--BrowserType=" + BrowserType);
+
+        if (BrowserType == "Chrome" || BrowserType == "FireFox") {
+
+        } else if (BrowserType == "Inspur") {
+
+          initName();
+
+        }
+
+        getPlayURL();
+
+        if (playUrl == "") {
+
+          goBack();
+
+        } else {
+
+          openVoid(playUrl);
+
+        }
+
+      } else {
+
+        goBack();
+
+      }
+
+    };
+
+    ajaxObj.failureCallback = function (_xmlHttp, _params) {
+
+      iDebug(">>>ajaxLoadMenuData failureCallback");
+
+      goBack();
+
+    };
+
+
+    ajaxObj.url = dataAjaxPath;
+
+    iDebug(">>>ajaxLoadMenuData ajaxObj.url=" + ajaxObj.url);
+
+    ajaxObj.requestData();
+
+    iDebug("list_video_ad--ajaxLoadMenuData()--playUrl04=");
+
+  }
+
+
+
+
+
+  function initName() {
+
+    document.getElementById("vodName").innerText = menuData[itemPos].title;
+
+    if (menuData[itemPos].title.length > 17) {
+
+      iDebug("list_video_ad--initName()--title.length");
+
+      document.getElementById("vodName").innerHTML = "<marquee style=\"width:370px;\">" + menuData[itemPos].title +
+        "</marquee>";
+
+    }
+
+  }
+
+
+
+  function changeVolume(_num) {
+    iDebug("list_video_ad--changeVolume");
+
+    if (navigatorFlag != -1) {
+
+      currVolume = MPlayer.getVolume();
+
+    } else {
+
+      currVolume = top.iSTB.player.get_volume();
+
+    }
+
+
+    if (volumeShowFlag == false) {
+
+      clearTimeout(volumeTimeOut);
+
+      showVolume();
+
+      volumeTimeOut = setTimeout(function () {
+
+        hideVolume();
+
+      }, 5000);
+
+    } else {
+
+      currVolume = currVolume + _num;
+
+      if (currVolume < 0) currVolume = 0;
+
+      if (currVolume > totalVolume) currVolume = totalVolume;
+
+      if (navigatorFlag != -1) {
+
+        MPlayer.setVolume(currVolume);
+
+      } else {
+
+        top.iSTB.player.set_volume(currVolume);
+
+      }
+
+
+      clearTimeout(volumeTimeOut);
+
+      showVolume();
+
+      volumeTimeOut = setTimeout(function () {
+
+        hideVolume();
+
+      }, 5000);
+
+    }
+
+  }
+
+
+
+  function showVolume() {
+
+    iDebug("list_video_ad--showVolume");
+
+    for (var i = 1; i < totalVolume + 1; i++) {
+
+      if (i < currVolume + 1) {
+
+        document.getElementById("volume_" + i).style.backgroundImage = "url(images/voice_bar2.png)";
+
+      } else {
+
+        document.getElementById("volume_" + i).style.backgroundImage = "url(images/voice_bar1.png)";
+
+      }
+
+    }
+
+    document.getElementById("volume").style.visibility = "visible";
+
+    document.getElementById("volumeValue").innerText = currVolume;
+
+    volumeShowFlag = true;
+
+  }
+
+
+
+  function hideVolume() {
+
+    iDebug("list_video_ad--hideVolume");
+
+    document.getElementById("volume").style.visibility = "hidden";
+
+    volumeShowFlag = false;
+
+  }
+
+
+
+  function getDuration() {
+
+    iDebug("list_video_ad--getDuration");
+
+    if (navigatorFlag == -1) {
+
+      duration = parseInt(top.iSTB.player.get_duration(), 10);
+
+      iDebug("list_video_ad--content.htm--getDuration--ipanel--inspur--duration=" + duration);
+
+    } else {
+
+      duration = MPlayer.getDuration();
+
+      iDebug("list_video_ad--content.htm--getDuration--ipanel--duration=" + duration);
+    }
+
+    document.getElementById("endTime").innerHTML = Math.floor(parseInt(duration, 10) / 3600) + ":" + Math.floor(
+      parseInt(duration, 10) % 3600 / 60) + ":" + parseInt(duration, 10) % 3600 % 60;
+
+  }
+
+
+
+  function stopAndPlay() {
+
+    iDebug("list_video_ad--stopAndPlay");
+
+    if (!isStop) {
+
+      if (navigatorFlag == -1) {
+
+        top.iSTB.player.pause();
+
+      } else {
+
+        MPlayer.pause();
+
+      }
+
+      document.getElementById("stop_div").style.visibility = "visible";
+
+      isStop = true;
+
+    } else {
+
+
+      if (navigatorFlag == -1) {
+
+        top.iSTB.player.resume();
+
+      } else {
+
+        MPlayer.resume();
+      }
+
+
+      document.getElementById("stop_div").style.visibility = "hidden";
+
+      isStop = false;
+
+    }
+
+  }
+
+
+  /*function stopAndPlay(){
+
+  	if(!isStop){
+
+  		top.iSTB.player.pause();
+
+  		document.getElementById("stop_div").style.visibility = "visible";
+
+  		isStop = true;
+
+  	}else{
+
+  		top.iSTB.player.resume();
+
+  		document.getElementById("stop_div").style.visibility = "hidden";
+
+  		isStop = false;
+
+  	}
+
+  }*/
+
+
+  function playProcess() {
+
+    iDebug("list_video_ad--playProcess");
+
+    if (navigatorFlag != -1) {
+
+      //获取媒体播放的当前时间点
+      elapsed = MPlayer.getElapsed();
+
+    } else {
+
+      elapsed = parseInt(top.iSTB.player.get_position(), 10);
+
+    }
+
+
+
+    if (parseInt(elapsed, 10) < 2) {
+
+      elapsed = 1;
+
+    } else if (parseInt(elapsed, 10) > parseInt(duration, 10)) {
+
+      elapsed = parseInt(duration, 10);
+
+    }
+
+    document.getElementById("currTime").innerHTML = Math.floor(parseInt(elapsed, 10) / 3600) + ":" + Math.floor(
+      parseInt(elapsed, 10) / 60) + ":" + parseInt(elapsed, 10) % 60;
+
+    var currProcess = Math.floor(parseInt(elapsed) / parseInt(duration) * 940);
+
+    document.getElementById("bar").style.width = currProcess + "px";
+
+    document.getElementById("barPos").style.left = currProcess + "px";
+
+
+
+    setTimeout(function () {
+
+      playProcess();
+
+    }, 1000);
+
+  }
+
+
+
+  function showPlayProcess() {
+
+    iDebug("list_video_ad--showPlayProcess");
+
+    document.getElementById("navBox").style.visibility = "visible";
+
+    pfBarShowFlag = true;
+
+  }
+
+
+
+  function changePlayProgress(_num) {
+
+    iDebug("list_video_ad--changePlayProgress");
+
+    if (elapsed + _num > duration) {
+
+      return;
+
+    }
+
+    if (navigatorFlag == "iPanel") {
+
+      var setp = Math.round(duration * _num);
+
+      elapsed = elapsed + setp;
+
+      iDebug("changePlayProgress  elapsed=" + elapsed + ",setp=" + setp + ",_num=" + _num);
+
+      MPlayer.seek(elapsed);
+
+      MPlayer.setPace(_num);
+
+
+    } else {
+
+      top.iSTB.player.seek(elapsed + _num);
+    }
+
+
+
+  }
+
+
+
+  function hidePlayProcess() {
+
+    iDebug("list_video_ad--hidePlayProcess");
+
+    document.getElementById("navBox").style.visibility = "hidden";
+
+    pfBarShowFlag = false;
+
+  }
+
+
+
+
+  function getPlayURL() {
+
+    iDebug("list_video_ad--getPlayURL--access_token=" + access_token + ",videoUrl=" + menuData[itemPos].videoUrl);
+    //playUrl = menuData[itemPos].videoUrl;
+    var videoUrl = menuData[itemPos].videoUrl;
+
+    if (isNaN(videoUrl)) {
+
+      iDebug("list_video_ad--getPlayURL--videoUrl01=" + videoUrl);
+
+      playUrl = videoUrl;
+
+    }
+    iDebug("list_video_ad--getPlayURL()--playUrl=" + playUrl);
+  }
+
+
+  /*
+
+
+  window.$LOG = '';
+
+  window.$MP = '';
+
+  window.$PLAT = '';
+
+
+
+  try{
+
+
+
+  	$LOG = new CLogger( {elem:'eLog'} );
+
+  	$PLAT = CPlatform.newInstance();
+
+  	//$MP = CMediaPlayer.newInstance( CPlatform.getBrowserType());
+
+  	$MP = CMediaPlayer.newInstance( CPlatform.getBrowserType(), '$MP' );*/
+
+  /*
+
+  $MP.onEvent = function( E )
+
+  {
+
+  	switch( E.msg )
+
+  	{
+
+  		case 'DVB_TUNER_UNLOCK': break;
+
+  		case 'PLAYER_FINISH': $MP.play(); break;
+
+  		default: $LOG.log( 'EVT: ' + E.msga + ', orgMsg=' + E.msgo );
+
+  	}
+
+  }
+
+  */
+
+  /*	$LOG.log( 'Platform: ' + CPlatform.getBrowserType());
+
+  	$LOG.log( 'Browser: ' + $PLAT.versionInfo());
+
+  	$LOG.log( 'MPlayer: ' + $MP.className );
+
+  }
+
+  catch( E ){}*/
+
+
+
+  //开始播放视频方法
+  function openVoid(url) {
+
+    iDebug("list_video_ad--openVoid()--url=" + url + ",BrowserType=" + BrowserType);
+
+    if (BrowserType == "Inspur") {
+
+      iDebug("list_video_ad--openVoid()--BrowserType01=" + BrowserType);
+
+      top.iSTB.player.play(url);
+
+      top.iSTB.player.set_video_window(0, 0, 1280, 720);
+
+      iDebug("list_video_ad--openVoid()--BrowserType02=" + BrowserType);
+
+    } else if (BrowserType == "Chrome" || BrowserType == "FireFox") {
+
+      iDebug("list_video_ad--openVoid()--BrowserType03=" + BrowserType);
+
+      if (playUrl != "") {
+
+        iDebug("list_video_ad--openVoid()--BrowserType04=" + BrowserType);
+
+        creatVideoTag(1280, 720, playUrl, "autoplay", "none", "controls");
+
+      }
+
+    } else if (BrowserType == "iPanel") {
+
+      iDebug("list_video_ad--openVoid()--BrowserType05=" + BrowserType);
+
+      MPlayer.setMediaSource(url);
+
+    }
+
+  }
+
+
+  function creatVideoTag(width, height, videoSrc, autoPlay, preLoad, controls) {
+
+    iDebug("list_video_ad--creatVideoTag()01--");
+
+    var videoObj = document.createElement("video");
+
+    videoObj.width = width;
+
+    videoObj.height = height;
+
+    videoObj.src = videoSrc;
+
+    videoObj.autoplay = autoPlay;
+
+    videoObj.preload = preLoad;
+
+    videoObj.controls = controls;
+
+    document.body.appendChild(videoObj);
+
+    iDebug("list_video_ad--creatVideoTag()01--");
+
+  }
+
+
+
+
+
+  //退出关闭视频方法
+
+  function stopVoid() {
+
+    iDebug("list_video_ad--stopVoid");
+    try {
+
+      if (navigatorFlag == "iPanel") {
+
+        MPlayer.stop(1);
+
+        MPlayer.setUnmute();
+
+      } else {
+
+        top.iSTB.player.stop();
+
+        top.iSTB.player.unmute();
+
+      }
+
+
+
+    } catch (E) {}
+
+  }
+
+
+
+  function exit() {
+
+    iDebug("list_video_ad--exit");
+
+    stopVoid();
+
+  }
+
+
+
+  var playTimeout = -1;
+
+  if (BrowserType == "Inspur") {
+
+    iDebug("list_video_ad--Inspur");
+
+    top.iSTB.evt.set_event_callback("eventCallback");
+
+  }
+
+  function eventCallback(type, event_name, event_type, event_value) {
+
+    iDebug("list_video_ad--eventCallback--event_name" + event_name);
+
+
+    switch (event_name) {
+
+      case "PLAYER_BUFFERING_END":
+
+        getDuration();
+
+        showPlayProcess();
+
+        playProcess();
+
+        pfTimeOut = setTimeout(function () {
+
+          hidePlayProcess();
+
+        }, 8000);
+
+        break;
+
+      case "PLAYER_FINISH":
+
+        window.location.href = backUrl + itemPos;
+
+        break;
+
+    }
+
+  }
+</script>
+
+<body leftmargin="0" topmargin="0" onload="init()" onunload="exit()" bgcolor="transparent">
+
+  <!--视频播放进度条-->
+
+  <div id="navBox" style="position:absolute; left:0px; top:528px; width:1280px; height:158px;background-image: url(images/pf_bg.png); border: 1px none #000000; visibility:hidden;">
+
+    <!--pf条的内容-->
+
+    <div style="position:absolute; left:51px; top:57px; width:1177px; height:78px;">
+
+      <table width="100%" height="80" border="0" cellpadding="0" cellspacing="0" style="font-size:24px; color:#ffffff;">
+
+        <tr>
+
+          <td id="currTime" width="12%" height="42" style="text-align:center"></td>
+
+          <td id="endTime" width="88%" align="right"></td>
+
+        </tr>
+
+        <tr>
+
+          <td style="font-size:30px; color:#f0f0f0;">视频名称:</td>
+
+          <td id="vodName" style="font-size:27px; color:#f0f0f0;"></td>
+
+        </tr>
+
+      </table>
+
+    </div>
+
+
+
+    <div id="pfBar" style="position:absolute; left:159px; top:70px; width:963px; height:16px;">
+
+      <div id="barPos" style="position:absolute; left:0px; top:-9px; width:33px; height:33px;"><img src="images/dot.png" width="33" height="33" /></div>
+
+      <img src="images/bar_010.png" width="9" height="16" /><img id="bar" src="images/bar_020.png" width="0" height="16"
+      /><img src="images/bar_030.png" width="9" height="16" />
+
+    </div>
+
+
+
+  </div>
+
+
+
+  <!--音量-->
+
+  <div id="volume" style="position:absolute;background-image:url(images/voice_btm.png); width:972px; height:110px; left:131px; top:450px; visibility:hidden;">
+
+
+
+    <div id="volume_1" style="position:absolute; width:20px; height:62px; left:101px; top:27px; background-image:url(images/voice_bar1.png);"></div>
+
+    <div id="volume_2" style="position:absolute; width:20px; height:62px; left:121px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_3" style="position:absolute; width:20px; height:62px; left:141px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_4" style="position:absolute; width:20px; height:62px; left:161px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_5" style="position:absolute; width:20px; height:62px; left:181px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_6" style="position:absolute; width:20px; height:62px; left:201px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_7" style="position:absolute; width:20px; height:62px; left:221px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_8" style="position:absolute; width:20px; height:62px; left:241px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_9" style="position:absolute; width:20px; height:62px; left:261px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_10" style="position:absolute; width:20px; height:62px; left:281px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_11" style="position:absolute; width:20px; height:62px; left:301px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_12" style="position:absolute; width:20px; height:62px; left:321px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_13" style="position:absolute; width:20px; height:62px; left:341px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_14" style="position:absolute; width:20px; height:62px; left:361px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_15" style="position:absolute; width:20px; height:62px; left:381px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_16" style="position:absolute; width:20px; height:62px; left:401px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_17" style="position:absolute; width:20px; height:62px; left:421px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_18" style="position:absolute; width:20px; height:62px; left:441px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_19" style="position:absolute; width:20px; height:62px; left:461px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_20" style="position:absolute; width:20px; height:62px; left:481px; top:27px;background-image:url(images/voice_bar1.png); "></div>
+
+    <div id="volume_21" style="position:absolute; width:20px; height:62px; left:501px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_22" style="position:absolute; width:20px; height:62px; left:521px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_23" style="position:absolute; width:20px; height:62px; left:541px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_24" style="position:absolute; width:20px; height:62px; left:561px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_25" style="position:absolute; width:20px; height:62px; left:581px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_26" style="position:absolute; width:20px; height:62px; left:601px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_27" style="position:absolute; width:20px; height:62px; left:621px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_28" style="position:absolute; width:20px; height:62px; left:641px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_29" style="position:absolute; width:20px; height:62px; left:661px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_30" style="position:absolute; width:20px; height:62px; left:681px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div id="volume_31" style="position:absolute; width:20px; height:62px; left:701px; top:27px;background-image:url(images/voice_bar1.png);  "></div>
+
+    <div style="position:absolute; left:749px; top:27px; width:52px; height:62px; line-height:62px; font-size:36px; color:#FFFFFF"
+      id="volumeValue"></div>
+
+  </div>
+
+  <!--暂停键-->
+
+  <div id="stop_div" style="position: absolute; left: 553px; top: 179px; width: 177px; height: 177px; background-image: url(images/player_bigplay.png); visibility: hidden;"></div>
+
+
+
+  <!--静音图标-->
+
+  <div id="mute_div" style="position: absolute; left: 1068px; top: 41px; width: 69px; height: 70px; background-image: url(images/jingyin.gif); visibility: hidden;"></div>
+
+
+
+  <div id="test" style="position:absolute; left:159px; top:100px; width:500px; height:400px; background-color:red; font-size:24px; visibility:hidden;">cccccc</div>
+
+</body>
+
+</html>

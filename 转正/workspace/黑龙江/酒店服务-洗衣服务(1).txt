@@ -1,0 +1,60 @@
+﻿{
+"folder":"../res/json/", 
+"filename":"json_39_20171128135858.txt", 
+"uniqueAttr":4, 
+"uniqueCont":5, 
+"thinfo":[
+					{
+						"attribute1":"%E6%9C%8D%E5%8A%A1%E5%90%8D%E7%A7%B0",
+						"attribute2":"%E6%B0%B4%E6%B4%97",
+						"attribute3":"%E5%B9%B2%E6%B4%97",
+						"attribute4":"%E7%86%A8%E7%83%AB"
+					}
+				 ],
+"info":[
+				{
+					"mID":"1", 
+					"attribute1":"%E8%A1%AC%E8%A1%AB", 
+					"attribute2":"30%E5%85%83", 
+					"attribute3":"50%E5%85%83", 
+					"attribute4":"20%E5%85%83", 
+					"subth":[],
+					"submenu":[]
+					}, 
+				{
+					"mID":"2", 
+					"attribute1":"T%E6%81%A4%E3%80%81%E8%BF%90%E5%8A%A8%E8%A1%AB", 
+					"attribute2":"30%E5%85%83", 
+					"attribute3":"50%E5%85%83", 
+					"attribute4":"20%E5%85%83", 
+					"subth":[],
+					"submenu":[]
+					}, 
+				{
+					"mID":"3", 
+					"attribute1":"%E6%AF%9B%E8%A1%A3", 
+					"attribute2":"40%E5%85%83", 
+					"attribute3":"60%E5%85%83", 
+					"attribute4":"20%E5%85%83", 
+					"subth":[],"submenu":[]
+					}, 
+				{
+					"mID":"4", 
+					"attribute1":"%E8%A3%A4%E3%80%81%E7%89%9B%E4%BB%94%E8%A3%A4", 
+					"attribute2":"30%E5%85%83", 
+					"attribute3":"50%E5%85%83", 
+					"attribute4":"20%E5%85%83", 
+					"subth":[],
+					"submenu":[]
+					}, 
+				{
+					"mID":"5", 
+					"attribute1":"%E4%B8%8A%E8%A3%85", 
+					"attribute2":"60%E5%85%83", 
+					"attribute3":"100%E5%85%83", 
+					"attribute4":"20%E5%85%83", 
+					"subth":[],
+					"submenu":[]
+					}
+			]
+}

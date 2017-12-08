@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="page-view-size" content="1280*720">
+<title>全屏点播</title>
+</head>
+<body bgcolor="transparent" onload="init()" onunload="exit()">
+<div id="playBar" style="position:absolute;bottom:20px;left:140px;width:1000px;height:50px;background-color:#3A4E80;border-radius:5px;visibility:hidden;">
+	<img id="playIcon" src="images/icon08_1.png" style="position:absolute;top:15px;left:25px;">
+	<div style="position:absolute;top:23px;left:70px;height:5px;width:800px;background-color:#7881A8;">
+		<img id="playPoint" src="images/icon9.png" style="position:absolute;top:-7px;left:-10px;">
+	</div>
+	<div id="totalTime" style="position:absolute;left:890px;height:50px;line-height:50px;font-size:24px;color:#fff;">00:00:00</div>
+</div>
+<div id="seek" style="position:absolute;left:162px;bottom:104px;visibility:hidden;">
+	<div id="currentTime" style="position:absolute;width:100px;height:40px;line-height:40px;font-size:24px;color:#000;background-color:#fff;text-align:center;">00:00:00</div>
+	<div style="position:absolute;width:0px;height:0px;left:40px;top:40px;border-left:10px solid transparent;border-right:10px solid transparent;border-top:10px solid #fff;"></div>
+</div>
+<div id="tips" style="position:absolute;left:365px;top:153px;visibility:hidden;">
+	<img src="images/tck_bg.png" width="560" height="360" style="position:absolute;">
+	<table border="0" cellpadding="0" cellspacing="0" width="500" height="339" style="position:absolute;left:30px;color:#ffffff;text-align:center;">
+		<tr>
+			<td height="97" style="font-size:28px;">温馨提示</td>
+		</tr>
+		<tr>
+			<td id="tipsCont" height="242" style="font-size:25px;"></td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/config.js"></script>
+<script type="text/javascript" src="js/keyevent.js"></script>
+<script type="text/javascript" src="js/player.js"></script>
+<script type="text/javascript">
+//@denglc
+document.onkeydown = eventHandler;
+document.onirkeypress = eventHandler;
+document.onsystemevent = eventHandler;
+function eventHandler(e){
+	var e = e || event;
+	var keycode = e.keyCode || e.which || e.charCode;
+	iDebug(">>>denglc-->vodPlay-->keycode:"+keycode);
+	var eventObj = Event.mapping(keycode);
+	switch(eventObj.code){
+		case "KEY_UP":
+			showPlayProcess();
+			showSeek();
+			return false;
+		case "KEY_LEFT":
+			changePlayProgress(-1);
+			break;
+		case "KEY_RIGHT":
+			changePlayProgress(1);
+			break;
+		case "KEY_SELECT":
+			if(isPlaying){
+				MPlayer.pause();
+				isPlaying = false;
+				showPlayProcess();
+				$("playIcon").src = "images/icon08.png";
+			}else{
+				MPlayer.resume();		
+				isPlaying = true;
+				showPlayProcess();
+				$("playIcon").src = "images/icon08_1.png";
+			}
+			break;
+		case "KEY_EXIT":
+		case "KEY_BACK":
+			window.location.href = backUrl;
+			return false;
+			break;
+		case "MSG_MEDIA_URL_VALID":
+			MPlayer.play();
+			break;
+		case "MSG_MEDIA_URL_INVALID":
+			break;
+		case "MSG_MEDIA_PLAY_SUCCESS":
+			getDuration();
+    		showPlayProcess();
+    		showSeek();
+    		playProcess();
+			isPlaying = true;
+			break;
+		case "MSG_MEDIA_PLAY_FAILED":
+			break;
+	}
+}
+/**************************变量**************************/
+var videoId = "";
+var accesstoken = "";//token
+var playToken = "";
+var playUrlBefore = "";
+var backUrl = "";//返回的页面
+var showTipsTimer = -1;
+
+var showTimer = -1;//进度条展示定时器
+var seekTimer = -1;//seek搜索定时器
+var playProcessTimer = -1;//进度更新定时器
+var elapsed = 0;//当前时间
+var duration = 0;//总时长
+var step = 15;//每次快进快退时间(s)
+var isPlaying = false;//是否正在播放
+/**************************方法**************************/
+function init(){
+	initPlayer();
+	initParams();
+}
+
+function initPlayer(){
+	MPlayer.init();
+}
+
+function initParams(){
+	videoId = parseInt(getGlobalParms("thrOne_videoId"),10) || parseInt(getUrlParams("videoId"),10) || "";
+	backUrl = getGlobalParms("thrOne_backUrl") || "index.htm";
+	accesstoken = getGlobalParms("thrOne_accesstoken") || "TOKEN50001002";
+	removeGlobalParms(["thrOne_videoId","thrOne_backUrl"]);
+	ajaxGetPlayToken();
+}
+
+function ajaxGetPlayToken(){
+	var ajaxObj = new ajaxClass();
+	ajaxObj.charset = "gbk";
+	ajaxObj.frame = window;
+
+	var url = Api.getPlayToken;
+	url = url.replace(/\{0\}/,accesstoken).replace(/\{1\}/,videoId);
+	ajaxObj.url = url;
+	iDebug(">>>ajaxGetPlayToken url:"+url);
+
+	ajaxObj.successCallback = function(_xmlHttp){
+		iDebug(">>>ajaxGetPlayToken:"+_xmlHttp.responseText);
+		var getData = JSON.parse(_xmlHttp.responseText);
+		if(getData.ret == 0){
+			playToken = getData.download_token;
+			playMonitor(sliceMonitorAddr());
+		}			
+	}
+	ajaxObj.failureCallback = function(){
+	}
+	ajaxObj.requestData();
+}
+
+function sliceMonitorAddr(){
+	return playUrlSuffix+"?accesstoken="+accesstoken+"&programid="+videoId+"&playtype=demand&protocol=http&playtoken="+playToken;
+}
+
+function playMonitor(__url){
+	iDebug(">>>denglc-->playMonitor-->url="+__url);
+	iDebug(">>>denglc-->playMonitor-->playUrlBefore="+playUrlBefore);
+	if(typeof __url == "undefined" || __url == "")return;
+	if(playUrlBefore == __url)return;
+	MPlayer.setPosition(0,0,1280,720);
+	iDebug(">>>"+browserType);
+	if(browserType == "Inspur"){
+		MPlayer.play(__url);
+	}else{
+		MPlayer.setMediaSource(__url);
+	}
+	playUrlBefore = __url;
+}
+
+function getDuration(){
+	duration = MPlayer.getDuration();
+	$("totalTime").innerText = changeTimeStr(duration);
+}
+
+function changeTimeStr(count){
+	var h = Math.floor(count/3600);
+	var m = Math.floor(count/60) % 60;
+	var s = count % 60;
+	return addZero(h) + ":" + addZero(m) + ":" + addZero(s);
+}
+
+function showPlayProcess(){
+	$("playBar").style.visibility = "visible";
+	clearTimeout(showTimer);
+	showTimer = setTimeout(function(){
+		hidePlayProcess();
+	},5000);
+}
+
+function hidePlayProcess(){
+	$("playBar").style.visibility = "hidden";
+}
+
+function showSeek(){
+	$("seek").style.visibility = "visible";
+	clearTimeout(seekTimer);
+	seekTimer = setTimeout(function(){
+		hideSeek();
+	},2000);
+}
+
+function hideSeek(){
+	$("seek").style.visibility = "hidden";
+}
+
+function playProcess(){
+	elapsed = MPlayer.getElapsed();
+	iDebug(">>>playProcess elapsed:"+elapsed);
+	if(parseInt(elapsed,10) < 1){
+		elapsed = 0;
+	}else if(parseInt(elapsed,10) > parseInt(duration,10)){
+		elapsed = parseInt(duration,10);
+	}
+
+	$("currentTime").innerText = changeTimeStr(elapsed);
+	var progress = elapsed / duration;
+	$("playPoint").style.left = (-10 + Math.floor(800*progress)) + "px";
+	$("seek").style.left = (162 + Math.floor(800*progress)) + "px";
+	if(elapsed >= duration - 1){
+		showTips("播放结束！");
+		setTimeout(function(){
+			window.location.href = backUrl;
+		},2000);
+	}else{
+		clearTimeout(playProcessTimer);
+		playProcessTimer = setTimeout(function(){
+			playProcess();
+		},1000);
+	}
+}
+
+function changePlayProgress(_num){
+	var seek = elapsed + _num * step;
+	seek = seek < 0 ? 0 : seek;
+	seek = seek > duration ? duration : seek;
+	MPlayer.seek(seek);
+	if(!isPlaying){
+		isPlaying = true;
+		$("playIcon").src = "images/icon08_1.png";
+	}
+	showPlayProcess();
+	showSeek();
+}
+
+function showTips(str){
+	clearTimeout(showTipsTimer);
+	$("tips").style.visibility = "visible";
+	$("tipsCont").innerText = str;
+	showTipsTimer = setTimeout(hideTips,3000);
+}
+
+function hideTips(){
+	$("tips").style.visibility = "hidden";
+}
+
+function exit(){
+	MPlayer.stop(1);
+}
+
+try{
+	iSTB.evt.set_event_callback("eventCallback");
+}catch(e){}
+function eventCallback(type,event_name,event_type,event_value){
+    switch(event_name){
+    	case "PLAYER_BUFFERING_END":
+			getDuration();
+    		showPlayProcess();
+    		showSeek();
+    		playProcess();
+			isPlaying = true;
+    		break;
+		case "PLAYER_ERROR":
+			break;
+		case "PLAYER_FINISH":
+			showTips("播放结束！");
+			setTimeout(function(){
+				window.location.href = backUrl;
+			},2000);
+			break;
+	}
+}
+</script>
+</body>
+</html>

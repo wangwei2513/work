@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+    <meta name="page-view-size" content="1280*720">
+    <title>无标题文档</title>
+</head>
+
+<body background="images/bg.jpg" leftmargin="0" topmargin="0">
+    <div style=" position:absolute; left:71px; top:62px;"><img src="images/logo.png" width="247" height="30" /></div>
+    <div style=" position:absolute; left:339px; top:64px; font-size:28px; color:#00baff;">文体活动</div>
+
+    <div style=" position:absolute; left:1171px; top:138px; width:50px; text-align: right; font-size:20px; color:#576984;">
+        <span id="currPage" style=" color:#fff;">1</span>/
+        <span id="totlePage"></span>
+    </div>
+
+    <div id="scrollBar" style=" position:absolute; left:1211px; top:167px;width:8px;height:477px;background:#999;border-radius:8px;">
+        <div id="scroll" style=" position:absolute; left:0; top:0;width:8px;"><img src="images/icon1_01.png" width="8" height="116" /></div>
+    </div>
+    <div id="contentBox" style=" position:absolute; left:70px; top:153px; width:1076px;height:477px;overflow:hidden; font-size:24px; color:#fff; line-height:56px;">
+        <div id="content" style=" position:absolute; left:0; top:0; width:1076px;">
+        </div>
+    </div>
+    <script src="js/common.js"></script>
+    <script>
+        function grabKeyEvent(keycode) {
+            var e = keycode || event;
+            var keycode = e.keyCode || e.which || e.charCode;
+            switch (keycode) {
+                case 1:
+                case 38: //up
+                    keyUp();
+                    return false;
+                    break;
+                case 2:
+                case 40: //down
+                    keyDown()
+                    return false;
+                    break;
+                case 3:
+                case 37: //left
+                    keyLeft();
+                    return false;
+                    break;
+                case 4:
+                case 39: //right
+                    keyRight();
+                    return false;
+                    break;
+                case 13: //ok
+                    // doSelect();
+                    break;
+                case 8:
+                    // goBack();
+                    window.location.href = 'index.htm';
+                    return false;
+                    break;
+                case 27:
+                case 32:
+                case 340:
+                case 640:
+                    window.location.href = 'index.htm';
+                    return false;
+                    break;
+            }
+        }
+        document.onkeydown = grabKeyEvent;
+        document.onsystemevent = grabKeyEvent;
+        var ajaxObj = null,
+            contentData = [],
+            currPage = 0,
+            totlePage = 0,
+            listPos = getGlobalParms("listPos") ? parseInt(getGlobalParms("listPos")) : 0;
+        // 加载content数据
+        function ajaxLoadContentData() {
+            if (ajaxObj == null) {
+                ajaxObj = new AjaxClass();
+                ajaxObj.charset = "gbk";
+                ajaxObj.frame = window;
+            } else {
+                ajaxObj.requestAbort();
+            }
+            ajaxObj.url = "content.js";
+            // 
+            ajaxObj.successCallback = function (_xmlHttp) {
+                var getData = eval("(" + _xmlHttp.responseText + ")");
+                contentData = getData;
+                initContent();
+            }
+            ajaxObj.failureCallback = function () {
+
+            }
+            ajaxObj.requestData();
+        }
+        // initContent
+        function initContent() {
+            $("content").innerHTML = contentData[listPos].content;
+            setTimeout(function() {
+                totlePage = Math.ceil($("content").offsetHeight / $("content").parentNode.offsetHeight)
+                $("totlePage").innerText = totlePage;
+                initScroll('scroll', 'scrollBar', totlePage);
+            }, 1000);
+        }
+        /*初始化滚动条*/
+        function initScroll(scrollBar, scroll, length) {
+            scrollObj = new ScrollBar(scrollBar, scroll);
+            scrollObj.init(length, 1, 360, 0);
+        }
+        // 上 
+        function keyUp() {
+            if (currPage <= totlePage - 1 && currPage > 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = $("content").offsetTop + 454 + "px"
+            } else if (currPage === 1) {
+                currPage--;
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = "0px"
+            }
+        }
+        // 下
+        function keyDown() {
+            totleLen = $("content").offsetHeight;
+            if (totlePage > 2 && currPage < totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(currPage * 418) + "px"
+            } else if (totlePage > 2 && currPage == totlePage - 2) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 418) + "px"
+            } else if (totlePage == 2 && currPage < 1) {
+                currPage++
+                $("currPage").innerText = currPage + 1;
+                scrollObj.scroll(currPage);
+                $("content").style.top = -(totleLen - 418) + "px"
+            }
+        }
+        // init
+        function init() {
+            ajaxLoadContentData();
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>

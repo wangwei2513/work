@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="page-view-size" content="1280*720">
+<title>专家咨询</title>
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script>
+	var stateArr = ["在线".fontcolor("#00aa00"),"繁忙".fontcolor("#fe5629"),"离线".fontcolor("#8d8d8d")];
+	var isOrder = [];
+	var maxLen = 3;
+	var listData = [];
+	var listBox = null;
+	var listPos = 0;
+	var maxWordSize = 50;
+	var askTipFlag = false;		// 预约确定框显示标识
+	var askBtnPos = 0;			// 雨夜确定框按钮焦点
+
+	function eventHandler(eventObj) {
+		iDebug("[exportList.htm]__eventObj.code="+eventObj.code);
+		switch(eventObj.code){
+			case "KEY_UP"://up
+			case "KEY_DOWN"://down
+				return false;
+				break;
+			case "KEY_LEFT"://left
+				changeLR(-1);
+				return false;
+				break;
+			case "KEY_RIGHT"://right
+				changeLR(1);
+				return false;
+				break;
+			case "KEY_SELECT"://enter
+				doSelect();
+				return false;
+				break;
+			case "KEY_EXIT":
+			case "KEY_BACK":
+				window.location.href = "onlineConsulting.htm";
+				return false;
+				break;
+			case "KEY_MENU":
+			case "KEY_HOMEPAGE":
+				return true;
+				break;
+		}
+	}
+
+	function changeLR(_num) {
+		if(askTipFlag){
+			$("askBtn" + askBtnPos).style.backgroundImage = "url(images/btn1.png)";
+			askBtnPos = (askBtnPos+_num+2)%2;
+			$("askBtn" + askBtnPos).style.backgroundImage = "url()";
+			$("askFocus").style.left = 35 + askBtnPos*230 + "px";
+		}else{
+			listBox.changeList(_num);
+		}
+	}
+
+	function doSelect() {
+		if(askTipFlag){
+			if(askBtnPos == 0){
+				isOrder[listBox.position] = "已预约";
+				$("btn" + listBox.focusPos).innerHTML = isOrder[listBox.position];
+			}
+			hideAskTip();
+		}else if(listData[listBox.position].state == 0){//在线
+			window.location.href = "videoCall.htm?videoID="+listData[listBox.position].id+"&price="+listData[listBox.position].price;
+		}else{
+			showAskTip();
+		}
+	}
+
+	function init() {
+		getExportList();
+	}
+
+	// 获取专家列表
+	function getExportList() {
+		var url = ajaxUrls.exportList;
+		if(DEBUG == 0){
+			// url = url.replace("{1}","");
+		}
+		var ajaxObj = new ajaxClass(url,function(_xmlHttp){
+			listData = eval('('+_xmlHttp.responseText+')');
+			if(checkStrNull(listData)!=""){
+				initList();
+			}
+		},function(_xmlHttp){
+			iDebug("[exportList.htm] getExportList fail !");
+		});
+		ajaxObj.requestData();
+	}
+
+	function initList() {
+		listBox = new showList(maxLen,listData.length,listPos,71,window);
+        listBox.focusDiv = "focus";
+        listBox.listSign = 1;	//0：竖向，1：横向
+        listBox.listHigh = 374;
+        listBox.focusLoop = true;
+        listBox.pageLoop = true;
+        listBox.haveData = function(_list){
+            $("export"+_list.idPos).style.visibility = "visible";
+            $("avatar"+_list.idPos).src = listData[_list.dataPos].imgUrl;
+            $("state"+_list.idPos).innerHTML = stateArr[listData[_list.dataPos].state];
+            $("name"+_list.idPos).innerHTML = '<span style=" color:#fff;">'+listData[_list.dataPos].name+'</span> ('+listData[_list.dataPos].time+")";
+            $("price"+_list.idPos).innerHTML = "&yen;"+listData[_list.dataPos].price;
+            $("intro"+_list.idPos).innerHTML = getStrChineseLen(listData[_list.dataPos].intro,maxWordSize);
+            if(typeof isOrder[_list.dataPos]!="undefined"&&isOrder[_list.dataPos]!=""){
+            	$("btn"+_list.idPos).innerHTML = isOrder[_list.dataPos];
+            }else if(listData[_list.dataPos].state == 0){
+            	isOrder[_list.dataPos] = "立即咨询";
+            	$("btn"+_list.idPos).innerHTML = isOrder[_list.dataPos];
+            }else{
+            	isOrder[_list.dataPos] = "预约";
+            	$("btn"+_list.idPos).innerHTML = isOrder[_list.dataPos];
+            }
+        };
+        listBox.notData = function(_list){
+            $("export"+_list.idPos).style.visibility = "hidden";
+            $("avatar"+_list.idPos).src = "";
+            $("state"+_list.idPos).innerHTML = "";
+            $("name"+_list.idPos).innerHTML = "";
+            $("price"+_list.idPos).innerHTML = "";
+            $("intro"+_list.idPos).innerHTML = "";
+        };
+        listBox.startShow();
+	}
+
+	function showAskTip() {
+		askTipFlag = true;
+		askBtnPos = 0;
+		$("cover").style.visibility = "visible";
+		$("focus").style.visibility = "hidden";
+		$("askFocus").style.left = 35 + askBtnPos*230 + "px";
+	}
+
+	function hideAskTip() {
+		askTipFlag = false;
+		$("cover").style.visibility = "hidden";
+		$("focus").style.visibility = "visible";
+	}
+</script>
+</head>
+<body background="images/bg.jpg" leftmargin="0" topmargin="0" onLoad="init()">
+    <div style="position:absolute;left:76px;top:52px; width:200px; height:37px; background:url(images/logo1.png) no-repeat left center; line-height:37px; font-size:30px; color:#a0a5ba; padding-left:220px;">专家咨询</div>
+    <!--列表-->
+    <div id="export0" style="position:absolute;left:94px;top:161px; width:344px; height:452px; background:url(images/kuan_bg1.png);">
+        <img id="avatar0" src="images/touxiang1.png" width="120" height="120" style="position:absolute;left:112px;top:14px;border-radius: 60px;">
+        <div id="state0" style="position:absolute;right:10px;top:12px;font-size:22px; color:#fff;">在线</div>
+        <div style="position:absolute;left:17px;top:143px; width:312px; line-height:32px;color:#b4c6e6">
+            <div id="name0" style="line-height:48px;font-size:26px;">
+                <span style=" color:#fff;">谭海燕</span> (08:00-12:00)
+            </div>
+            <div style="line-height:48px;font-size:18px;">
+                <span id="price0" style=" color:#ff9908;font-size:30px;">￥30</span/>/分钟
+            </div>
+            <div style="line-height:46px;font-size:22px;">专注领域</div>
+            <div id="intro0" style="font-size:18px;">
+                专注儿童疾病，婴幼儿常见病、多发病等各种感染
+            </div>
+        </div>
+        <div id="btn0" style="position:absolute;left:0px;top:390px;width:344px;line-height:62px;color:#fff; background:url(images/btn1_bg.png);font-size:26px;text-align:center;">立即咨询</div>
+    </div>
+    <div id="export1" style="position:absolute;left:468px;top:161px; width:344px; height:452px; background:url(images/kuan_bg1.png);">
+        <img id="avatar1" src="images/touxiang1.png" width="120" height="120" style="position:absolute;left:112px;top:14px;border-radius: 60px;">
+        <div id="state1" style="position:absolute;right:10px;top:12px;font-size:22px; color:#fff;">繁忙</div>
+        <div style="position:absolute;left:17px;top:143px; width:312px; line-height:32px;color:#b4c6e6">
+            <div id="name1" style="line-height:48px;font-size:26px;">
+                <span style=" color:#fff;">谭海燕</span> (08:00-12:00)
+            </div>
+            <div style="line-height:48px;font-size:18px;">
+                <span id="price1" style=" color:#ff9908;font-size:30px;">￥30</span/>/分钟
+            </div>
+            <div style="line-height:46px;font-size:22px;">专注领域</div>
+            <div id="intro1" style="font-size:18px;">
+                专注儿童疾病，婴幼儿常见病、多发病等各种感染
+            </div>
+        </div>
+        <div id="btn1" style="position:absolute;left:0px;top:390px;width:344px;line-height:62px;color:#ffffff; background:url(images/btn1_bg.png);font-size:26px;text-align:center;">预约</div>
+    </div>
+    <div id="export2" style="position:absolute;left:842px;top:161px; width:344px; height:452px; background:url(images/kuan_bg1.png);">
+        <img id="avatar2" src="images/touxiang1.png" width="120" height="120" style="position:absolute;left:112px;top:14px;border-radius: 60px;">
+        <div id="state2" style="position:absolute;right:10px;top:12px;font-size:22px; color:#fff;">离线</div>
+       <div style="position:absolute;left:17px;top:143px; width:312px; line-height:32px;color:#b4c6e6">
+            <div id="name2" style="line-height:48px;font-size:26px;">
+                <span style=" color:#fff;">谭海燕</span> (08:00-12:00)
+            </div>
+            <div style="line-height:48px;font-size:18px;">
+                <span id="price2" style=" color:#ff9908;font-size:30px;">￥30</span/>/分钟
+            </div>
+            <div style="line-height:46px;font-size:22px;">专注领域</div>
+            <div id="intro2" style="font-size:18px;">
+                专注儿童疾病，婴幼儿常见病、多发病等各种感染
+            </div>
+        </div>
+        <div id="btn2" style="position:absolute;left:0px;top:390px;width:344px;line-height:62px;color:#ffffff; background:url(images/btn1_bg.png);font-size:26px;text-align:center;">预约</div>
+    </div>
+    <!--焦点-->
+    <div id="focus" style="position: absolute; left: 71px; top: 143px; width: 389px; height: 495px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%">
+            <tr>
+                <td width="36" height="36" background="images/focus_01.png"></td>
+                <td width="317" background="images/focus_02.png"></td>
+                <td width="36" height="36" background="images/focus_03.png"></td>
+            </tr>
+            <tr>
+                <td height="423" background="images/focus_04.png"></td>
+                <td></td>
+                <td background="images/focus_05.png"></td>
+            </tr>
+            <tr>
+                <td width="36" height="36" background="images/focus_06.png"></td>
+                <td background="images/focus_07.png"></td>
+                <td background="images/focus_08.png"></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 预约选择 -->
+    <div id="cover" style="position: absolute;left: 0;top: 0;width: 1280px;height: 720px;background: url(images/cover.png);visibility: hidden;">
+    	<div style="position:absolute; top:201px; left:378px; width:507px; height:318px; background-image: url(images/tck_bg2.png); ">
+			<div style="position:absolute; top:13px; left:26px; width:451px; height:41px; font-size:30px; color:#ffffff; line-height:36px; text-align:center;">温馨提示</div>
+			<div style="position:absolute; top:104px; left:0px; width:100%; height:100px; font-size:24px; line-height:50px;text-align: center; color:#01deff;">
+				您确定要预约当前服务吗？
+			</div>
+			<div id="askBtn0" style="position:absolute; top:242px; left:58px; width:164px; height:54px; font-size:26px; color:#ffffff; line-height:54px; text-align:center;">确定</div>
+			<div id="askBtn1" style="position:absolute; top:242px; left:288px; width:164px; height:54px; background-image: url(images/btn1.png); font-size:26px; color:#ffffff; line-height:54px; text-align:center;">取消</div>
+			<div id="askFocus" style="position:absolute; top:219px; left:35px; width:212px; height:105px;">
+				<table width="100%" height="100%" border="0" cellpadding="0" cellspacing="0">
+					<tr>
+						<td width="36" height="36" background="images/focus_01.png"></td>
+						<td background="images/focus_02.png"></td>
+						<td width="36" background="images/focus_03.png"></td>
+					</tr>
+					<tr>
+						<td background="images/focus_04.png"></td>
+						<td></td>
+						<td background="images/focus_05.png"></td>
+					</tr>
+					<tr>
+						<td height="36" background="images/focus_06.png"></td>
+						<td background="images/focus_07.png"></td>
+						<td background="images/focus_08.png"></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

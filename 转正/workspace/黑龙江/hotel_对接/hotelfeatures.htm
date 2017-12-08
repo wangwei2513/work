@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>酒店特色</title>
+<style>
+	*{ 
+		margin:0;
+		padding:0;
+        font-family:'微软雅黑';
+	}
+    #content2 table td,#content3 table td{
+        padding-left: 17px;
+    }
+</style>
+<script src="js/common.js"></script>
+<script src="js/config.js"></script>
+<script src="js/feature.js"></script>
+</head>
+
+<body background="images/bg2.jpg" onLoad="init()">
+	<div style="position:absolute;left:414px;top:71px; width:auto; height:24px; font-size:24px; color:#b8ab94;">酒店特色<span id="title"><!--  · 电话簿 --></span></div>
+	<div style="position:absolute;left:1056px;top:38px; width:109px; height:82px; font-size:21px; color:#9d8761;">
+        <span id="currTime" style="font-size:40px;"></span><br/>
+        <span id="currDate"></span>
+    </div>
+    
+    <!--左边栏目列表-->
+    <div style="position:absolute;left:117px;top:159px; width:174px; height:402px;">
+        <!-- 焦点 -->
+    	<div id="menuFocus" style="position:absolute;left:0px;top:0px; width:174px; height:67px; background:url(images/listL_f2.png);"></div>
+    	<table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="position:absolute;left:0px;font-size:24px; color:#c4a17f; text-align:center; line-height:67px;"> 
+            <tr height="67" style="color:#000;">
+            	<td id="menu0"></td>
+            </tr>
+            <tr height="67">
+            	<td id="menu1"></td>
+            </tr>
+            <tr height="67">
+            	<td id="menu2"></td>
+            </tr>
+            <tr height="67">
+            	<td id="menu3"></td>
+            </tr>
+            <tr height="67">
+            	<td id="menu4"></td>
+            </tr>
+            <tr height="67">
+            	<td id="menu5"></td>
+            </tr>
+        </table>
+    </div>
+   
+    <!--图文-->
+    <div id="content0" style="position:absolute;left:298px;top:137px; width:864px; height:450px;display: none;">
+        <div style="position:absolute;left:0px;top:0px; width:823px; height:438px;overflow: hidden;">
+            <div style="position:absolute;left:12px;top:12px; width:313px; height:426px;">
+                <img id="contentImg" src="" width="313" height="426">
+                <div id="pointBack" style="position:absolute;left:94px;top:397px; width:126px; height:14px; background:rgba(0,0,0,0.7);border-radius: 6px;display: none;">
+                    <!-- <img id="point0" src="images/dian1.png" width="8" height="7" style="position:absolute;left:13px;top:3px;">
+                    <img id="point1" src="images/dian2.png" width="8" height="7" style="position:absolute;left:32px;top:3px;">
+                    <img id="point2" src="images/dian2.png" width="8" height="7" style="position:absolute;left:50px;top:3px;">
+                    <img id="point3" src="images/dian2.png" width="8" height="7" style="position:absolute;left:68px;top:3px;">
+                    <img id="point4" src="images/dian2.png" width="8" height="7" style="position:absolute;left:87px;top:3px;">
+                    <img id="point5" src="images/dian2.png" width="8" height="7" style="position:absolute;left:105px;top:3px;"> -->
+                </div>
+            </div>
+            <div id="contentTxt" style="position:absolute;left:341px;top:12px; width:482px;font-size:21px; color:#b8ab94;line-height:47px; text-indent:2em;">
+            </div>
+        </div>
+        
+        <!--滑动条-->
+        <div id="scrollBack0" style="position:absolute;left:848px;top:26px; width:3px; height:395px; background:rgba(206,161,99,.5);display: none;">
+            <img id="scrollBar0" src="images/page01.png" width="14" height="13" style="position:absolute;left:-6px;top:-5px;">
+        </div>
+    </div>
+
+    <!-- 酒店指南 -->
+    <div id="content1" style="position:absolute;left:298px;top:137px; width:864px; height:450px;overflow: hidden;display: none;">
+        <div style="position:absolute;left:64px;top:98px; width:208px; height:253px;">
+            <img id="guideImg0" src="images/menu0_0.png" width="208" height="208">
+            <div id="guideName0" style="position:absolute;top:230px; width:208px; text-align:center; font-size:24px; color:#b8ab94;">安全提示</div>
+        </div>
+        
+        <div style="position:absolute;left:328px;top:98px; width:208px; height:253px;">
+            <img id="guideImg1" src="images/menu1_0.png" width="208" height="208">
+            <div id="guideName1" style="position:absolute;top:230px; width:208px; text-align:center; font-size:24px; color:#b8ab94;">电话本</div>
+        </div>
+        
+        <div style="position:absolute;left:591px;top:98px; width:208px; height:253px;">
+            <img id="guideImg2" src="images/menu2_0.png" width="208" height="208">
+            <div id="guideName2" style="position:absolute;top:230px; width:208px; text-align:center; font-size:24px; color:#b8ab94;">楼层提示</div>
+        </div>
+    </div>
+    <!-- 电话簿 -->
+    <div id="content2" style="position:absolute;left:298px;top:137px; width:864px; height:450px;display: none;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="position:absolute;left:0px;font-size:22.5px; color:#d5cab8;">    
+            <tr id="telRow0" height="64">
+                <td width="514" id="telList0"></td>
+                <td width="336" id="telList1"></td>
+            </tr>
+            <tr id="telRow1" height="64" style="background:rgba(255,255,255,.05);">
+                <td id="telList2"></td>
+                <td id="telList3"></td>
+            </tr>
+            <tr id="telRow2" height="64">
+                <td id="telList4"></td>
+                <td id="telList5"></td>
+            </tr>
+            <tr id="telRow3" height="64" style="background:rgba(255,255,255,.05);">
+                <td id="telList6"></td>
+                <td id="telList7"></td>
+            </tr>
+            <tr id="telRow4" height="64">
+                <td id="telList8"></td>
+                <td id="telList9"></td>
+            </tr>
+            <tr id="telRow5" height="64" style="background:rgba(255,255,255,.05);">
+                <td id="telList10"></td>
+                <td id="telList11"></td>
+            </tr>
+            <tr id="telRow6" height="64">
+                <td id="telList12"></td>
+                <td id="telList13"></td>
+            </tr>
+        </table>
+    </div>
+    
+    <!-- 优惠活动 -->
+    <div id="content3" style="position:absolute;left:298px;top:137px; width:864px; height:450px;display: none;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="position:absolute;left:0px;font-size:21px; color:#d5cab8;">  
+            <tr height="64">
+                <td id="discountList0"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList1" style="background:rgba(255,255,255,.05);"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList2"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList3" style="background:rgba(255,255,255,.05);"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList4"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList5" style="background:rgba(255,255,255,.05);"></td> 
+            </tr>
+            <tr height="64">
+                <td id="discountList6"></td> 
+            </tr>
+        </table>
+    </div>
+    <!-- 每个优惠活动下的内容 -->
+    <div id="content4" style="position:absolute;left:298px;top:137px; width:864px; height:450px;overflow: hidden;display: none;">
+        <div id="discountContent" style="position:absolute;left:12px;top:12px; width:815px;color:#b8ab94;">
+            <div id="discountTitle" style="text-align:center;font-size:26.51px;line-height:52px;"></div>
+            <div id="discountDetail" style="font-size:21px;line-height:46px;"></div>
+        </div>
+        <!--滑动条-->
+        <div id="scrollBack4" style="position:absolute;left:848px;top:26px; width:3px; height:395px; background:rgba(206,161,99,.4);display: none;">
+            <img id="scrollBar4" src="images/page01.png" width="14" height="13" style="position:absolute;left:-6px;top:-5px;">
+        </div>
+    </div>
+
+    <!--弹出层放大图片-->
+    <div id="popup" style="position:absolute;left:0px;top:0px; width:1280px; height:720px; background:url(images/cover.png);z-index: 9;display: none;">
+         <div id="leftArrow" style="position:absolute;left:80px;top:312px; width:50px; height:80px; background:url(images/arrow_left.png);"></div>
+         <div id="rightArrow" style="position:absolute;left:1152px;top:312px; width:50px; height:80px; background:url(images/arrow_right.png);"></div>
+    
+        <div style="position:absolute;left:174px;top:89px; width:933px; height:526px;">
+            <img id="bigImg" src="images/ad1.jpg" width="933" height="526">
+        </div>
+    </div>
+
+    <!--服务热线-->
+    <div style="position:absolute;left:117px;top:637px; width:324px; height:29px;">
+        <img src="images/tips01.png" width="324" height="29">
+    </div>
+    
+    <!--底部操作提示-->
+    <div style="position:absolute;left:963px;top:632px; width:210px; height:40px;">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%" height="100%" style="font-size:21px; color:#9d8761; ">
+            <tr>
+                <td width="48"><img src="images/icon00.png" width="40" height="40" style="display:block;"></td>
+                <td width="64">选择</td>
+                <td width="48"><img src="images/icon01.png" width="40" height="40" style="display:block;"></td>
+                <td width="64">进入</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
+
+
+

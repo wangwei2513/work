@@ -1,0 +1,106 @@
+@charset "UTF-8";
+
+
+#keytable{
+	background-color:#474747;
+	border-top: gray;
+	box-sizing: border-box;
+}
+
+/* 键盘格子 */
+#keytable td {
+	width:94px;
+	height:55px;
+	text-align:center;
+	font-size:36px;
+	color:#f0f0f0;	
+	text-align:center;
+	border: 1px solid gray;
+	box-sizing: border-box;
+}
+
+.wordrightborder {
+	border-right:#1c1c1c solid 1px;
+	color:#000000;
+	font-size:30px;
+}
+
+.wordbottomborder {
+	border-bottom:#1c1c1c solid 1px;
+}
+
+.wordtopborder {
+	border-top:#1c1c1c solid 1px;
+}
+
+.rightborder {
+	border-right:#1c1c1c solid 1px;
+}
+
+.leftborder {
+	border-left:#1c1c1c solid 1px;
+}
+
+.bottomborder {
+	border-bottom:#1c1c1c solid 1px;
+}
+
+.topborder {
+	border-top:#1c1c1c solid 1px;
+}
+
+.numbg {
+	background-color:#383838;	
+}
+
+.letterbg {
+	background-color:#474747;	
+}
+
+.specialbg {
+	background-color:#383838;	
+}
+
+.onfocus {
+	background-color:#ffca28;
+	color:#000000;
+}
+
+.opreabg {
+	background-color:#2f2f2f;
+}
+#keyinput{
+	background-color:#474747;
+	color:#ffffff;
+}
+
+
+#inputValue {	
+	word-break:break-all; /*支持IE，chrome，FF不支持*/
+　　word-wrap:break-word;/*支持IE，chrome，FF*/
+	font-size:36px;
+}
+#inputButton{
+	background-color:#2f2f2f;
+	border-top:#1c1c1c solid 1px;
+	border-left:#1c1c1c solid 1px;
+	border-bottom:#1c1c1c solid 1px; 
+	font-size:36px;
+}
+#keyword{
+	background-color:#7f7f7f;
+}
+#r_arrow{
+	font-size: 30px; color:#ffffff;
+	border-bottom:#1c1c1c solid 1px;
+	border-left:#1c1c1c solid 1px;
+}
+
+#txtRight{
+	border-left: #1c1c1c solid 1px;
+}
+
+#txtRightTable td{
+	font-size: 30px; color:#ffffff;
+	border-bottom: 1px solid #1c1c1c;
+}

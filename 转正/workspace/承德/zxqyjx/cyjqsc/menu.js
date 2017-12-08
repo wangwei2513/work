@@ -1,0 +1,1 @@
+[{"blurImageUrl":"","clickable":1,"enName":"spfl","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"list","name":"商品分类","navigator":"","newAdd":0,"nodePath":"zxqyjx/cyjqsc/spfl"}]

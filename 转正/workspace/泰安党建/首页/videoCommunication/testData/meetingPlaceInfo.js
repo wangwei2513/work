@@ -1,0 +1,26 @@
+{
+	"result":"E0000",
+	"msg":{
+		"secondPlace":[
+			{
+				"placeName":"安站村党支部会场14",
+				"meetingName":"学习习主席讲话1",
+				"channelId":"14"
+			},{
+				"placeName":"安站管区党总支会场13",
+				"meetingName":"学习习主席讲话",
+				"channelId":"13"
+			}],
+		"ownPlace":{
+				"meetingName":"学习习主席讲话1",
+				"channelId":"12",
+				"placeName":"安临站镇委会场12"
+			},
+		"placeType":0,
+		"mainPlace":{
+			"meetingName":"学习习主席讲话1",
+			"channelId":"11",
+			"placeName":"安临站镇委会场11"
+		}
+	}
+}

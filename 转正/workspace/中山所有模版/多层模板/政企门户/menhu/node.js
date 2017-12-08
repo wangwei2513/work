@@ -1,0 +1,14 @@
+{
+	"blurImageUrl": "",
+	"clickable": 1,
+	"enName": "cslm",
+	"entryWord": "",
+	"focusImageUrl": "",
+	"isManaged": "managed",
+	"linkUrl": "ddsfdf",
+	"listType": "list",
+	"name": "╡Бйтю╦д©",
+	"navigator": "╡БйтеепР>╡Бйтю╦д©",
+	"newAdd": 0,
+	"nodePath": "cspx/cslm"
+}

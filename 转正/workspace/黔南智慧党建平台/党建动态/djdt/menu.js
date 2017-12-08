@@ -1,0 +1,53 @@
+[{
+    "blurImageUrl": "",
+    "clickable": 1,
+    "enName": "zzgz",
+    "entryWord": "",
+    "focusImageUrl": "images/pic2_1.jpg",
+    "isManaged": "managed",
+    "linkUrl": "",
+    "listType": "list",
+    "name": "�ȷ���Ѷ",
+    "navigator": "",
+    "newAdd": 0,
+    "nodePath": "subNode"
+}, {
+    "blurImageUrl": "",
+    "clickable": 1,
+    "enName": "dypy",
+    "entryWord": "",
+    "focusImageUrl": "images/pic2_2.jpg",
+    "isManaged": "managed",
+    "linkUrl": "",
+    "listType": "list",
+    "name": "������̬",
+    "navigator": "",
+    "newAdd": 0,
+    "nodePath": "subNode"
+}, {
+    "blurImageUrl": "",
+    "clickable": 1,
+    "enName": "yjdt",
+    "entryWord": "",
+    "focusImageUrl": "images/pic2_3.jpg",
+    "isManaged": "managed",
+    "linkUrl": "",
+    "listType": "list",
+    "name": "���񹫿�",
+    "navigator": "",
+    "newAdd": 0,
+    "nodePath": "subNode"
+}, {
+    "blurImageUrl": "",
+    "clickable": 1,
+    "enName": "sgdt",
+    "entryWord": "",
+    "focusImageUrl": "images/pic2_4.jpg",
+    "isManaged": "managed",
+    "linkUrl": "",
+    "listType": "list",
+    "name": "��Ա����",
+    "navigator": "",
+    "newAdd": 0,
+    "nodePath": "subNode"
+}]

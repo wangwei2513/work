@@ -1,0 +1,626 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+    <title>民意征集</title>
+    <script type="text/javascript" src="js/ajaxClass.js"></script>
+    <script type="text/javascript" src="js/comm.js"></script>
+    <script type="text/javascript" src="js/global.js"></script>
+    <!--<script type="text/javascript" src="Noname1.js"></script>-->
+    <script>
+        var queryAll = "http://10.7.27.220:8090/votesManager/getQuestionnaireById.action";
+        var voteUrl = "http://10.7.27.220:8090/votesManager/addVote.action";
+        var voteInfoUrl = "http://10.7.27.220:8090/votesManager/getVoteOptionIds.action";
+        var queryArea = "http://10.7.27.220:8090/votesManager/getAllArea.action"; //
+        var AllQuestOptionUrl = "http://10.7.27.220:8090/votesManager/getAllQuestionsAndOptions.action?questionnaireId="; //
+
+        queryAll = queryAll + "?id=" + parseInt(getGlobalVar("menuPos"));
+        console.log(queryAll)
+        var menuPos = parseInt(getGlobalVar("menuPos"));
+
+        var questionnaireId = menuPos;
+        var CASerialNumber = "23432";
+        var listData = [];
+        var areaFlag = 0;
+        var chosePos = 0;
+        var btnPos = 1;
+        var quesPos = 0;
+        var totalVotes = 0;
+        document.onkeydown = grabEvent;
+        document.onsystemevent = grabEvent;
+
+        function grabEvent() {
+            var eventObj = Event.mapping(event);
+            var keycode = eventObj.code;
+            if (keycode == "KEY_EXIT" || keycode == "KEY_MENU") {
+                window.location.href = returnUrl;
+
+                return EVENT.STOP;
+            }
+            switch (keycode) {
+                case "KEY_UP": //up
+                    if (isVoted) return;
+                    keyUp();
+                    return EVENT.STOP;
+                    break;
+                case "KEY_DOWN": //down
+                    if (isVoted) return;
+                    keyDown();
+                    return EVENT.STOP;
+                    break;
+                case "KEY_LEFT": //left
+                    keyLeft();
+                    return EVENT.STOP;
+                    break;
+                case "KEY_RIGHT": //right
+                    keyRight();
+                    return EVENT.STOP;
+                    break;
+                case "KEY_SELECT":
+                    doSelect();
+                    return EVENT.STOP;
+                    break;
+                case "KEY_BACK":
+                    window.location.href = "index.htm" + location.search;
+                    return EVENT.STOP;
+                    break;
+            }
+        }
+
+        var isVoted = false;
+        var selected2 = ""; //已选择的选项的id
+        var selected = ""; //已选择的选项的chosePos
+        function doSelect() {
+
+            if (areaFlag == 0) {
+                if (btnLen == 3) { //多选 
+                    if (selected.indexOf(chosePos) !== -1) { //多选已选择，再次选择，即取消
+                        selected = selected.replace(chosePos, "");
+                        selected2 = selected.replace(listData[quesPos].question_options[chosePos].option_id, "");
+                        $("done" + chosePos).innerText = "选择";
+                        $("done" + chosePos).style.color = "#000000";
+                        getFocus();
+                    } else {
+                        selected += chosePos;
+                        selected2 += listData[quesPos].question_options[chosePos].option_id + ";";
+                        $("done" + chosePos).style.backgroundImage = "url(images/border_05.png)"; //green
+                        $("done" + chosePos).innerText = "已选";
+                        $("done" + chosePos).style.color = "#000000";
+                        changeList(1);
+                    }
+
+                } else { //单选
+                    selected = chosePos + ""; //listData[quesPos].question_options[chosePos].option_id;
+                    selected2 = listData[quesPos].question_options[chosePos].option_id;
+                    doVote();
+                }
+
+            } else if (areaFlag == 1) {
+
+                showTxt("");
+                if (btnPos == 0) {
+                    if (quesPos > 0) {
+                        quesPos -= 1;
+                        selected = "";
+                        selected2 = "";
+                        initList();
+                    }
+                } else if (btnPos == 1) {
+                    if (quesPos < listData.length - 1 && isVoted) {
+
+                        quesPos += 1;
+                        selected = "";
+                        selected2 = "";
+                        isVoted = false;
+                        initList(); //这里面有清零处理的呀。
+
+                    } else if (quesPos < listData.length - 1 && !isVoted) {
+                        showTxt("请完成当前投票！");
+                    }
+                } else if (btnPos == 2) { //多选投票
+
+                    if (!isVoted && selected.length >= 1) doVote();
+                    else if (isVoted) showTxt("您已经投过此票！");
+                    //else showTxt("请继续选择投票选项！");
+                }
+            } else if (areaFlag == 2) {
+                if (iconPos == 0) {
+                    window.location.href = "http://10.7.27.220/zhsqPortal/index.htm"
+                } else if (iconPos == 2 && iconPos == 1) {
+                    window.location.href = "index.htm"
+                }
+
+
+            }
+        }
+
+        function doVote() {
+            //alert(totalVotes);
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = voteUrl + "?caId=" + CASerialNumber + "&questionnaireId=" + questionnaireId + "&questionId=" + listData[quesPos].question_id + "&optionId=" + selected2 + "&operatorKey=1";
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var str = _xmlHttp.responseText;
+                var data = eval("(" + str + ")");
+                if (data.result == 1) { //成功 。焦点自动到下一题去
+                    showTxt("");
+                    totalVotes += 1;
+
+                    isVoted = true;
+
+                    areaFlag = 1;
+
+                    if (listData[quesPos].question_ifCheck) {
+                        blurFocus();
+                    }
+                    btnPos = 1;
+
+                    for (var i = 0; i < selected.length; i++) {
+                        $("done" + selected[i]).style.backgroundImage = "url(images/border_04.png)"; //gray
+                        $("done" + selected[i]).innerText = "已投";
+                        $("done" + selected[i]).style.color = "#000000";
+                        $("vote" + selected[i]).innerText = parseInt($("vote" + selected[i]).innerText) + 1;
+                    }
+                    getFocus();
+                    if (totalVotes == listData.length) { //全部投完了，弹出结果页面
+                        //setTimeout(function (){
+                        window.location.href = "result.htm?0";
+                        //},2000);
+                    }
+                } else if (data.result == 0) {
+                    //alert("失败");	
+                    showTxt("投票失败！");
+                } else if (data.result == 2) {
+                    showTxt("您已经投过此票！");
+                    totalVotes += 1; //这里不能随便加。不然弹出结果的时机会不对.前面处理为必须投票后才能进行下一题。焦点到下一题，改为自动切换
+
+                    isVoted = true;
+                    getVoteInfo(); //--获取选过的选项
+                }
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+
+            };
+            ajaxObj.requestData();
+        }
+
+
+        //获取之前投票过的是哪些
+        function getVoteInfo() {
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = voteInfoUrl + "?caId=" + CASerialNumber + "&questionId=" + listData[quesPos].question_id;
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var str = _xmlHttp.responseText;
+                var list = eval("(" + str + ")");
+                var voteIds = list.option_ids;
+                voteIds = parseInt(voteIds.split(";")[0]); //获取第一个选中的
+                //listData[quesPos].chosednumber = voteIds;//之前选中的选项
+                areaFlag = 1;
+                btnPos = 1;
+                initList();
+                getFocus();
+                if (totalVotes == listData.length) { //全部投完了，弹出结果页面
+                    setTimeout(function() {
+                        window.location.href = "result.htm?0";
+                    }, 2000);
+                }
+
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+
+            };
+            ajaxObj.requestData();
+        }
+
+        function showTxt(_str) {
+            $("txt").innerText = _str;
+        }
+        var iconPos = 0;
+
+        function iconMove() {
+            emptyIcon();
+            $("imgIcon" + iconPos).src = "images/btn1_0" + (iconPos + 1) + ".png"
+        }
+
+        function emptyIcon() {
+            for (var i = 0; i < 3; i++) {
+                $("imgIcon" + i).src = "images/btn0_0" + (i + 1) + ".png"
+
+            }
+        }
+
+        function keyUp() {
+            if (areaFlag == 0) {
+                changeList(-1);
+            } else if (areaFlag == 1) {
+                if (isVoted) {
+                    return;
+                }
+                blurFocus();
+                areaFlag = 0;
+                chosePos = listData[quesPos].question_options.length - 1;
+                getFocus();
+            } else {
+                areaFlag = 1;
+                emptyIcon();
+            }
+        }
+
+        function keyDown() {
+            if (areaFlag == 0) {
+                changeList(1);
+            } else if (areaFlag == 1) {
+                blurFocus();
+                areaFlag = 2;
+                iconMove();
+            }
+        }
+
+        function keyLeft() {
+            if (areaFlag == 0) {
+                return;
+            } else if (areaFlag == 1) {
+                changeBtn(-1);
+            } else if (areaFlag == 2 && iconPos == 0) {
+                iconPos = 2;
+                iconMove();
+            } else if (areaFlag == 2 && iconPos > 0) {
+                iconPos--;
+                iconMove();
+            }
+        }
+
+        function keyRight() {
+            if (areaFlag == 0) {
+                return;
+            } else if (areaFlag == 1) {
+                changeBtn(1);
+            } else if (areaFlag == 2 && iconPos == 2) {
+                iconPos = 0;
+                iconMove();
+            } else if (areaFlag == 2 && iconPos < 2) {
+                iconPos++;
+                iconMove();
+            }
+
+        }
+
+
+        function changeList(_num) {
+            //alert(selected);
+            if (chosePos + _num < 0) return;
+
+
+            var tp = chosePos.toString();
+            if (selected.indexOf(tp) !== -1) { //已选择
+                $("done" + chosePos).style.backgroundImage = "url(images/border_05.png)"; //green
+            } else blurFocus();
+
+            if (chosePos + _num >= listData[quesPos].question_options.length) {
+
+                /*if(listData[quesPos].question_ifCheck){ //多选, 选项不止一个时
+                	if(selected.length >=2) {areaFlag =1; btnPos = 2;}
+                }else {
+                	if(isVoted) areaFlag = 1;	//已经投票了，并且是单选
+                }*/
+
+                areaFlag = 1;
+
+            } else {
+                chosePos += _num;
+            }
+
+            getFocus();
+        }
+
+        function getFocus() {
+            if (areaFlag == 0) {
+                $("done" + chosePos).style.backgroundImage = "url(images/border_06.png)";
+                $("done" + chosePos).style.color = "#000000";
+            } else if (areaFlag == 1) {
+                $("btn" + btnPos).style.backgroundImage = "url(images/border_02.png)";
+                $("btn" + btnPos).style.color = "#000000";
+            }
+        }
+
+        function blurFocus() {
+
+            if (areaFlag == 0) {
+                $("done" + chosePos).style.backgroundImage = "url(images/border_07.png)";
+                $("done" + chosePos).style.color = "#FFFFFF";
+
+                if (selected.indexOf(chosePos) !== -1) { //多选已选择
+                    $("done" + chosePos).style.backgroundImage = "url(images/border_05.png)"; //green
+                }
+            } else if (areaFlag == 1) {
+
+                $("btn" + btnPos).style.backgroundImage = "url(images/border_03.png)";
+                $("btn" + btnPos).style.color = "#FFFFFF";
+            }
+        }
+
+
+        function changeBtn(_num) {
+            showTxt("");
+            blurFocus();
+            btnPos = (btnPos + _num + btnLen) % btnLen;
+            getFocus();
+        }
+
+        function init() {
+
+            // gatArea(); //也可以不分区域，直接获取所有问卷
+            getAll(); //获得所有问卷 本地调试，暂时注释
+            //getAllQuestOption(1); //本地测试添加
+
+        }
+
+        var Area = [];
+
+        function getArea() {
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = queryArea;
+            ajaxObj.successCallback = function(_xmlHttp) {
+
+                var str = _xmlHttp.responseText;
+                var data = eval("(" + str + ")"); //有很多areaId
+                for (var i = 0; i < data.length; i++) {
+                    Area[Area.length] = data[i].areaid;
+                }
+
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+                //("ajax请求失败");
+            };
+            ajaxObj.requestData();
+
+        }
+
+        var Wenjuan;
+
+        function getAll() {
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = queryAll;
+            ajaxObj.charset = "utf-8";
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var str = _xmlHttp.responseText;
+                Wenjuan = eval("(" + str + ")");
+
+                $("desc").innerText = Wenjuan.name;
+                //getAllQuestOption(Wenjuan[0].id);
+                getAllQuestOption(menuPos);
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+
+            };
+            ajaxObj.requestData();
+        }
+
+        function getAllQuestOption(_id) {
+            //listData = question_list;
+            //initList();
+            //以上是本地测试
+
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = AllQuestOptionUrl + _id;
+            ajaxObj.successCallback = function(_xmlHttp) {
+
+                var str = _xmlHttp.responseText;
+                var list = eval("(" + str + ")");
+                listData = list.question_list;
+                ////("getAllQuestOption.length:"+listData.length);
+                initList();
+
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+                //("ajax请求失败");
+            };
+            ajaxObj.requestData();
+        }
+
+
+        function initList() { //第一次进来显示问题初始化
+            for (var i = 0; i < 4; i++) {
+                if (listData[quesPos].question_options[i]) {
+                    $("div" + i).style.visibility = "visible";
+                } else {
+                    $("div" + i).style.visibility = "hidden";
+                }
+            }
+            if (listData[quesPos].question_ifCheck) {
+                $("question").innerText = listData[quesPos].question_title + "(多选)";
+                $("btn2").style.visibility = "visible";
+                btnLen = 3;
+            } else {
+                $("question").innerText = listData[quesPos].question_title + "(单选)";
+                $("btn2").style.visibility = "hidden";
+                btnLen = 2;
+            }
+
+            $("nums").innerText = (quesPos + 1) + "/" + listData.length;
+
+            refreshT();
+
+            if (listData[quesPos].question_type == 0 || listData[quesPos].question_type == 1) {
+                getVoteOptionIds(listData[quesPos].question_id);
+            }
+
+        }
+
+        function refreshT() { //初始化题目
+            for (var i = 0; i < 3; i++) {
+                $("btn" + i).style.backgroundImage = "url(images/border_03.png)";
+                $("btn" + i).style.color = "#FFFFFF";
+            }
+
+            areaFlag = 0;
+            chosePos = 0;
+            for (var j = 0; j < 4; j++) {
+                $("done" + j).style.color = "#FFFFFF";
+                $("done" + j).style.backgroundImage = "url(images/border_07.png)";
+                ////(listData[quesPos].question_ifCheck);
+                if (listData[quesPos].question_ifCheck) {
+                    $("done" + j).innerText = "选择";
+                } else {
+                    $("done" + j).innerText = "投票";
+                }
+            }
+        }
+
+        var btnLen = 3; //默认多选
+
+        function getVoteOptionIds(_id) {
+            /*
+            	for(var i=0;i<listData[quesPos].question_options.length;i++){
+            			$("ans"+i).innerText = listData[quesPos].question_options[i].option_content;
+            			$("vote"+i).innerText = listData[quesPos].question_options[i].option_count;
+            			$("done"+i).style.color = "#FFFFFF";
+            			$("done"+i).style.backgroundImage = "url(images/border_07.png)";
+            			
+            			
+            	}
+            	getFocus();*/
+
+            /*  以上是本地测试  */
+
+
+            var ajaxObj = new ajaxClass();
+            ajaxObj.url = "http://10.7.27.220:8090/votesManager/getVoteOptionIds.action?caId=" + CASerialNumber + "&questionId=" + _id;
+            ajaxObj.successCallback = function(_xmlHttp) {
+                var str = _xmlHttp.responseText;
+                var optionIds = eval("(" + str + ")");
+
+                //"option_ids":"25;24;24;26;"
+                optionIds = optionIds.option_ids;
+                optionIds = optionIds.split(";"); //最后一个数据为空
+
+                //////////////////////////////////////////////////
+                for (var i = 0; i < listData[quesPos].question_options.length; i++) {
+                    $("ans" + i).innerText = listData[quesPos].question_options[i].option_content;
+                    $("vote" + i).innerText = listData[quesPos].question_options[i].option_count;
+                    ////////////////////////////////////////////// 还原选项样式 
+
+                    /////////////////////////////////////////// 补充已选的
+
+                    if (optionIds.length > 0) {
+
+                        var currId = listData[quesPos].question_options[i].option_id;
+                        for (var j = 0; j < optionIds.length - 1; j++) {
+                            console.log(optionIds[j] + "###" + listData[quesPos].question_options[i].option_id);
+                            if (optionIds[j] == currId) {
+                                //("有已投选项");
+                                $("done" + i).style.backgroundImage = "url(images/border_04.png)";
+                                $("done" + i).innerText = "已投";
+                                $("done" + i).style.color = "#000000";
+                                //console.log($("done"+i).innerText);
+                                isVoted = true;
+                                areaFlag = 1;
+                                //getFocus();
+                                break;
+                            }
+                        }
+                        //("选项"+i +"没有选");
+
+                    } //for 2
+
+                } //for 1
+                //("initList: isVoted="+isVoted);
+                getFocus();
+
+            };
+            ajaxObj.failureCallback = function(_xmlHttp) {
+                //("ajax请求失败");
+            };
+            ajaxObj.requestData();
+
+        }
+    </script>
+</head>
+
+<body style="background:url(images/inner_bg.jpg) no-repeat;" onload="init()">
+    <!--title-->
+    <div style="position:absolute;left:46px;top:29px;"><img src="images/logo.png" /></div>
+
+    <!-- 左侧信息-->
+    <div style="position:absolute;left:46px;top:112px;width:910px;height:510px; background-color:transparent">
+        <div style="position:absolute;left:141px;top:27px;color:#ffffff;font-size:30px;" id="desc">欢迎参加宜兴市争创全国文明城市的问卷调查</div>
+        <img src="images/line_01.png" style="position:absolute;left:0px;top:68px;" width="910" height="1" />
+        <div id="question" style="position:absolute;left:24px;top:91px;color:#ffffff;font-size:24px;"></div>
+        <!--选项环节-->
+        <div style="position:absolute;left:54px;top:149px;width:801px;height:261px;color:#ffffff;font-size:24px;">
+            <table borde="0" cellp//ing="0" cellspacing="0" style="position:absolute;left:0px;top:0px;" width="801" height="261">
+                <tr>
+                    <td>
+                        <div id="div0" style="position:absolute;left:0px;top:0px;width:801px;height:72px;">
+                            <span id="ans0" style="position:absolute;left:9px;top:10px;"></span>
+                            <img id="icon0" src="images/icon_03.png" style="position:absolute;left:629px;top:13px;" />
+                            <span id="vote0" style="position:absolute;left:650px;top:8px;font-size:22px;"></span>
+                            <div id="done0" style="position:absolute;left:723px;top:0px;background:url(images/border_07.png);width:78px;height:41px;font-size:22px;text-align:center;line-height:40px;">
+                                选择
+                            </div>
+                            <img src="images/line_01.png" style="position:absolute;left:9px;top:58px;" />
+                        </div>
+                    </td>
+                    <td>
+                        <div id="div1" style="position:absolute;left:0px;top:72px;width:801px;height:72px;">
+                            <span id="ans1" style="position:absolute;left:9px;top:10px;"></span>
+                            <img id="icon1" src="images/icon_03.png" style="position:absolute;left:629px;top:13px;" />
+                            <span id="vote1" style="position:absolute;left:650px;top:8px;font-size:22px;"></span>
+                            <div id="done1" style="position:absolute;left:723px;top:0px;background:url(images/border_07.png);width:78px;height:41px;font-size:22px;color:#ffffff;text-align:center;line-height:40px;">
+                                选择
+                            </div>
+                            <img src="images/line_01.png" style="position:absolute;left:9px;top:58px;" />
+                        </div>
+                    </td>
+                    <td>
+                        <div id="div2" style="position:absolute;left:0px;top:144px;width:801px;height:72px;">
+                            <span id="ans2" style="position:absolute;left:9px;top:10px;"></span>
+                            <img id="icon2" src="images/icon_03.png" style="position:absolute;left:629px;top:13px;" />
+                            <span id="vote2" style="position:absolute;left:650px;top:8px;font-size:22px;"></span>
+                            <div id="done2" style="position:absolute;left:723px;top:0px;background:url(images/border_07.png);width:78px;height:41px;font-size:22px;text-align:center;line-height:40px;">
+                                选择
+                            </div>
+                            <img src="images/line_01.png" style="position:absolute;left:9px;top:58px;" />
+                        </div>
+                    </td>
+                    <td>
+                        <div id="div3" style="position:absolute;left:0px;top:216px;width:801px;height:72px;">
+                            <span id="ans3" style="position:absolute;left:9px;top:10px;"></span>
+                            <img id="icon3" src="images/icon_03.png" style="position:absolute;left:629px;top:13px;" />
+                            <span id="vote3" style="position:absolute;left:650px;top:8px;font-size:22px;"></span>
+                            <div id="done3" style="position:absolute;left:723px;top:0px;background:url(images/border_07.png);width:78px;height:41px;font-size:22px;
+								text-align:center;line-height:40px;">
+                                选择
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!--页码信息-->
+        <div id="txt" style="position: absolute; text-align:right; font-size:20px; left: 654px; top: 416px; width:200px; height:20px; color: #ff0000;"></div>
+        <div id="nums" style="position:absolute;left:448px;top:456px;color:#ffffff;font-size:24px;">2/9</div>
+        <div id="btn0" style="position:absolute;left:508px;top:446px;background:url(images/border_03.png);width:132px;height:42px;text-align:center;color:#fff;font-size:24px;
+			line-height:40px;">上一题 </div>
+        <div id="btn1" style="position:absolute;left:643px;top:447px;background:url(images/border_03.png);width:132px;height:42px;text-align:center;color:#fff;font-size:24px;
+			line-height:40px;">下一题 </div>
+        <div id="btn2" style="position:absolute;left:778px;top:447px;background:url(images/border_03.png);width:132px;height:42px;text-align:center;color:#fff;font-size:24px;
+			line-height:40px;">投票 </div>
+
+    </div>
+    <!--右侧信息-->
+    <div style="position:absolute;left:966px;top:111px;"><img src="images/pic_09.png" /></div>
+    <div style="position:absolute;left:896px;top:619px; width:288px; height:67px; ">
+        <div style="position:absolute;left:0;top:0; width:51px; height:67px; ">
+            <img id="imgIcon0" src="images/btn0_01.png" alt="">
+        </div>
+        <div style="position:absolute;left:100px;top:0; width:51px; height:67px; ">
+            <img id="imgIcon1" src="images/btn0_02.png" alt="">
+        </div>
+        <div style="position:absolute;left:200px;top:0; width:51px; height:67px; ">
+            <img id="imgIcon2" src="images/btn0_03.png" alt="">
+        </div>
+    </div>
+</body>
+
+</html>

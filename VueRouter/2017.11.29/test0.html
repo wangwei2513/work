@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <!-- 嵌套路由 -->
+    <div id="app">
+        <router-link to="/user/paul/profile">paul</router-link>
+        <router-link to="/user/james/post">james</router-link>
+        <router-view></router-view>
+    </div>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/vue-router/dist/vue-router.js"></script>
+    <script>
+        const user = {
+            template: '<div class="user">' +
+                '<h2>User:{{$route.params.id}}</h2>' +
+                '<router-view></router-view>' +
+                '</div>'
+        }
+        const userProfile = {
+            props:['userProfile'],
+            template: '<div>profile:{{userProfile}}</div>'
+        }
+        const userPost = {
+            props:['userPost'],
+            template: '<div>post:{{userPost}}</div>'
+        }
+        const router = new VueRouter({
+            routes: [{
+                path: '/user/:id',
+                component: user,
+                children: [{
+                    path: 'profile',
+                    component: userProfile
+                }]
+            }, {
+                path: '/user/:id',
+                component: user,
+                children: [{
+                    path: 'post',
+                    component: userPost
+                }]
+            }]
+        })
+        const app = new Vue({
+            data: {
+                userProfile:'aaa',
+                userPost:'bbb'
+            },
+            router
+        }).$mount("#app")
+    </script>
+</body>
+
+</html>

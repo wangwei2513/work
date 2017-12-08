@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"abb","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495528967013404183.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山ABB变压器有限公司","navigator":"南朗镇>名企>中山ABB变压器有限公司","newAdd":0,"nodePath":"xlz/mingqi/abb"}

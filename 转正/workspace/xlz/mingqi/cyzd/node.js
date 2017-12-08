@@ -1,0 +1,1 @@
+{"blurImageUrl":"","clickable":1,"enName":"cyzd","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495527542490194202.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"产业基地","navigator":"南朗镇>名企>产业基地","newAdd":0,"nodePath":"xlz/mingqi/cyzd"}

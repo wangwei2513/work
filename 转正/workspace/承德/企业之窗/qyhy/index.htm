@@ -1,0 +1,315 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+  <title>无标题文档</title>
+  <style>
+    .column_txt0 {
+      height: 42px;
+      font-size: 24px;
+      color: #000;
+      line-height: 42px;
+      text-align: center;
+    }
+  </style>
+  <script type="text/javascript" src="js/common.js"></script>
+  <script src="js/grabKeyEvent.js"></script>
+  <script type="text/javascript">
+    var dataAjaxPath = "content.js";
+    var columnAjaxObj = null;
+
+    var itemLen = 6;
+    var column = 3;
+    var row = 2;
+    var itemMaxSize = 10;
+
+    var itemBox = null;
+    var scrollBox = null;
+    var menuData = [];
+    var backUrl = "";
+
+    function eventHandler(keycode) {
+      switch (keycode) {
+        case 1: // up
+        case 38:
+          changeUD(-3);
+          return false;
+          break;
+        case 2: // down
+        case 40:
+          changeUD(3);
+          return false;
+          break;
+        case 3: // left
+        case 37:
+          changeLR(-1);
+          return false;
+          break;
+        case 4: // right
+        case 39:
+          changeLR(1);
+          return false;
+          break;
+        case 13:
+          doSelect();
+          return false;
+          break;
+        case 8:
+          goBack();
+          //event.returnValue = false;
+          return false;
+          break;
+        case 339:
+        case 27: //exit
+          goPortal();
+          // iSTB.browser.gotoSTB("tv");
+          event.returnValue = false;
+          return false;
+          break;
+        case 4097:
+          goExitMenu();
+          return false;
+          break;
+      }
+    }
+
+    function changeUD(_num) {
+      if (itemBox != null) {
+        if ((_num < 0 && (itemBox.focusPos >= 0 && itemBox.focusPos < column)) || (_num > 0 && (itemBox.focusPos >=
+            column && itemBox.focusPos <= itemLen - 1))) {
+          return;
+        }
+        clearFocus();
+        itemBox.changeList(_num);
+        scrollBox.scroll(itemBox.position);
+        showScrollPage();
+        showFocus();
+      }
+    }
+
+    function changeLR(_num) {
+      if (itemBox != null) {
+        if ((itemBox.focusPos == 0 || itemBox.focusPos == 3) && _num < 0 && itemBox.currPage == 1) {
+          clearFocus();
+          parent.focusArea = 0;
+          parent.showFocus();
+        } else {
+          clearFocus();
+          itemBox.changeList(_num);
+          scrollBox.scroll(itemBox.position);
+          showScrollPage();
+          showFocus();
+        }
+      }
+    }
+
+    function doSelect() {
+      if (itemBox != null) {
+        parent.location.href = parent.filePath + "/content.htm?itemPos=" + itemBox.position + "&mainMenuPos=" + parent.columnBox
+          .position + "&focusArea=" + parent.focusArea;
+      }
+    }
+
+    function goBack() {
+      goExitBack();
+    }
+
+    function init() {
+      ajaxLoadMenuData();
+    }
+
+
+    function ajaxLoadMenuData() {
+      if (columnAjaxObj != null) {
+        columnAjaxObj.requestAbort();
+      }
+      columnAjaxObj = new AjaxClass();
+      columnAjaxObj.frame = window;
+      columnAjaxObj.charset = "gbk";
+      columnAjaxObj.successCallback = function (_xmlHttp, _params) {
+        //iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+        if (typeof (jsonData) != "undefined" && jsonData.length > 0) {
+          menuData = jsonData;
+          showItem();
+        } else {
+          noItemData();
+          initScroll();
+        }
+      };
+      columnAjaxObj.failureCallback = function (_xmlHttp, _params) {
+        iDebug(">>>ajaxLoadMenuData failureCallback");
+        noItemData();
+      };
+      columnAjaxObj.url = dataAjaxPath;
+      iDebug(">>>ajaxLoadMenuData columnAjaxObj.url=" + columnAjaxObj.url);
+      columnAjaxObj.requestData();
+    }
+
+
+    function noItemData() {
+      for (var i = 0; i < itemLen; i++) {
+        if (i == 0) {
+          $("item" + i).innerText = "暂无数据";
+        } else {
+          $("item" + i).innerText = "";
+        }
+        $("date" + i).innerText = "";
+      }
+      $("itemFocus").style.visibility = "hidden";
+    }
+
+    function showItem() {
+      itemBox = new showList(itemLen, menuData.length, parent.itemPos, 1, window);
+      itemBox.focusDiv = "focus";
+      itemBox.haveData = function (_list) {
+        $("title" + _list.idPos).innerHTML = subStr(menuData[_list.dataPos].title, itemMaxSize, "...");
+        $("entryImage" + _list.idPos).src = (menuData[_list.dataPos].entryImage == null || menuData[_list.dataPos].entryImage
+          .imageUrl == "") ? "images/default.png" : menuData[_list.dataPos].entryImage.imageUrl;
+      };
+      itemBox.notData = function (_list) {
+        $("title" + _list.idPos).innerHTML = "";
+        $("entryImage" + _list.idPos).src = "images/global_tm.gif";
+      };
+      itemBox.startShow();
+      initScroll();
+      //焦点位置
+      clearFocus();
+      showFocus();
+    }
+
+
+    function initScroll() {
+      scrollBox = null;
+      if (itemBox != null) {
+        $("barDiv").style.visibility = "visible";
+        listDataLength = menuData.length;
+        scrollBox = new ScrollBar("barDiv", "barDiv", window);
+        scrollBox.init(listDataLength, itemLen, 492, 0, 61);
+        scrollBox.scroll(itemBox.position);
+        showScrollPage();
+      } else {
+        noScrollBar();
+      }
+    }
+
+    function noScrollBar() {
+      $("barDiv").style.visibility = "hidden";
+      $("currPage").innerText = 0;
+      $("totalPage").innerText = 0;
+      scrollBox = null;
+    }
+
+    function showScrollPage() {
+      if (itemBox != null) {
+        $("currPage").innerText = itemBox.position + 1;
+        $("totalPage").innerText = menuData.length;
+      }
+    }
+
+    function clearFocus() {
+      if (parent.focusArea == 1 && itemBox != null) {
+        $("itemFocus").style.visibility = "hidden";
+        $("title" + itemBox.focusPos).innerHTML = subStr(menuData[itemBox.position].title, itemMaxSize, "...");
+      }
+    }
+
+    function showFocus() {
+      if (parent.focusArea == 1 && itemBox != null) {
+        $("itemFocus").style.visibility = "visible";
+        if (getStrChineseLength(menuData[itemBox.position].title) > itemMaxSize) {
+          $("title" + itemBox.focusPos).innerHTML = "<marquee direction=left width=250>" + menuData[itemBox.position].title +
+            "</marquee>";
+        }
+        $("itemFocus").style.left = (-26 + (itemBox.focusPos % column) * 283) + "px";
+        $("itemFocus").style.top = (-23 + parseInt(itemBox.focusPos / column, 10) * 245) + "px";
+      }
+    }
+  </script>
+
+</head>
+
+<body leftmargin="0" topmargin="0" onload="init();">
+
+  <!--推荐-->
+  <div style="position: absolute; left: 20px; top: 20px; width: 854px; height: 241px;">
+    <div style="position:absolute; left:0px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage0" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title0">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+    <div style="position:absolute; left:283px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage1" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title1">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+    <div style="position:absolute; left:566px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage2" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title2">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+    <div style="position:absolute; left:-26px; top:-23px; width:315px; height:245px; background:url(images/column_focus0.png); background-image: url(images/column_focus0.png); visibility:hidden"
+      id="itemFocus"></div>
+    <div id="focus"></div>
+  </div>
+  <!--条目-->
+  <div style="position: absolute; left: 20px; top: 265px; width: 855px; height: 240px;">
+    <div style="position:absolute; left:0px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage3" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title3">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+    <div style="position:absolute; left:283px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage4" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title4">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+    <div style="position:absolute; left:566px; top:0px; width:240px; height:193px;">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td><img src="" width="263" height="192" id="entryImage5" /></td>
+        </tr>
+        <tr>
+          <td class="column_txt0" id="title5">&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div style="position: absolute; left: 875px; top: 20px; width: 3px; height: 492px; background-color: #828282;">
+    <div style="position:absolute; left:-12px; top:0px; width:29px; height:61px; background-image: url(images/page.png);" id="barDiv">
+      <div style="position:absolute; left:0px; top:0px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;"
+        id="currPage"></div>
+      <div style="position:absolute; left:0px; top:31px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;"
+        id="totalPage"></div>
+    </div>
+  </div>
+</body>
+
+</html>

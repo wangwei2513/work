@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=gbk" />
+  <title></title>
+  <script type="text/javascript" src="js/common.js"></script>
+  <script type="text/javascript" src="js/grabKeyEvent.js"></script>
+  <script type="text/javascript">
+    var dataAjaxPath = "content.js";
+    var columnAjaxObj = null;
+    var logoAjaxObj = null;
+
+    var itemLen = 8;
+    var itemMaxSize = 23;
+
+    var itemBox = null;
+    var scrollBox = null;
+    var menuData = [];
+    var backUrl = "";
+
+    function eventHandler(keycode) {
+      switch (keycode) {
+        case 1: // up
+        case 38:
+          changeUD(-1);
+          return false;
+          break;
+        case 2: // down
+        case 40:
+          changeUD(1);
+          return false;
+          break;
+        case 3: // left
+        case 37:
+          changeLR(-1);
+          return false;
+          break;
+        case 4: // right
+        case 39:
+          changeLR(1);
+          return false;
+          break;
+        case 13:
+          doSelect();
+          return false;
+          break;
+        case 8:
+          goBack();
+          //event.returnValue = false;
+          return false;
+          break;
+        case 339:
+        case 27: //exit
+          goPortal();
+          // iSTB.browser.gotoSTB("tv");
+          event.returnValue = false;
+          return false;
+          break;
+        case 4097:
+          goExitMenu();
+          return false;
+          break;
+      }
+    }
+
+    function changeUD(_num) {
+      if (itemBox != null) {
+        clearFocus();
+        itemBox.changeList(_num);
+        showFocus();
+        scrollBox.scroll(itemBox.position);
+        showScrollPage();
+      }
+    }
+
+    function changeLR(_num) {
+      if (itemBox != null) {
+        clearFocus();
+        parent.focusArea = 0;
+        parent.showFocus();
+      }
+    }
+
+    function doSelect() {
+      if (itemBox != null) {
+        parent.location.href = parent.filePath + "/content.htm?itemPos=" + itemBox.position + "&mainMenuPos=" + parent.columnBox
+          .position + "&focusArea=" + parent.focusArea;
+      }
+    }
+
+    function goBack() {
+      parent.goBack();
+    }
+
+    function init() {
+      iDebug("list_iframe--subNode--init");
+      ajaxLoadMenuData();
+    }
+
+
+    function ajaxLoadMenuData() {
+      if (columnAjaxObj != null) {
+        columnAjaxObj.requestAbort();
+      }
+      columnAjaxObj = new AjaxClass();
+      columnAjaxObj.frame = window;
+      columnAjaxObj.charset = "gbk";
+      columnAjaxObj.successCallback = function (_xmlHttp, _params) {
+        //iDebug(">>>ajaxLoadMenuData successCallback _xmlHttp.responseText=" + _xmlHttp.responseText);
+        var jsonData = eval('(' + _xmlHttp.responseText + ')');
+        if (typeof (jsonData) != "undefined" && jsonData.length > 0) {
+          menuData = jsonData;
+          iDebug("list_iframe--subNode--ajaxLoadMenuData--menuData=" + menuData);
+          showItem();
+          iDebug("list_iframe--subNode--ajaxLoadMenuData--itemBox");
+        } else {
+          noItemData();
+          initScroll();
+        }
+      };
+      columnAjaxObj.failureCallback = function (_xmlHttp, _params) {
+        iDebug(">>>ajaxLoadMenuData failureCallback");
+        noItemData();
+      };
+      columnAjaxObj.url = dataAjaxPath;
+      iDebug(">>>ajaxLoadMenuData columnAjaxObj.url=" + columnAjaxObj.url);
+      columnAjaxObj.requestData();
+    }
+
+
+    function noItemData() {
+      for (var i = 0; i < itemLen; i++) {
+        if (i == 0) {
+          $("item" + i).innerText = "��������";
+        } else {
+          $("item" + i).innerText = "";
+        }
+        $("date" + i).innerText = "";
+      }
+      $("itemFocus").style.visibility = "hidden";
+    }
+
+    function showItem() {
+      iDebug("list_iframe--subNode--showItem()--itemBox");
+      itemBox = new showList(itemLen, menuData.length, parent.itemPos, 1, window);
+
+      iDebug("list_iframe--subNode--showItem()--itemBox=" + typeof (itemBox));
+
+      itemBox.focusDiv = "itemFocus";
+      itemBox.listSign = "top";
+      itemBox.listHigh = 65;
+      itemBox.focusLoop = true;
+      itemBox.haveData = function (_list) {
+        $("item" + _list.idPos).innerHTML = "��" + subStr(menuData[_list.dataPos].title, itemMaxSize, "...");
+        $("date" + _list.idPos).innerText = menuData[_list.dataPos].date;
+      };
+      itemBox.notData = function (_list) {
+        $("item" + _list.idPos).innerHTML = "";
+        $("date" + _list.idPos).innerText = "";
+      };
+      itemBox.startShow();
+      initScroll();
+      //����λ��
+      clearFocus();
+      showFocus();
+    }
+
+
+    function initScroll() {
+      scrollBox = null;
+      if (itemBox != null) {
+        $("barDiv").style.visibility = "visible";
+        listDataLength = menuData.length;
+        scrollBox = new ScrollBar("barDiv", "barDiv", window);
+        scrollBox.init(listDataLength, itemLen, 492, 0, 61);
+        scrollBox.scroll(itemBox.position);
+        showScrollPage();
+      } else {
+        noScrollBar();
+      }
+    }
+
+    function noScrollBar() {
+      $("barDiv").style.visibility = "hidden";
+      $("currPage").innerText = 0;
+      $("totalPage").innerText = 0;
+      scrollBox = null;
+    }
+
+    function showScrollPage() {
+      if (itemBox != null) {
+        $("currPage").innerText = itemBox.position + 1;
+        $("totalPage").innerText = menuData.length;
+      }
+    }
+
+    function clearFocus() {
+      if (parent.focusArea == 1 && itemBox != null) {
+        $("itemFocus").style.visibility = "hidden";
+        $("item" + itemBox.focusPos).style.color = "";
+        $("date" + itemBox.focusPos).style.color = "";
+        $("item" + itemBox.focusPos).innerHTML = "��" + subStr(menuData[itemBox.position].title, itemMaxSize, "...");
+      }
+    }
+
+
+    function showFocus() {
+      if (parent.focusArea == 1 && itemBox != null) {
+        $("itemFocus").style.visibility = "visible";
+        $("item" + itemBox.focusPos).style.color = "#ffffff";
+        $("date" + itemBox.focusPos).style.color = "#ffffff";
+        if (getStrChineseLength(menuData[itemBox.position].title) > itemMaxSize) {
+          $("item" + itemBox.focusPos).innerHTML = "<marquee direction=left width=600>" + "��" + menuData[itemBox.position]
+            .title + "</marquee>";
+        }
+      }
+    }
+  </script>
+
+</head>
+
+<body leftmargin="0" topmargin="0" onload="init();">
+
+  <div style="position: absolute; left:12px; width: 835px; height: 517px; background-image: url(images/line1.png); border: 1px none #000000; top: -1px;" ">
+<div style="position: absolute; top: 122px; width: 849px; height: 64px; background-color: #e28a0d; layer-background-color:
+    #e28a0d; border: 1px none #000000; visibility: hidden; left: -12px; " id="itemFocus "></div>
+
+  <div style="position: absolute; top: 1px; width: 797px; height: 503px; ">
+    <table width="100% " border="0 " cellspacing="0 " cellpadding="0 " style="font-size:26px; line-height:65px; color:#3f3f3f; ">
+      <tr>
+        <td id="item0 ">&nbsp;</td>
+        <td id="date0 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item1 ">&nbsp;</td>
+        <td id="date1 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item2 ">&nbsp;</td>
+        <td id="date2 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item3 ">&nbsp; </td>
+        <td id="date3 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item4 ">&nbsp; </td>
+        <td id="date4 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item5 ">&nbsp;</td>
+        <td id="date5 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item6 ">&nbsp;</td>
+        <td id="date6 ">&nbsp;</td>
+      </tr>
+      <tr>
+        <td id="item7 ">&nbsp;</td>
+        <td id="date7 ">&nbsp;</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div style="position: absolute; left: 881px; top: 0px; width: 3px; height: 492px; background-color: #828282; ">
+  <div style="position:absolute; left:-12px; top:0px; width:29px; height:61px; background-image: url(images/page.png);
+    " id="barDiv ">
+    <div style="position:absolute; left:0px; top:0px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;
+    " id="currPage "></div>
+    <div style="position:absolute; left:0px; top:31px; width:29px; height:29px; font-size:24px; color:#ffffff; text-align:center;
+    " id="totalPage "></div>
+  </div>
+</div>
+</body>
+</html>
