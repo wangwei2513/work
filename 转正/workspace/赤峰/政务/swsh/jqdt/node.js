@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"jqdt","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.14.30.222:80//application/appcmsFiles/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"近期动态","navigator":"活动集锦>赤峰党委中心工作>近期动态","newAdd":0,"nodePath":"hdjj/swsh/jqdt","subNodeFocusCombinedImage":"http://10.14.30.222:80//application/appcmsFiles/"}

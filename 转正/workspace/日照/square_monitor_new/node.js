@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"square_monitor_new","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"squared","name":"宫格-链接","navigator":"宫格-链接","newAdd":0,"nodePath":"square_monitor_new"}

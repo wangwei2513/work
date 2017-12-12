@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"meishi","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1496386809649859833.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"宾馆住宿","navigator":"南朗镇>服务>宾馆住宿","newAdd":0,"nodePath":"xlz/fuwu/meishi"}

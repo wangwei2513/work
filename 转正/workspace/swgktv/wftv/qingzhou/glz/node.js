@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"glz","entryWord":"","focusImageUrl":"http://10.191.69.205:80/appcmsFiles/","isManaged":"notManaged","linkUrl":"http://10.191.69.205:80/newappcms/glzlb/index.htm","listType":"","name":"高柳镇","navigator":"三务公开数字电视公开平台>青州>高柳镇","newAdd":0,"nodePath":"swgktv/wftv/qingzhou/glz"}

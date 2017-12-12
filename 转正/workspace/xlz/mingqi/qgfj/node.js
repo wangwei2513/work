@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"qgfj","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495529175022272769.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山侨光纺织有限公司","navigator":"南朗镇>名企>中山侨光纺织有限公司","newAdd":0,"nodePath":"xlz/mingqi/qgfj"}

@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"jnzx","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495610775276598654.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山纪念中学","navigator":"南朗镇>旅游>中山纪念中学","newAdd":0,"nodePath":"xlz/lvyou/jnzx"}

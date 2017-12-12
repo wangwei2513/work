@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"qzh","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1495610179208980417.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"程君海故居","navigator":"南朗镇>旅游>程君海故居","newAdd":0,"nodePath":"xlz/lvyou/qzh"}

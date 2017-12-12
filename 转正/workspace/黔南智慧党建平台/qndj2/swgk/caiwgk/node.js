@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"caiwgk","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"","name":"财务公开","navigator":"黔南党建2版本>三务公开>财务公开","newAdd":0,"nodePath":"qndj2/swgk/caiwgk","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

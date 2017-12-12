@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"bm","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"","name":"常规/便民类模板","navigator":"常规 > 服务","newAdd":0,"nodePath":"bm"}

@@ -1,1 +1,0 @@
-var playUrl = "http://10.14.41.246/application/playCase/vodPlay.htm";

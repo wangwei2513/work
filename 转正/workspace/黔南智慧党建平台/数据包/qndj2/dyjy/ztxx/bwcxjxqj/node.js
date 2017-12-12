@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"bwcxjxqj","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"不忘初心继续前进","navigator":"党员教育>专题学习>不忘初心继续前进","newAdd":0,"nodePath":"qndj2/dyjy/ztxx/bwcxjxqj","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

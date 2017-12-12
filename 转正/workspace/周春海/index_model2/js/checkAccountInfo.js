@@ -1,1 +1,0 @@
-﻿{"flag":"0","usernum":"0501001","oweMonth":"1","paymonth":"201711","name":"昆明卡互卡","yue":"24.84","addr":"世博车市"}

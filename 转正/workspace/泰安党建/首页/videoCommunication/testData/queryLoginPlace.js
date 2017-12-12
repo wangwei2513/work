@@ -1,1 +1,0 @@
-{"result":"E0000","msg":{"areaName":"锦绣社区","areaLevel":4,"parentArea":[{"areaName":"广川街道办","areaLevel":3,"areaId":3},{"areaName":"德城区组织部","areaLevel":2,"areaId":2},{"areaName":"德城区","areaLevel":1,"areaId":1}],"placeName":"锦绣社区党支部","areaId":4}}

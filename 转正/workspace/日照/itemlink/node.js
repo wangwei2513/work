@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"itemlink","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"list","name":"列表-链接","navigator":"列表-链接","newAdd":0,"nodePath":"itemlink"}

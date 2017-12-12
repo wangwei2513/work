@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"yszfw_xxgk","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.7.27.220:80/appcmsFiles/","isManaged":"notManaged","linkUrl":"","listType":"ds_wenziliebiao","name":"信息公开","navigator":"阳朔政府网>信息公开","newAdd":0,"nodePath":"yszfw/yszfw_xxgk","subNodeFocusCombinedImage":"http://10.7.27.220:80/appcmsFiles/"}

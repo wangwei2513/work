@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"myddc","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"tv_noList","name":"满意度调查","navigator":"美丽乡村>村民互动>满意度调查","newAdd":0,"nodePath":"qndj2/mlxc/cmhd/myddc","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

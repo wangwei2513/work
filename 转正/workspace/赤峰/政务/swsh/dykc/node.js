@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"dykc","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.14.30.222:80//application/appcmsFiles/","isManaged":"managed","linkUrl":"","listType":"tv_square","name":"调研考察","navigator":"活动集锦>赤峰党委中心工作>调研考察","newAdd":0,"nodePath":"hdjj/swsh/dykc","subNodeFocusCombinedImage":"http://10.14.30.222:80//application/appcmsFiles/"}

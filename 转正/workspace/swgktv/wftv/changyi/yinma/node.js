@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"yinma","entryWord":"","focusImageUrl":"http://10.191.69.205:80/appcmsFiles/","isManaged":"notManaged","linkUrl":"","listType":"","name":"饮马","navigator":"三务公开数字电视公开平台>昌邑>饮马","newAdd":0,"nodePath":"swgktv/wftv/changyi/yinma"}

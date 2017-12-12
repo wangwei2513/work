@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"wqrz","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"squared","name":"债权融资","navigator":"民营经济之窗>金融服务>债权融资","newAdd":0,"nodePath":"zxqyjx/jrfw/wqrz"}

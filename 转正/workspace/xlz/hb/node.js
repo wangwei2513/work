@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"hb","entryWord":"","focusImageUrl":"http://172.23.252.132:80/appcmsFiles/1496386195306961335.jpg","isManaged":"managed","linkUrl":"","listType":"list","name":"中山影视城","navigator":"南朗镇>中山影视城","newAdd":0,"nodePath":"xlz/hb"}

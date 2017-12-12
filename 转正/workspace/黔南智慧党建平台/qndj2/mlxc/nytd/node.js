@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"nytd","entryCombinedImage":"","entryWord":"","focusImageUrl":"http://10.69.42.209:80/appcmsFiles_4.0/","isManaged":"managed","linkUrl":"","listType":"","name":"农业天地","navigator":"黔南党建2版本>美丽乡村>农业天地","newAdd":0,"nodePath":"qndj2/mlxc/nytd","subNodeFocusCombinedImage":"http://10.69.42.209:80/appcmsFiles_4.0/"}

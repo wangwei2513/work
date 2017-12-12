@@ -1,1 +1,0 @@
-{"blurImageUrl":"","clickable":1,"enName":"xxjy_list_ptext","entryWord":"","focusImageUrl":"","isManaged":"managed","linkUrl":"","listType":"list","name":"南湖-条目图文混排","navigator":"南湖-条目图文混排","newAdd":0,"nodePath":"xxjy_list_ptext"}

@@ -1,3 +1,0 @@
-{
-	messageInfo:0
-}
