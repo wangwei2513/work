@@ -5,12 +5,12 @@
           <div class="manage_tip">
           <p>ele后台管理系统</p>  
           </div>
-          <el-form v-model="loginForm" :rules="rules" :ref="loginForm">
+          <el-form :model="loginForm" :rules="rules" ref="loginForm">
             <el-form-item prop="username">
               <el-input v-model="loginForm.username" placeholder="用户名"><span>dadaas</span></el-input>
             </el-form-item>
             <el-form-item prop="password">
-              <el-input v-model="loginForm.password" placeholder="密码" type="password"></el-input>
+              <el-input type="password" placeholder="密码" v-model="loginForm.password"></el-input>
             </el-form-item>
             <el-form-item label="">
               <el-button type="primary" @click="submitForm('loginForm')" class="submit_btn">登录</el-button>
@@ -25,17 +25,15 @@
 </template>
 
 <script>
-import { login, getAdminData } from "../api/getData";
-import { mapState, mapActions } from "vuex";
+import { login, getAdminInfo } from "../api/getData";
+import { mapActions, mapState } from "vuex";
 export default {
   data() {
     return {
-      loginForm: [
-        {
-          username: "",
-          password: ""
-        }
-      ],
+      loginForm: {
+        username: "",
+        password: ""
+      },
       rules: {
         username: [{ required: true, message: "请输入用户名", trigger: "blur" }],
         password: [{ required: true, meesage: "请输入密码", trigger: "blur" }]
@@ -44,7 +42,7 @@ export default {
     };
   },
   mounted() {
-    showLogin: true;
+    this.showLogin = true;
     if (!this.adminInfo.id) {
       this.getAdminData();
     }
@@ -53,9 +51,9 @@ export default {
     ...mapState(["adminInfo"])
   },
   methods: {
-    ...mapActions(["adminInfo"]),
+    ...mapActions(["getAdminData"]),
     async submitForm(formName) {
-      this.$ref[formName].validate(async valid => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
           const res = await login({
             user_name: this.loginForm.userName,

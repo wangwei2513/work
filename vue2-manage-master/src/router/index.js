@@ -24,7 +24,7 @@ const explain = r => require.ensure([], () => r(require('@/page/explain')), 'exp
 const routes = [
 	{
 		path: '/',
-		component: login
+		component: login 
 	},
 	{
 		path: '/manage',

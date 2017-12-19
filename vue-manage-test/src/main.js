@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store'
 import ElementUi from 'element-ui'
 import Vuex from 'vuex'
 import less from 'less'
@@ -18,6 +19,7 @@ Vue.use(Vuex)
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })
