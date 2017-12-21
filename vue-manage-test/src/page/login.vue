@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { login, getAdminInfo } from "../api/getData";
+import { login, getAdminInfo, loginData } from "../api/getData";
 import { mapActions, mapState } from "vuex";
 export default {
   data() {
@@ -55,6 +55,7 @@ export default {
     async submitForm(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
+          loginData();
           const res = await login({
             user_name: this.loginForm.userName,
             password: this.loginForm.password

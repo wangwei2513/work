@@ -13,6 +13,7 @@ export default async(url = '', data = {}, type = 'get', method = 'fetch') => {
     if (dataStr !== '') {
       dataStr = dataStr.substr(0, dataStr.lastIndexOf('&'));
       url = url + "?" + dataStr;
+      console.log(url)
     }
   }
   if (window.fetch && method == 'fetch') {
@@ -32,6 +33,7 @@ export default async(url = '', data = {}, type = 'get', method = 'fetch') => {
       })
     }
     try {
+      console.log(url)
       const response = await fetch(url, requestConfig);
       const responseJson = await responseJson.json();
       return responseJson;
