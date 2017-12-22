@@ -142,7 +142,7 @@
                 categoryOptions: [],
                 selectedCategory: [],
                 address: {},
-            }
+            } // 
         },
         created(){
             this.initData();
