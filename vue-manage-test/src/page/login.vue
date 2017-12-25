@@ -25,8 +25,9 @@
 </template>
 
 <script>
-import { login, getAdminInfo} from "../api/getData";
+import { login, getAdminInfo } from "../api/getData";
 import { mapActions, mapState } from "vuex";
+import Mock from "mockjs";
 export default {
   data() {
     return {
@@ -43,6 +44,7 @@ export default {
   },
   mounted() {
     this.showLogin = true;
+    this.MockData()
     if (!this.adminInfo.id) {
       this.getAdminData();
     }
@@ -53,17 +55,21 @@ export default {
   methods: {
     ...mapActions(["getAdminData"]),
     async submitForm(formName) {
+      
       this.$refs[formName].validate(async valid => {
         if (valid) {
-          login();
-          const res = await login({
-            user_name: this.loginForm.userName,
-            password: this.loginForm.password
-          });
+          // login();
+          const res = await login(
+            // {
+            // user_name: this.loginForm.username,
+            // password: this.loginForm.password
+            // }
+          );
+          console.log(res)
           if (res.status === 1) {
             this.$message({
               message: "登录成功",
-              type: "seccess"
+              type: "success"
             });
             this.$router.push("manage");
           } else {
@@ -81,13 +87,24 @@ export default {
         }
         return false;
       });
+    },
+    MockData() {
+      Mock.mock("/admin/login", "post", {
+        status: 1
+      });
+      Mock.mock("/admin/info", "get", {
+        status: 1,
+        data:{
+          id:'weihuang'
+        }
+      });
     }
   },
   watch: {
     adminInfo: function(newValue) {
       if (newValue.id) {
         this.$message({
-          type: "seccess",
+          type: "success",
           message: "检测您之前登陆过，将自动登录"
         });
         this.$router.push("manage");

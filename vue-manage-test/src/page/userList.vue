@@ -52,21 +52,6 @@ export default {
           register_time: "2017/12/12",
           username: "weiHuang",
           city: "机场"
-        },
-        {
-          register_time: "2017/12/13",
-          username: "padarker",
-          city: "水城"
-        },
-        {
-          register_time: "2017/12/15",
-          username: "miaomiaomiaoji",
-          city: "hospital"
-        },
-        {
-          register_time: "2017/12/16",
-          username: "MC_AWM",
-          city: "防空洞"
         }
       ],
       currentRow: null,
@@ -94,6 +79,7 @@ export default {
           throw new Error("获取数据失败");
         }
         this.getUsers();
+        console.log(this.getUsers())
       } catch (error) {
         console.log("获取数据失败", error);
       }
@@ -107,24 +93,70 @@ export default {
       this.getUsers();
     },
     async getUsers() {
-      const Users = await getUserList({
-        offset: this.offset,
-        limit: this.limit
-      });
+      const Users = await getUserList(
+      //   {
+      //   offset: this.offset,
+      //   limit: this.limit
+      // }
+      );
+      console.log("users"+Users)
       this.tableData = [];
-      Users.forEach(item => {
+      Users.data.forEach(item => {
         const tableData = {};
         tableData.username = item.username;
-        tableData.registe_time = item.registe_time;
+        tableData.register_time = item.register_time;
         tableData.city = item.city;
         this.tableData.push(tableData);
       });
+      console.log(this.tableData)
     },
     mockData() {
       Mock.mock("/users/count", "get", {
         status: 1
       });
-      Mock.mock("/users/list", "get", {});
+      Mock.mock("/users/list", "get", {
+        data:[
+        {
+          register_time: "2017/12/12",
+          username: "weiHuang",
+          city: "机场"
+        },
+        {
+          register_time: "2017/12/13",
+          username: "padarker",
+          city: "水城"
+        },
+        {
+          register_time: "2017/12/15",
+          username: "miaomiaomiaoji",
+          city: "hospital"
+        },
+        {
+          register_time: "2017/12/16",
+          username: "MC_AWM",
+          city: "防空洞"
+        },{
+          register_time: "2017/12/12",
+          username: "weiHuang",
+          city: "机场"
+        },
+        {
+          register_time: "2017/12/13",
+          username: "padarker",
+          city: "水城"
+        },
+        {
+          register_time: "2017/12/15",
+          username: "miaomiaomiaoji",
+          city: "hospital"
+        },
+        {
+          register_time: "2017/12/16",
+          username: "MC_AWM",
+          city: "防空洞"
+        }
+      ]
+      });
     }
   }
 };

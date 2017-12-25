@@ -123,10 +123,13 @@ export default {
           const resArr = [[], [], [], []];
           res.forEach((item, index) => {
             if (item.status == 1) {
-              resArr[Math.floor(index / 7)].push(item.count);
+              console.log(index)
+              console.log(item.count)
+              resArr[Math.floor(index / 7)].push(item.count)
             }
           });
           this.sevenDate = resArr;
+          console.log(resArr)
         })
         .catch(err => {
           console.log(err);

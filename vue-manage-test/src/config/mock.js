@@ -1,4 +1,4 @@
 import Mock from 'mockjs'
-export default (url = '' , type = 'get' , template) => {
-  Mock.mock(url, type, template)
-}
+export const userCountData = () => Mock.mock('./admin/login','get',{
+  status:1
+})

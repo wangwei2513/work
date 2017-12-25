@@ -88,6 +88,7 @@ export default {
             name: "API请求量",
             type: "line",
             data: this.sevenDate[0],
+            yAxisIndex: 1,
             markPoint: {
               data: [{ type: "max", name: "最大值" }, { type: "min", name: "最小值" }]
             }
