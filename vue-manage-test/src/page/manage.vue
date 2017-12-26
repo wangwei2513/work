@@ -6,7 +6,7 @@
           <el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
           <el-submenu index="2">
             <template slot="title"><i class="el-icon-document"></i>数据管理</template>
-            <el-menu-item index="userList">用户列表</el-menu-item>
+            <el-menu-item index="userList" class="li_background">用户列表</el-menu-item>
             <el-menu-item index="shopList">商家列表</el-menu-item>
             <el-menu-item index="foodList">食品列表</el-menu-item>
             <el-menu-item index="orderList">订单列表</el-menu-item>
@@ -69,6 +69,9 @@ export default {
 .right_content {
   height: 100%;
   overflow: auto;
+}
+.li_background{
+  background-color: #202c3e;
 }
 </style>
 

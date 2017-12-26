@@ -33,3 +33,17 @@ export const allUserCount = () => getData('/users/allUserCount')
 export const allOrderCount = () => getData('/users/allOrderCount')
 // 全部管理员
 export const allAdminCount = () => getData('/users/allAdminCount')
+// 
+export const getFoods = () => getData('/users/getFoods')
+// 
+export const getFoodsCount = () => getData('/users/getFoodsCount')
+// 
+export const getMenu = () => getData('/users/getMenu')
+// 
+export const updateFood = () => getData('/users/updateFood')
+// 
+export const deleteFood = () => getData('/users/deleteFood')
+// 
+export const getRestaurantDetail = () => getData('/users/getRestaurantDetail')
+// 
+export const getMenuById = () => getData('/users/getMenuById')
