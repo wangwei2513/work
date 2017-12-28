@@ -334,7 +334,8 @@ export default {
       this.tableData.splice(row.index, 1, { ...this.selectTable });
       this.$nextTick(() => {
         this.expendRow.push(row.index);
-      });
+        console.log(this.expandRow)
+      });console.log(this.expandRow)
       if (type == "edit" && this.restaurant_id != row.restaurant_id) {
         this.getMenu();
       }

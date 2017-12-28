@@ -47,3 +47,10 @@ export const deleteFood = () => getData('/users/deleteFood')
 export const getRestaurantDetail = () => getData('/users/getRestaurantDetail')
 // 
 export const getMenuById = () => getData('/users/getMenuById')
+// 
+export const getOrder = () => getData('/users/getOrder')
+export const getOrderData = () => getData('/users/getOrderData')
+// 
+// 
+export const getUserInfo = () => getData('/users/getUserInfo')
+export const getAddressInfo = () => getData('/users/getAddressInfo')

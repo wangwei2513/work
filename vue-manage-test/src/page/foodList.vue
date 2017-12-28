@@ -61,7 +61,7 @@
           layout="total,prev,pager,next">
         </el-pagination>
       </div>
-      <el-dialog title="修改食品信息" v-model="dialogFormVisible">
+      <el-dialog title="修改食品信息" :visible.sync="dialogFormVisible">
         <el-form :model="selectTable">
           <el-form-item label="食品信息" label-width="100px">
             <el-input v-model="selectTable.name" auto-complete="off"></el-input>
@@ -83,7 +83,7 @@
               :show-file-list="false"
               :on-success="handleServiceAvatarSuccess"
               :before-upload="beforeAvatarUpload">
-                <img v-if="selectTable.image_path" :src="baseImagePath+selectTable.image_path" class="avatar" alt="">
+                <img v-if="selectTable.image_path" :src="baseImgPath+selectTable.image_path" class="avatar" alt="">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
           </el-form-item>
@@ -98,8 +98,8 @@
                 <el-button 
                   size="mini" 
                   type="danger"
-                  @click="deleteSpcs"
-                ></el-button>
+                  @click="deleteSpcs(scope.$index)"
+                >删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -110,21 +110,21 @@
           <el-button type="primary" @click="updateFood">确定</el-button>
         </div>
       </el-dialog>
-      <el-dialog title="添加规格">
+      <el-dialog title="添加规格" :visible.sync="specsFormVisible">
         <el-form :rules="specsFormrules" :model="specsForm">
           <el-form-item label="规格" label-width="100px" prop="specs">
             <el-input v-model="specsForm.specs" placeholder=""></el-input>
           </el-form-item>
           <el-form-item label="包装费" label-width="100px">
-            <el-input v-model="specsForm.paking_fee" :min="0" :max="100" placeholder=""></el-input>
+            <el-input-number v-model="specsForm.packing_fee" :min="0" :max="100" placeholder=""></el-input-number>
           </el-form-item>
           <el-form-item label="价格" label-width="100px">
-            <el-input v-model="specsForm.price" :min="0" :max="10000" placeholder=""></el-input>
+            <el-input-number v-model="specsForm.price" :min="0" :max="10000" placeholder=""></el-input-number>
           </el-form-item>
         </el-form>
         <div class="dialog_footer">
           <el-button @click="specsFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="addSepcs"></el-button>
+          <el-button type="primary" @click="addSepcs">确定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -217,7 +217,8 @@ export default {
           restaurant_id: this.selectTable.restaurant_id,
           allMenu: true
         });
-        menu.forEach((item, index) => {
+        console.log(menu);
+        menu.data.forEach((item, index) => {
           this.menuOptions.push({
             label: item.label,
             value: item.id,
@@ -265,8 +266,8 @@ export default {
       this.specsForm.price = 20;
       this.specsFormVisible = false;
     },
-    deleteSpces(index) {
-      this.specs.slice(index, 1);
+    deleteSpcs(index) {
+      this.specs.splice(index, 1);
     },
     handleSizeChange(val) {
       console.log(`每页${val}条`);
@@ -301,7 +302,7 @@ export default {
         }
       };
       this.selectMenu = { label: category.name, value: row.category_id };
-      this.tableData.splice(row.index, 1, { ...this, selectTable });
+      this.tableData.splice(row.index, 1, { ...this.selectTable });
       this.$nextTick(() => {
         this.expendRow.push(row.index);
       });
@@ -397,6 +398,85 @@ export default {
             category_id: 3,
             image_path: "aa/aa/aa",
             specsFoods: {}
+          },{
+            name: "qsda",
+            item_id: "qwe",
+            description: "好吃",
+            rating: 3.9,
+            month_sales: 2131,
+            restaurant_id: 21,
+            category_id: 3,
+            image_path: "aa/aa/aa",
+            specsFoods: {}
+          },{
+            name: "qsda",
+            item_id: "qwe",
+            description: "好吃",
+            rating: 3.9,
+            month_sales: 2131,
+            restaurant_id: 21,
+            category_id: 3,
+            image_path: "aa/aa/aa",
+            specsFoods: {}
+          },{
+            name: "qsda",
+            item_id: "qwe",
+            description: "好吃",
+            rating: 3.9,
+            month_sales: 2131,
+            restaurant_id: 21,
+            category_id: 3,
+            image_path: "aa/aa/aa",
+            specsFoods: {}
+          },{
+            name: "qsda",
+            item_id: "qwe",
+            description: "好吃",
+            rating: 3.9,
+            month_sales: 2131,
+            restaurant_id: 21,
+            category_id: 3,
+            image_path: "aa/aa/aa",
+            specsFoods: {}
+          }
+        ]
+      });
+      Mock.mock("/users/getRestaurantDetail", "get", {
+        name: "沙县",
+        address: "福建沙县"
+      });
+      Mock.mock("/users/getMenuById", "get", {
+        name: "热门推荐"
+      });
+      Mock.mock("/users/getMenu", "get", {
+        data: [
+          {
+            label: "aaa",
+            id: 34
+          },
+          {
+            label: "bbb",
+            id: 35
+          },
+          {
+            label: "ccc",
+            id: 36
+          },
+          {
+            label: "ddd",
+            id: 37
+          },
+          {
+            label: "eee",
+            id: 38
+          },
+          {
+            label: "fff",
+            id: 39
+          },
+          {
+            label: "ggg",
+            id: 40
           }
         ]
       });
