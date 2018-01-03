@@ -35,7 +35,7 @@
 					</el-form-item>
 					<el-form-item label="店铺特点" style="white-space: nowrap;">
 						<span>品牌保证</span>
-						<el-switch on-text="" off-text="" v-model="formData.is_premium"></el-switch>
+						<el-switch v-model="formData.is_premium"></el-switch>
 						<span>蜂鸟专送</span>
 						<el-switch on-text="" off-text="" v-model="formData.delivery_mode"></el-switch>
 						<span>新开店铺</span>
@@ -407,7 +407,7 @@ export default {
                 address: "", //地址
                 latitude: "",
                 longitude: "",
-                description: "", //介绍
+                description: "", //介绍、yunfei
                 phone: "",
                 promotion_info: "",
                 float_delivery_fee: 5, //运费

@@ -54,3 +54,11 @@ export const getOrderData = () => getData('/users/getOrderData')
 // 
 export const getUserInfo = () => getData('/users/getUserInfo')
 export const getAddressInfo = () => getData('/users/getAddressInfo')
+// 获取用户数据
+export const getAdminCount = () => getData('/users/getAdminCount')
+export const getAdminList = () => getData('/users/getAdminList')
+// getCity, getCategories, searchPlace, addShop
+export const getCity = () => getData('/users/getCity')
+export const getCategories = () => getData('/users/getCategories')
+export const searchPlace = () => getData('/users/searchPlace')
+export const addShop = () => getData('/users/addShop')

@@ -16,8 +16,7 @@ export default async(url, data, type) => {
     if (type == 'post') {
       axios.post(url, data)
         .then(function (response) {
-          // console.log("response=" + JSON.stringify(response.data))
-          // return response.data;
+          console.log("response=" + JSON.stringify(response.data))
           resolve(response.data)
         })
         .catch(function (error) {
@@ -26,8 +25,7 @@ export default async(url, data, type) => {
     } else {
       axios.get(url)
         .then(function (response) {
-          // console.log("response=" + JSON.stringify(response))
-          // return response.data;
+          console.log("response=" + JSON.stringify(response.data))
           resolve(response.data)
         })
         .catch(function (error) {

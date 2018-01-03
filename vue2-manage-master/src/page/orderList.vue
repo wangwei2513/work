@@ -130,7 +130,6 @@ export default {
       });
     },
     async expand(row, status) {
-      
       if (status) {
         console.log(row)
         const restaurant = await getResturantDetail(row.restaurant_id);
