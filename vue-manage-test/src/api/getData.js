@@ -62,3 +62,6 @@ export const getCity = () => getData('/users/getCity')
 export const getCategories = () => getData('/users/getCategories')
 export const searchPlace = () => getData('/users/searchPlace')
 export const addShop = () => getData('/users/addShop')
+// getCategories,addCategory,addFood
+export const addCategory = () => getData('/users/addCategory')
+export const addFood = () => getData('/users/addFood')

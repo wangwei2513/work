@@ -159,7 +159,7 @@
                <el-button
                 type="danger"
                 size="mini"
-                @click="handleDelect(scope.$index)">
+                @click="handleDelete(scope.$index)">
                 删除
                </el-button>
              </template>
@@ -168,7 +168,7 @@
           <el-form-item class="button-submit">
             <el-button
              type="primary"
-             @click="submitForm(formData)">立即创建</el-button>
+             @click="submitForm('formData')">立即创建</el-button>
           </el-form-item>
         </el-form>
       </el-col>
