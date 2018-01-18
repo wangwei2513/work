@@ -11,13 +11,14 @@ import mockjs from 'mockjs'
 import axios from 'axios'
 import 'element-ui/lib/theme-chalk/index.css'
 
+
 Vue.config.productionTip = false
 
 Vue.use(ElementUi)
 Vue.use(less)
 Vue.use(Vuex)
 Vue.use(mockjs)
-Vue.use(axios)
+Vue.prototype.$ajax = axios
 
 /* eslint-disable no-new */
 new Vue({

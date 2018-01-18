@@ -8,11 +8,7 @@ export default async(url, data, type) => {
         dataStr += key + "=" + data[key] + "&";
       });
     }
-    if (dataStr !== "") {
-      dataStr = dataStr.substr(0, dataStr.lastIndexOf("&"));
-      url = url + "?" + dataStr;
-      console.log(url);
-    }
+
     if (type == 'post') {
       axios.post(url, data)
         .then(function (response) {
@@ -23,6 +19,11 @@ export default async(url, data, type) => {
           console.log(error);
         });
     } else {
+      if (dataStr !== "") {
+        dataStr = dataStr.substr(0, dataStr.lastIndexOf("&"));
+        url = url + "?" + dataStr;
+        console.log(url);
+      }
       axios.get(url)
         .then(function (response) {
           console.log("response=" + JSON.stringify(response.data))

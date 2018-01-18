@@ -4,7 +4,7 @@ export const login = data => getData('/admin/login', data , 'post')
 // 获取用户信息
 export const getAdminInfo = () => getData('/admin/info')
 // 退出登录
-export const signOut = () => getData('/admin/signout')
+export const signout = () => getData('/admin/signout')
 /**
  * 获取用户列表
  */
@@ -65,3 +65,13 @@ export const addShop = () => getData('/users/addShop')
 // getCategories,addCategory,addFood
 export const addCategory = () => getData('/users/addCategory')
 export const addFood = () => getData('/users/addFood')
+// getVisters
+export const getVisiters = () => getData('/users/getVisiters')
+//
+export const cityGuess = () => getData('/users/cityGuess')
+export const getResturants = () => getData('/users/getResturants')
+export const getResturantsCount = () => getData('/users/getResturantsCount')
+export const foodCategory = () => getData('/users/foodCategory')
+export const updateResturant = () => getData('/users/updateResturant')
+export const searchplace = () => getData('/users/searchplace')
+export const deleteResturant = () => getData('/users/deleteResturant')

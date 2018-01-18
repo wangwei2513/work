@@ -3,9 +3,9 @@
     <head-top></head-top>
     <el-row>
       <el-col :span="14" :offset="4">
-        <header>选择食品种类</header>
+        <header class="form_header">选择食品种类</header>
         <el-form :model="categoryForm" ref="categoryForm" label-width="110px" class="form">
-          <el-row>
+          <el-row class="category_select">
             <el-form-item label="食品种类">
               <el-select v-model="categoryForm.categorySelect" :placeholder="selectValue.select" class="width_100">
                 <el-option
@@ -25,7 +25,7 @@
               <el-form-item label="食品描述">
                 <el-input v-model="categoryForm.description" placeholder="食品描述"></el-input>
               </el-form-item>
-              <el-button type="primary" @click="submitCategoryForm('categoryForm')">
+              <el-button type="primary" @click="addCategoryForm('categoryForm')" class="margin_left_110">
                 提交
               </el-button>
             </div>
@@ -36,15 +36,20 @@
             <span>添加食品种类</span>
           </div>
         </el-form>
-        <header>添加食品</header>
-        <el-form :model="foodForm">
-          <el-form-item label="食品名称">
+        <header class="form_header">添加食品</header>
+        <el-form
+         :model="foodForm" 
+         :rules="rules" 
+         ref="foodForm"
+         label-width="110px"
+         class="form food_form">
+          <el-form-item label="食品名称" prop="name">
             <el-input v-model="foodForm.name" placeholder=""></el-input>
           </el-form-item>
-          <el-form-item label="食品活动">
+          <el-form-item label="食品活动" prop="activity">
             <el-input v-model="foodForm.activity" placeholder=""></el-input>
           </el-form-item>
-          <el-form-item label="食品详情">
+          <el-form-item label="食品详情" prop="description">
             <el-input v-model="foodForm.description" placeholder=""></el-input>
           </el-form-item>
           <el-form-item label="上传食品照片">
@@ -73,7 +78,7 @@
             <el-radio v-model="foodSpces" label="one">单规格</el-radio>
             <el-radio v-model="foodSpces" label="more">多规格</el-radio>
           </el-form-item>
-          <el-row v-if="foodSpces == one">
+          <el-row v-if="foodSpces == 'one'">
             <el-form-item label="包装费">
               <el-input-number v-model="foodForm.spces[0].packing_fee" :min="3" :max="15"></el-input-number>
             </el-form-item>
@@ -102,23 +107,23 @@
             <el-button type="primary" @click="addFood('foodForm')">确认添加食品</el-button>
           </el-form-item>
         </el-form>
-        <el-dialog title="添加规格" v-model="dialogFormVisible">
-          <el-form :model="spcesForm" :rules="spcesFormRules">
-            <el-form-item label="规格">
-              <el-input v-model="spcesForm.spces" placeholder=""></el-input>
-            </el-form-item>
-            <el-form-item label="包装费">
-              <el-input v-model="spcesForm.packing_fee" placeholder=""></el-input>
-            </el-form-item>
-            <el-form-item label="价格">
-              <el-input v-model="spcesForm.price" placeholder=""></el-input>
-            </el-form-item>
-          </el-form>
-          <div class="dialog_footer">
-            <el-button type="danger" @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="addSpces">确定</el-button>
-          </div>
-        </el-dialog>
+        <el-dialog title="添加规格" :visible.sync="dialogFormVisible">
+				  	<el-form :rules="spcesFormRules" :model="spcesForm">
+					    <el-form-item label="规格" label-width="100px" prop="spces">
+					     	<el-input v-model="spcesForm.spces" auto-complete="off"></el-input>
+					    </el-form-item>
+					    <el-form-item label="包装费" label-width="100px">
+							<el-input-number v-model="spcesForm.packing_fee" :min="0" :max="100"></el-input-number>
+						</el-form-item>
+						<el-form-item label="价格" label-width="100px">
+							<el-input-number v-model="spcesForm.price" :min="0" :max="10000"></el-input-number>
+						</el-form-item>
+				  	</el-form>
+				  <div slot="footer" class="dialog-footer">
+				    <el-button @click="dialogFormVisible = false">取 消</el-button>
+				    <el-button type="primary" @click="addSpces">确 定</el-button>
+				  </div>
+				</el-dialog>
       </el-col>
     </el-row>
   </div>
@@ -126,8 +131,9 @@
 
 <script>
 import headTop from "../components/headTop";
-import {getCategories,addCategory,addFood} from '../api/getData'
-import {baseUrl,baseImgPath} from '../config/env'
+import Mock from "mockjs";
+import { getCategories, addCategory, addFood } from "../api/getData";
+import { baseUrl, baseImgPath } from "../config/env";
 export default {
   data() {
     return {
@@ -143,13 +149,19 @@ export default {
         name: "",
         activity: "",
         description: "",
-        spces: [],
-        foodImagePath: "",
-        attributes: []
+        attributes:[],
+        spces: [
+          {
+            spces: "",
+            packing_fee: 0,
+            price: 20
+          }
+        ]
       },
+      foodImagePath: "",
       restaurant_id: 0,
-      foodRules: {
-        name: [{ required: "true", message: "请输入名称", trigger: "blur" }]//
+      rules: {
+        name: [{ required: true, message: "请输入食品名称", trigger: "blur" }]
       },
       attributes: [
         {
@@ -165,11 +177,11 @@ export default {
       dialogFormVisible: false,
       foodSpces: "one",
       spcesForm: {
-        spces:'',
-        paking_fee:'',
-        price:''
+        spces: "",
+        packing_fee: "",
+        price: ""
       },
-      spcesFormRuler: {
+      spcesFormRules: {
         spces: [{ required: true, message: "请输入规格", trigger: "blur" }]
       }
     };
@@ -178,6 +190,7 @@ export default {
     headTop
   },
   created() {
+    this.mockData();
     if (this.$route.query.rastaurant_id) {
       this.restaurant_id = this.$route.restaurant_id;
     } else {
@@ -214,130 +227,221 @@ export default {
   methods: {
     async initData() {
       try {
-        const result = await getCategories(this.restaurant_id)
+        const result = await getCategories(this.restaurant_id);
         if (result.status === 1) {
-          result.category_list.map((index,item) => {
-            item.value = index,
-            item.label = item.name
-          })
+          console.log(result.category_list);
+          result.category_list.map((item, index) => {
+            item.value = index;
+            item.label = item.name;
+          });
           this.categoryForm.categoryList = result.category_list;
         } else {
-          console.log(result)
+          console.log(result);
         }
       } catch (error) {
-        console.log('获取category失败！',error)
+        console.log("获取category失败！", error);
       }
     },
-    addCategoryFun(){
-      this.showAddCategory = !this.showAddCategory
+    addCategoryFun() {
+      this.showAddCategory = !this.showAddCategory;
     },
-    addCategoryForm(categoryForm){
+    addCategoryForm(categoryForm) {
       this.$refs[categoryForm].validate(async valid => {
         if (valid) {
           const params = {
-            name:this.categoryForm.name,
-            description:this.categoryForm.description,
-            restaurant_id:this.restaurant_id
-          }
+            name: this.categoryForm.name,
+            description: this.categoryForm.description,
+            restaurant_id: this.restaurant_id
+          };
           try {
-            const result = await addCategory(params)
+            const result = await addCategory(params);
             if (result.status === 1) {
-              this.initData()
-              this.categoryForm.name = ''
-              this.categoryForm.description = ''
-              this.showAddCategory = false
+              this.initData();
+              this.categoryForm.name = "";
+              this.categoryForm.description = "";
+              this.showAddCategory = false;
               this.$message({
-                type:'success',
-                message:'添加成功'
-              })
+                type: "success",
+                message: "添加成功"
+              });
             } else {
-              console.log(result)
+              console.log(result);
             }
           } catch (error) {
-            console.log('添加失败',error)
+            console.log("添加失败", error);
           }
         } else {
           this.$notify.error({
-            title:'错误',
-            message:'请检查输入是否正确',
-            offset:100
-          })
+            title: "错误",
+            message: "请检查输入是否正确",
+            offset: 100
+          });
         }
-      })
+      });
     },
-    uploadImg(res,file){
+    uploadImg(res, file) {
       if (res.status === 1) {
-        this.foodForm.foodImagePath = res.image_path
+        this.foodForm.foodImagePath = res.image_path;
       } else {
-        this.$message.error('上传图片失败！')
+        this.$message.error("上传图片失败！");
       }
     },
-    beforeUpload(file){
-      const isRightType = file.type === 'images/jpeg'||file.type === 'images/png'
-      const isL2M = file.size/1024/1024 < 2
+    beforeImgUpload(file) {
+      const isRightType =
+        file.type === "images/jpeg" || file.type === "images/png";
+      const isL2M = file.size / 1024 / 1024 < 2;
       if (!isRightType) {
-        this.$message.error('图片格式必须是jpg')
+        this.$message.error("图片格式必须是jpg");
       }
       if (!isL2M) {
-        this.$message.error('图片大小必须小于2M')
+        this.$message.error("图片大小必须小于2M");
       }
-      return isRightType && isL2M
+      return isRightType && isL2M;
     },
-    addSpces(){
-      this.foodForm.spces.push(...spcesForm)
-      this.spcesForm.spces = ''
-      this.spcesForm.packing_fee = 0
-      this.spcesForm.price = 20
-      this.dialogFormVisible = false
+    addSpces() {
+      this.foodForm.spces.push({...this.spcesForm});
+      this.spcesForm.spces = "";
+      this.spcesForm.packing_fee = 0;
+      this.spcesForm.price = 20;
+      this.dialogFormVisible = false;
     },
-    handelDelete(index){
-      this.foodForm.spces.splice(index,1)
+    handelDelete(index) {
+      this.foodForm.spces.splice(index, 1);
     },
-    tableRowClassName(row,index) {
+    tableRowClassName(row, index) {
       if (index === 1) {
-        return 'info-row'
-      } else if(index === 3) {
-        return 'positive-row'
+        return "info-row";
+      } else if (index === 3) {
+        return "positive-row";
       }
     },
     addFood(formName) {
       this.$refs[formName].validate(async valid => {
         if (valid) {
           const params = {
-            ...foodForm,
-            category_id:this.categoryForm.category_id,
-            restaurant_id:restaurant_id
-          }
+            ...this.foodForm,
+            category_id: this.categoryForm.category_id,
+            restaurant_id: this.restaurant_id
+          };
           try {
-            const result = await addFood(params)
+            const result = await addFood(params);
             if (result.status === 1) {
               this.$message({
-                type:'success',
-                message:'添加成功'
-              })
+                type: "success",
+                message: "添加成功"
+              });
             } else {
               this.$message({
-                type:'error',
-                message:result.message
-              })
-            } 
+                type: "error",
+                message: result.message
+              });
+            }
           } catch (error) {
-            console.log('添加失败！',error)
+            console.log("添加失败！", error);
           }
         } else {
           this.$notify.error({
-            title:'错误',
-            message:'请检查如数是否正确',
-            offset:100
-          })
-          return false
+            title: "错误",
+            message: "请检查如数是否正确",
+            offset: 100
+          });
+          return false;
         }
-      })
+      });
+    },
+    mockData() {
+      Mock.mock("/users/getCategories", "get", {
+        status: 1,
+        "category_list|5": [
+          {
+            name: Mock.Random.cname(7, 10)
+          }
+        ]
+      });
+      Mock.mock("/users/addCategory", "get", {
+        status: 1
+      });
+      Mock.mock("/users/addFood", "get", {
+        status: 1
+      });
     }
-  } 
+  }
 };
 </script>
 
-<style>
-
+<style lang="less" scoped>
+@import "../style/mixin.less";
+.add_category_button {
+  border: 1px solid #eaeefb;
+  border-bottom-right-radius: 5px;
+  border-bottom-left-radius: 5px;
+  border-top: none;
+  color: #bbb;
+  text-align: center;
+  height: 40px;
+  line-height: 40px;
+  transition: all 400ms;
+  &:hover {
+    background: #f9fafc;
+    span,
+    .edit_icon {
+      color: #20a0ff;
+    }
+  }
+}
+.add_category_row {
+  height: 0;
+  overflow: hidden;
+  transition: all 400ms;
+  background: #f9fafc;
+}
+.category_select {
+  border: 1px solid #eaeefb;
+  padding: 10px 30px 10px 10px;
+  border-top-right-radius: 6px;
+  border-top-left-radius: 6px;
+}
+.form_header {
+  width: 100%;
+  line-height: 60px;
+  font-size: 16px;
+  text-align: center;
+}
+.form {
+  min-width: 400px;
+  margin-bottom: 30px;
+  &:hover {
+    box-shadow: 0 0 8px 0 rgba(232, 237, 250, 0.6),
+      0 2px 4px 0 rgba(232, 237, 250, 0.5);
+    border-radius: 6px;
+    transform: all 400ms;
+  }
+}
+.food_form {
+  border: 1px solid #eaeefb;
+  padding: 10px 10px 0;
+  border-radius: 6px;
+}
+.width_100 {
+  width: 100%;
+}
+.margin_left_110 {
+  margin-left: 110px;
+}
+.avatar_upload_icon {
+  border: 1px dashed #ccc;
+  .wh(120px,120px);
+  border-radius: 3px;
+  line-height: 120px;
+}
+.showCategory {
+  height: 185px;
+}
+.add_category {
+  background: #f9fafc;
+  padding: 10px 30px 10px 10px;
+  border: 1px solid #eaeefb;
+  border-top: none;
+}
 </style>
+

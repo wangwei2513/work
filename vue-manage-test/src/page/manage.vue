@@ -74,4 +74,13 @@ export default {
   background-color: #24334a;
 }
 </style>
+<style>
+.el-menu-item {
+  background: #ccc;
+}
+.el-menu {
+  background: #ccc;
+}
+</style>
+
 
