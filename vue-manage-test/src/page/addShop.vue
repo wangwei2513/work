@@ -327,7 +327,7 @@ export default {
     beforeUpload(file) {
       const isRightType =
         file.type === "image/jpeg" || file.type === "image/png";
-      if (!isRightType) {
+      if (isRightType) {
         this.$message.error("图片格式之能是JPEG、png");
       }
       const isLt2m = file.size / 1024 / 1024 < 2;

@@ -95,7 +95,8 @@ export default {
       Mock.mock("/admin/info", "get", {
         status: 1,
         data:{
-          id:'weihuang'
+          id:'weihuang',
+          avatar:'logo.png'
         }
       });
     }

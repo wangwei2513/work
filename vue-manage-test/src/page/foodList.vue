@@ -347,7 +347,7 @@ export default {
       const isRightType =
         file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isRightType) {
+      if (isRightType) {
         this.$message.error("图片格式不正确");
       }
       if (!isLt2M) {

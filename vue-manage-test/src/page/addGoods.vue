@@ -288,9 +288,10 @@ export default {
     },
     beforeImgUpload(file) {
       const isRightType =
-        file.type === "images/jpeg" || file.type === "images/png";
+        file.type === "image/jpeg" || file.type === "image/png";
       const isL2M = file.size / 1024 / 1024 < 2;
-      if (!isRightType) {
+      console.log(file.type)
+      if (isRightType) {
         this.$message.error("图片格式必须是jpg");
       }
       if (!isL2M) {

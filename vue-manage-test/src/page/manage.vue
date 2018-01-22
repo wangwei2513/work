@@ -3,7 +3,7 @@
     <el-row class="height_100">
       <el-col :span="4" class="left_menu" style="height: 100%;">
         <el-menu default-active="default_active" router class="min_height"  text-color="#fff" background-color="#324057">
-          <el-menu-item index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
+          <el-menu-item class="manage" index="manage"><i class="el-icon-menu"></i>首页</el-menu-item>
           <el-submenu index="2" class="li_background">
             <template slot="title"><i class="el-icon-document"></i>数据管理</template>
             <el-menu-item index="userList">用户列表</el-menu-item>
@@ -75,12 +75,7 @@ export default {
 }
 </style>
 <style>
-.el-menu-item {
-  background: #ccc;
-}
-.el-menu {
-  background: #ccc;
-}
+@import '../style/manage.css';
 </style>
 
 

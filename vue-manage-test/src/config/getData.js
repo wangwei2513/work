@@ -1,4 +1,4 @@
-// 请求数据
+// axios
 import axios from 'axios'
 export default async(url, data, type) => {
   return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ export default async(url, data, type) => {
       });
     }
 
-    if (type == 'post') {
+    if (type === 'post') {
       axios.post(url, data)
         .then(function (response) {
           console.log("response=" + JSON.stringify(response.data))

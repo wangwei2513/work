@@ -294,7 +294,7 @@ export default {
         file.type === "image/jpeg" || file.type === "image/png";
       const isLt2M = file.size / 1024 / 1024 < 2;
 
-      if (!isRightType) {
+      if (isRightType) {
         this.$message.error("上传头像图片只能是 JPG 格式!");
       }
       if (!isLt2M) {

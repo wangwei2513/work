@@ -18,7 +18,7 @@
 import { signout } from "@/api/getData";
 import { baseImgPath } from "@/config/env";
 import { mapActions, mapState } from "vuex";
-
+import Mock from "mockjs";
 export default {
   data() {
     return {
@@ -26,9 +26,11 @@ export default {
     };
   },
   created() {
+    this.mockData();
     if (!this.adminInfo.id) {
       this.getAdminData();
     }
+    console.log("-----------"+JSON.stringify(this.adminInfo))
   },
   computed: {
     ...mapState(["adminInfo"])
@@ -53,6 +55,11 @@ export default {
           });
         }
       }
+    },
+    mockData() {
+      Mock.mock("/admin/signout", "get", {
+        status: 1
+      });
     }
   }
 };
@@ -76,7 +83,7 @@ export default {
 .el-dropdown-menu__item {
   text-align: center;
 }
-.dropdown{
+.dropdown {
   width: 100px;
 }
 </style>

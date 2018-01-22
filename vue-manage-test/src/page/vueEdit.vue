@@ -3,10 +3,10 @@
         <head-top></head-top>
         <div class="edit_container">
         	<quill-editor v-model="content"
-                ref="myQuillEditor"
-                class="editer"
-                :options="editorOption"
-                @ready="onEditorReady($event)">
+            ref="myQuillEditor"
+            class="editer"
+            :options="editorOption"
+            @ready="onEditorReady($event)">
   			  </quill-editor>
         </div>
         <div class="submit_btn">
@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import 'quill/dist/quill.core.css'
-import 'quill/dist/quill.snow.css'
+import "quill/dist/quill.core.css";
+import "quill/dist/quill.snow.css";
 import headTop from "../components/headTop";
 import { quillEditor } from "vue-quill-editor";
 
