@@ -1,0 +1,16 @@
+{
+  "name": "express_form",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "admin-mongo": "0.0.23",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.1"
+  }
+}

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      border: 0 border-style color;
+    }
+
+    .bkgImg {
+      background-image: url("a.jpg");
+      width: 100px;
+      height: 100px;
+      margin: 100px auto;
+      background-position: -20px -40px;
+      background-repeat: no-repeat
+    }
+
+    /* 文本 */
+
+    .text_indent {
+      text-indent: 20%;
+      text-align: justify;
+      word-spacing: 20px;
+      letter-spacing: .4em;
+      text-transform: uppercase;
+      text-decoration: line-through;
+
+    }
+
+    /* 字体 */
+
+    .font {
+      font-family: Georgia, 'Times New Roman', Times, serif;
+      font-size: 20px;
+      font-style: oblique;
+      font-variant: small-caps;
+      font-weight: bold
+    }
+
+    /* 链接 */
+
+    .a {
+      text-decoration: none;
+      color: #5284F0;
+    }
+
+    /* 列表 */
+
+    .list {
+      /* list-style: square */
+      list-style-image: url('b.jpg');
+      /* list-style-position: inside; */
+      margin-left: 40px;
+    }
+
+    .list li {
+      vertical-align: center;
+      height: 30px;
+      line-height: 30px;
+      vertical-align: center;
+      /* font-size: 30px; */
+    }
+
+    /* 表格 */
+
+    /* outline */
+
+    .outline {
+      width: 100px;
+      height: 100px;
+      margin: auto;
+      outline: 1px dotted #999;
+    }
+
+    /* border */
+
+    .border {
+      width: 100px;
+      height: 100px;
+      margin: 20px auto;
+      border-left: 1px solid red;
+      border-top: 1px dashed black;
+      border-right: 1px double blue;
+      border-bottom: 1px dotted #ccc;
+    }
+    /* 定位 */
+    .float_left{
+      float: left;
+    }
+    /* 选择器 */
+    a[href]{
+      color: red
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bkgImg"></div>
+  <div class="text_indent">this is</div>
+  <u>ascasc</u>
+  <p class="font">vqerb2q3rgqweqwevqwe</p>
+  <a href="" class="a">aaaaa</a>
+  <ul class="list">
+    <li>1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+    <li>6</li>
+    <li>7</li>
+    <li>8</li>
+  </ul>
+  <div class="outline"></div>
+  <div class="border"></div>
+  <div>
+    <p>
+      aaaaaaaaaaaaaaaa
+      <img src="./a.jpg" alt="" class="float_left">
+    </p>
+  </div>
+</body>
+
+</html>
