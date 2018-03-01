@@ -24,16 +24,16 @@
     }
 
     .a:hover {
-      width: 70px;
-      height: 70px;
-      margin-left: 30px;
+      width: calc(100px/1.414);
+      height: calc(100px/1.414);
+      margin-left: calc(100px - (100px/1.414));
       border: 1px dashed #000;
       transform-origin: 100% 0 0;
       transform: rotate(-45deg);
-      -webkit-transition: all 0.3s;
-      -moz-transition: all 0.3s;
-      transition: all 0.3s;
-      animation: a 3s infinite ease-in-out;
+      -webkit-transition: all 3s ease-in-out;
+      -moz-transition: all 3s ease-in-out;
+      transition: all 3s ease-in-out;
+      /* animation: a 3s infinite ease-in-out; */
     }
     @keyframes a {
       from{
@@ -62,6 +62,10 @@
   <div class="b">
 
   </div>
+  <script>
+    let arr = new Array(100).keys()
+    console.log(new Set([...arr]))
+  </script>
 </body>
 
 </html>

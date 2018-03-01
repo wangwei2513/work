@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- <div class="gradient"></div> -->
+  <!-- 对角渐变 -->
+  <!-- <div class="gradient1"></div> -->
+  <!-- 径向渐变 -->
+  <!-- <div class="gradient2"></div> -->
+  <!-- 旋转 -->
+  <!-- <div class="rotate"></div> -->
+  <!-- 旋转2 -->
+
+  <div class="rotate1"></div>
+  <div class="div0"></div>
+  <!--  -->
+  <div class="p">
+    <p>ascascasc</p>
+    <p>ascascasca</p>
+    <p>cascascqwcasdcawe</p>
+    <div>qwecqwsdcqwefqwd</div>
+    <!--  -->
+
+  </div>
+  <p>第一个段落。</p>
+  <p>第二个段落。</p>
+  <p>第三个段落。</p>
+  <p>第四个段落。</p>
+  <style>
+    /* p:nth-child(even) {
+      background: #ff0000;
+    } */
+
+    .p div:nth-child(2n) {
+      color: red
+    }
+    .p div:nth-of-type(n){
+      background: red;
+    }
+    .gradient {
+      width: 1000px;
+      height: 100px;
+      background-image: -webkit-gradient(linear, left, from(red), to(blue));
+      background-image: -webkit-linear-gradient(right, red, blue);
+      background-image: -moz-linear-gradient(right, red, blue);
+      background-image: linear-gradient(to right, red, blue);
+    }
+
+    .gradient1 {
+      width: 300px;
+      height: 300px;
+      margin-top: 1em;
+      background-image: -webkit-gradient(linear, left top, from(red), to(blue));
+      background-image: -webkit-linear-gradient(bottom right, red, blue);
+      background-image: -moz-linear-gradient(bottom right, red, blue);
+      background-image: linear-gradient(to bottom right, red, blue);
+    }
+
+    .gradient2 {
+      width: 300px;
+      height: 300px;
+      margin-top: 20px;
+      border-radius: 50%;
+      background-image: -webkit-gradient(radial, ellipse, from(red), to(blue));
+      background-image: -webkit-repeating-linear-gradient(ellipse, red, blue);
+      background-image: -moz-repeating-radial-gradient(ellipse, red, blue);
+      background-image: repeating-radial-gradient(ellipse, red, blue);
+    }
+
+    .rotate {
+      width: 200px;
+      height: 200px;
+      background: #cccccc;
+      position: relative;
+      left: 0;
+    }
+
+    .rotate:hover {
+      left: 100px;
+      transform: rotate(45deg);
+      -webkit-transition: all .3s 0.3s;
+      -moz-transition: all .3s 0.3s;
+      transition: all .3s 0.3s;
+    }
+
+    .rotate1 {
+      width: 100px;
+      height: 100px;
+      float: left;
+      border: 1px solid #ccc;
+      /* margin: 20px; */
+    }
+
+    .div0 {
+      width: 100px;
+      height: 100px;
+      border: 1px dashed #ccc;
+      /* margin: 20px; */
+      pointer-events: none;
+    }
+
+    .rotate1:hover {
+      width: calc(100px/1.414);
+      height: calc(100px/1.414);
+      margin-top: calc(50px*.414);
+      /* margin-left: 50px; */
+      transform: rotate(-45deg);
+      -webkit-transition: all 3s;
+      -moz-transition: all 3s;
+      transition: all 3s;
+    }
+
+  </style>
+</body>
+
+</html>
