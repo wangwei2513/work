@@ -1,0 +1,2053 @@
+﻿一、第一书记
+	1、查询第一书记详情数据(测试OK)
+		功能说明：查询第一书记详情数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryFirstSecretaryDetail?name=王小明&job=书记助理
+		入参说明：
+			name：书记姓名
+			job：职务
+		返回的数据格式：
+			正常下返回：
+				{"name":"xxx","job":"xx","appointCompanyName":"xxx","accreditDate":"xxx","accreditCompanyName":"xxx"
+				 "work":[{"title":"","detail":"xxx","startDate":"xx","endDate":"xx","status":"进行中","mobilePic":"xxx,xxx"}]
+				}
+				name：第一书记姓名  
+				job：职务
+				contactUserName:党组织联系人
+				contactWay：联系方式
+				remark：派驻说明
+				appointCompanyName：派任单位
+				accreditDate：派任时间
+				accreditCompanyName：驻职单位
+				work：第一书记录的工作记录
+					title：工作记录的标题
+					detail：工作记录的详情
+					startDate：工作的开始时间
+					endDate：工作的结束时间
+					mobilePic：相关图片资源访问路径，多张图片间访问路径以英文逗号分隔
+			异常或无数据时返回空字符串
+			
+				
+	2、查询所有第一书记的姓名(测试OK)
+		功能说明：查询所有第一书记的姓名及职务
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryFirstSecretaryUserName?name=王小明
+		入参说明：
+			name: 书记姓名（支持模糊搜索）
+		返回的数据格式：
+			正常下返回：
+				[{"name":"王小明","job":"书记助理","accreditCompanyName":"水利局"}]
+				name：书记姓名
+				job：职务
+			异常或无数据时返回空字符串
+			
+二、党组织信息
+	1、查询党员所在组织的信息(测试OK)
+		功能说明：查询党员所在组织的信息
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryMyOrg?orgId=1
+		入参说明：
+			orgId-->党员所在组织的ID
+			返回的数据格式：
+			正常下返回：
+				{"id":xx,"parentId":xxx,"orgName":"三中党支部","orgTypeName":"基层组织","companyName":"商业储运公司",
+				"secretaryUserName":"王小明","contactUserName":"韦德","contactWay":"13556622004",
+				"areaName":"xx区","foundTime":"2017-09-10","address":"xxx","totalNumber":xx,"introduction":"xxx","pcPic":"xxx,xxx","stbPic":"xxx,xxx","mobilePic":"xxx,xxx"
+				}
+				orgName：党组织名称
+				orgTypeName：组织类别
+				companyName：党组织所在单位情况
+				secretaryUserName：党组织书记
+				contactUserName：党组织联系人
+				contactWay：联系电话
+				areaName：所在区域名称
+				foundTime；成立时间
+				address：地址  
+				totalNumber：组织下党员人数
+				introduction：组织介绍
+				mobilePic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于手机端)
+				stbPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于机顶端)
+				pcPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于PC端)
+			异常或无数据时返回空字符串
+			
+	2、查询党员的权限角色类型及所管理员的组织ID
+		功能说明：查询党员的权限角色类型及所管理员的组织ID
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryRoleType?userId=xx
+		入参说明：	
+			userId：党员ID
+		返回的数据格式；
+			{"isSecretary":"true","isManager":"false","secretaryManageOrgId":"xx,xx","manageOrgId":"xx,xx"}
+			isSecretary：是否为书记 true-->是  false-->否
+			isManager：是否为管理员 true-->是  false-->否
+			secretaryManageOrgId：书记角色所管理的组织ID
+			manageOrgId：管理员角色所管理的组织ID
+	3、查询平级的党组织信息
+		功能说明：查询平级的党组织信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/querySameLevelOrg?orgId=xx&orgName=xxx
+		入参说明：	
+			orgId:党组织id (必选)
+			orgName:党组织名称 (模糊搜索时必选)
+		返回的数据格式；
+			[
+				{
+					"id": 40,"name": "深圳市茁壮网络股份有限公司党总支"
+				}
+			]
+	4、查询该组织的党员信息
+		功能说明：查询该组织的党员信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/querySameLevelOrgMember?orgId=xx
+		入参说明：	
+			orgId:党组织id
+		返回的数据格式；
+			[
+				{
+					"id": 40,"name": "陈xx"
+				}
+			]
+	5、搜索平级的党组织的党员
+		功能说明：搜索平级的党组织的党员
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/querySameLevelMemberByName?orgId=xx&name=xx
+		入参说明：	
+			orgId:党组织id（需要用来确认是跟哪一级平级）
+			name:要搜索的名字
+		返回的数据格式；
+			[
+				{
+				"id": 40,"name": "陈x"
+				,"orgName":"xx组织"}
+			]
+三、党员活动
+	1、查询组织下的党员活动数据(测试OK)
+		功能说明：查询组织下的党员活动数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryActivity?orgId=xxx
+		入参说明：	
+			orgId-->所在组织的ID
+		返回的数据格式：
+			[{"id":xxx","name":"xx","type":"一般活动","score":xx,"startDate":"xxx","endDate":"xxx","address":"xxx","director":"xxx"
+			  "contactWay":"xxx","desc":"xxx","status":"进行中","summary":"xx","maxNumber":xxxx,"stbPic":"xxx,xxx","pcPic":"11.png,xxx",
+			  "mobilePic":"xxx,xxx"
+			  }]
+			id-->活动ID
+			name-->活动名称
+			type-->活动类别
+			startDate：开始时间
+			endDate：结束时间
+			address：地址
+			director：负责人
+			contactWay：联系方式
+			desc：活动介绍
+			status：活动状态，分为“进行中”或“已结束“
+			summary：活动总结
+			maxNumber：活动允许报名的人数上限
+			pcPic：pc端显示的活动图片url，多张图片以英文逗号分隔
+			stbPic：盒端显示的活动图片url，多张图片以英文逗号分隔
+			mobilePic：手机端显示的活动图片url，多张图片以英文逗号分隔
+			异常或无数据时返回空字符串
+			
+	2、查询党员活动详情数据(测试OK)
+		功能说明：查询党员活动详细数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryActivityDetail?activityId=xxx
+		入参说明：	
+			activityId-->活动ID
+		返回的数据格式：
+			{"name":"xx","type":"一般活动","score":xx,"startDate":"xxx","endDate":"xxx","address":"xxx","director":"xxx"
+			  "contactWay":"xxx","desc":"xxx","status":"进行中","summary":"xx","maxNumber":xxxx,"stbPic":"xxx,xxx","pcPic":"11.png,xxx",
+			  "mobilePic":"xxx,xxx","enteredNumber":xxx,
+			   "record":[{"title":"xx","detail":"xx","createDate":"xxx","stbPic":"xxx,xxx",
+						"pcPic":"11.png,xxx",
+						"mobilePic":"xxx,xxx"}
+						]
+			}
+			name-->活动名称
+			type-->活动类别
+			startDate：开始时间
+			endDate：结束时间
+			address：地址
+			director：负责人
+			contactWay：联系方式
+			desc：活动介绍
+			status：活动状态，分为“进行中”或“已结束“
+			summary：活动总结
+			maxNumber：活动允许报名的人数上限
+			enteredNumber：活动已报名人数
+			pcPic：pc端显示的活动图片url，多张图片以英文逗号分隔
+			stbPic：盒端显示的活动图片url，多张图片以英文逗号分隔
+			mobilePic：手机端显示的活动图片url，多张图片以英文逗号分隔
+			record：活动记录，可能多条
+				title：活动标题
+				detail：活动详情
+				pcFile：pc端显示的活动记录图片url，多张图片以英文逗号分隔
+				stbFile：盒端显示的活动记录图片url，多张图片以英文逗号分隔
+				mobileFile：手机端显示的活动记录图片url，多张图片以英文逗号分隔
+				createDate：记录日期
+			异常或无数据时返回空字符串
+			
+	3、党员活动报名(测试OK)
+		功能说明：党员活动报名
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/enteredActivity?userId=78&activityId=1
+		入参说明：	
+			userd-->党员ID
+			activityId-->活动ID
+		返回的数据格式：	
+			{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+			
+三、通讯录
+	1、查询组织(测试OK)
+		功能说明：查询组织数据，可按名称进行查询
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryOrg?name=水利局
+		入参说明：
+			name-->组织名称，未传此参数，返回所有组织数据
+		返回的数据格式：
+			{"totalUser":324,"org":[{"name":"樟树市城建局","orgId":xx,"totalUser":82,"mobilePic":"xxx,xx",stbPic":"xx","pcPic":"xx"}]}
+			totalUser：所有组织下人员总数
+			org：组织数据
+				name：组织名称
+				orgId：组织ID
+				totalUser：本组织下人员总数
+				mobilePic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于手机端)
+				stbPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于机顶端)
+				pcPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于PC端)
+		异常或无数据时返回空字符串
+		
+	2、查询指定组织下党员信息(测试OK)
+		功能说明：查询指定组织下党员信息
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryPartyMember?orgId=xx&name=xxx
+		入参说明：	
+				partymemberId --> 当前用户的党员id
+				orgId-->组织ID，必需参数
+				name-->党员名称，可选参数
+		返回的数据格式：	
+			{"A":[{"name":"阿达","id":xxx,"gender":"男","pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx","partyJob":"xxx","joinPartyDate":"xx","educationalLevel":"xx","birthDate":"xx"}],
+			 "B":[{"name":"北的符号","id":xxx,"gender":"男","pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx","partyJob":"xxx","joinPartyDate":"xx","educationalLevel":"xx","birthDate":"xx"}]
+			}
+			  name：党员姓名
+			  id：党员ID
+			  pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+			  stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+			  mobilePicUrl：手机端显示的用户图片url，多张图片以英文逗号分隔
+			  partyJob：职称
+			  joinPartyDate：入党日期
+			  educationalLevel：学历
+			  birthDate：出生日期
+		异常或无数据时返回空字符串
+		
+	3、查询指定党员的详细数据(测试OK)
+		功能说明：查询指定党员的详细数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryPartyMemberDetail?userId=1411
+		入参说明：
+				userId-->党员ID，必需参数
+		返回的数据格式：	
+				{"name":"王格格","administrationJob":"XX市城建局书记","contactWay":"15464466612","desc":"xxx","birthDate":"xx","orgName":"xx","partyJob":"xx",
+				"email":"xxx","company":"xx","gender":"男","pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx","score":xxx,"joinPartyDate":xx
+				}		
+				name：党员姓名
+				birthdate：出生日期
+				joinPartyDate：入党日期
+				partyJob：党内职务
+				orgName：所在党组织的名称
+				mobilePicUrl：手机端呈现的党员图片url,多张图片以英文逗号分隔
+				pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+			    stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+				administrationJob：行政职务
+				contactWay：联系方式(手机号)
+				email：邮箱
+				company：所在单位
+				gender：性别 
+				desc：简介 
+				score：党分
+		异常或无数据时返回空字符串
+
+	4、查询具有管理权限的党委数据(测试OK)
+		功能说明：查询指定区域下的党委（组织）数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryManagedOrg?userId=806&orgName=xx
+		入参说明：
+				userId-->党员ID，必需参数
+				orgName-->搜索值，非需参数，传入此值，将按此组织名称过滤数据
+		返回的数据格式：	
+				{"totalUser":xxx,"dataList":[{"orgName":"xx","orgId":xxxx,"mobilePic":"xxx,xx",stbPic":"xx","pcPic":"xx"}]}	
+				totalUser：总人数
+				orgName：组织名称
+				orgId：组织id
+				havePower:表示是否有权限查看此支部，1有，0无
+				mobilePic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于手机端)
+				stbPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于机顶端)
+				pcPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于PC端)
+		异常或无数据时返回空字符串	
+		
+	5、查询具有管理权限的支部数据(测试OK)
+		功能说明：查询指定区域下的支部数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryManagedChildOrg?userId=806&orgName=xx&orgId=xxx
+		入参说明：
+				userId-->党员ID，必需参数
+				orgName-->搜索值，非需参数，传入此值，将按此组织名称过滤数据
+				orgId-->党委ID
+		返回的数据格式：	
+				{"totalUser":xxx,"dataList":[{"orgName":"xx","orgId":xxxx,"mobilePic":"xxx,xx",stbPic":"xx","pcPic":"xx","havePower":1}]}	
+				totalUser：总人数
+				orgName：组织名称
+				orgId：组织id
+				havePower:表示是否有权限查看此支部，1有，0无
+				mobilePic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于手机端)
+				stbPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于机顶端)
+				pcPic：组织相关图片资源访问路径，多张图片间访问路径以英文逗号分隔(适用于PC端)
+		异常或无数据时返回空字符串	
+	
+		
+四、留言反馈
+	1、提交党员留言(不要使用，测试OK)
+		功能说明：提交党员留言
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/submitFeedback?title=help&detail=helpme&type=1&idCard=000234&name=rose&contactWay=13410879007
+		入参说明：	
+			title：主题
+			detail：正文
+			type：留言类型 1、留言建议  2、问题反馈  3、困难求助 4、用户体验 5、功能反馈
+			idCard：留言人的身份证号
+			name：留言人姓名
+			contactWay：联系方式
+		返回的数据格式：	
+			{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+			
+			
+	1、提交党员留言(新版,测试OK)
+		功能说明：提交党员留言
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/submitFeedback?title=help&detail=helpme&type=1&idCard=000234&name=rose&contactWay=13410879007&orgId=1&userId=111
+		入参说明：	
+			title：主题
+			detail：正文
+			type：留言类型 1、留言建议  2、问题反馈  3、困难求助 4、用户体验 5、功能反馈
+			idCard：留言人的身份证号
+			name：留言人姓名
+			contactWay：联系方式
+			userId：党员ID
+			orgId：党员所在组织的ID
+		返回的数据格式：	
+			{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+		
+五、留言反馈	
+	1、查询留言反馈数据(测试OK)
+		功能说明：查询留言反馈数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryFeedback?userId=123
+		入参说明：
+			userId：党员ID
+		返回的数据格式：
+			[   
+				{"id":xxx,"title":"xxx","detail":"xx","createDate":"xx","auditStatus":1,"type":1}
+			]
+			id：留言ID
+			title：主题
+			detail：正文
+			createDate：留言的日期
+			auditStatus：审核状态,1：未审核  2：审核通过  3：审核未通过
+			type：留言类型 1、留言建议  2、问题反馈  3、困难求助 4、用户体验 5、功能反馈
+			
+	2、查询留言回复的数据(测试OK)
+		功能说明：查询留言反馈数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryFeedbackReply?feedbackId=56
+		入参说明：
+			feedbackId：留言ID
+		返回的数据格式：
+			[{"id":9,"idCard":"000234","detail":"reply3","name":"rose","createDate":"2017-08-22 15:42:05","feedbackId":XXX},
+			{"id":7,"idCard":"000234","detail":"reply","name":"rose","createDate":"2017-08-22 15:35:18","feedbackId":xx},
+			{"id":8,"idCard":"000234","detail":"reply2","name":"rose","createDate":"2017-08-22 15:37:09","feedbackId":xx}]
+			id：留言回复ID
+			idCard：回复人身份证号  
+			detail：回复的内容
+			name：回复人的姓名
+			createData：回复的日期
+			feedbackId：留言ID
+			
+	3、提交回复(测试OK)
+		功能说明：提交留言回复
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/submitFeedbackReply?feedbackId=56&detail=reply56&idCard=000234&name=rose
+		入参说明：	
+			feedbackId：留言ID
+			detail：回复的内容
+			idCard：回复人的身份证号
+			name：回复人的姓名
+		返回的数据格式：	
+			{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+			
+六、学习排行
+	1、查询学习排行数据(测试OK)
+		功能说明：查询学习排行数据及党员本人的排行
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryLearningCharts?pageSize=100&userId=60
+		入参说明：
+			pageSize：名次，非必需参数，不传入此参数，接口默认返回排名前20名的数据
+			userId：党员ID
+		返回的数据格式：	
+			{"name":"xxx","score":345,"ranking":234,"gender":"男","rankingList":[{"name":"刘迪宁","score":"875","gender":"男",ranking:1,"orgName":"xxx组织","pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx"}
+																{"name":"李毛毛","score":"870","gender":"女",ranking:2,"orgName":"xxx组织",
+																 "pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx"
+																}
+																],"pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx"
+			}
+			name：登陆党员的姓名
+			score：登陆党员本人的党分
+			ranking：登陆党员的排名
+			gender：性别
+			mobilePicUrl：手机端呈现的党员图片url,多张图片以英文逗号分隔
+			pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+			stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+			rankingList:排名靠前的党员数据
+				name：姓名
+				score：党分
+				gender：性别
+				ranking：排名
+				orgName：组织名称（前三名有组织名称，其它名次组织名称为空值）
+				mobilePicUrl：手机端呈现的党员图片url,多张图片以英文逗号分隔
+				pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+			    stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+			
+七、学习课件
+	1、返回用户学习的课件编号(测试OK)
+		功能说明：返回用户学习的课件编号
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryCourseCode?category=1&columnCode=column001
+		入参说明：	
+			category：人员类别，此字段是homed扩展字段中的category属性值
+			columnCode：栏目编码，非必需参数。传入此参数，则按栏目编码进行过滤数据。
+		返回的数据格式：
+			{"courseCode":"001,002,004"}
+			courseCode：课件编号,homed中的唯一标识，多个编号用英文逗号分隔
+			
+	2、返回用户学习的课程数据
+		功能说明：返回用户学习的课程数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryCourseInfo?category=1&columnCode=column001
+		入参说明：	
+			category：人员类别，此字段是homed扩展字段中的category属性值
+			columnCode：栏目编码，非必需参数。传入此参数，则按栏目编码进行过滤数据。
+		返回的数据格式：
+			[{"courseCode":"001","courseName":"xxx","courseType":1,"pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx","cousewareScores":[{coursewareCode:"",score:11}]}]
+			courseCode：课程编号,homed中的唯一标识
+			courseName：课程名称
+			courseDescription：课程描述
+			mobilePicUrl：手机端呈现的课程图片url,多张图片以英文逗号分隔
+			pcPicUrl：pc端显示的课程图片url，多张图片以英文逗号分隔
+			stbPicUrl：盒端显示的课程图片url，多张图片以英文逗号分隔
+			courseType：课程类别  1-->选修 2-->必修
+			
+			
+	3、返回用户学习的进度(测试OK)
+		功能说明：返回用户学习的进度
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryLearningProcess?category=1&userId=XX
+		入参说明：	
+			category：人员类别，此字段是homed扩展字段中的category属性值
+			userId：党员ID
+		返回的数据格式：
+			{"learningProcess":xx}
+			learningProcess：学习进度
+		
+八、通知公告
+	1、返回用户的通知公告code(测试OK)
+		功能说明：返回用户的通知公告code
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryNoticeCode?userId=78
+		入参说明：	
+			userId：党员ID
+		返回的数据格式：
+			[{"readedFlag":1,"noticeCode":"001","title":"xx","releaseDate":"xx","createDate":"xxx",handleFlag:0}]
+			readedFlag：是否阅读的标记，1：未读   2：已读
+			noticeCode：通知公告编号，homed中的唯一标识符
+			title：通知公告的标题
+			releaseDate：发布日期
+			createDate：创建日期
+			handleFlag:办理标记， 0：无需办理 1：未办理  2：已办理
+			
+	2、设置通知公告已阅读(测试OK)
+		功能说明：设置通知公告已阅读
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/readedNotice?userId=55&noticeCode=notice2&terminalType=1&handleFlag=2
+		入参说明：	
+			userId：党员ID
+			noticeCode：通知公告编码，homed中的唯一标识
+			terminalType：终端类型 1-->手机端  2-->stb端  3-->pc端
+			handleFlag:选填，提供给需要办理通知的党员进行办理操作，已办理传2
+		返回的数据格式：
+		{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+			
+	3、查询提醒信息(通知公告没有阅读，则可以有提示信息提示进行阅读)(测试OK)
+		功能说明：返回用户的提醒数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryNoticeReminder?userId=60
+		入参说明：	
+			userId：党员ID
+		返回的数据格式：
+			[{"noticeCode":"xxx","reminder":"您有一条通知公告没有查看，请查看xxxxxxxxxxxx"}]
+			noticeCode：没有阅读的通知公告的编号，homed中的唯一标识符
+			reminder：提醒内容
+			
+	4、查询通知公告阅读/处理人员的数据(已编码)(暂停使用)
+		功能说明：查询通知公告已阅读人员的情况
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryNoticeStatusData?noticeCode=xx&readFlag=&handleFlag=1
+		入参说明：	
+			noticeCode：通知标识
+			readFlag：      1：未读  2：已读 (需查询通知公告的阅读情况时传入参数，否则不传)
+			handleFlag：	1：未办理  2：已办理 (需查询通知公的办理情况时传入参数，否则不传)
+		返回的数据格式:
+			[{"name":"xxx","job":"xxx","readedDate":"xx","orgName":"xx","areaName":"xx","contactWay":"xx","mobilePicUrl":"xx","pcPicUrl":"xx","stbPicUrl":"xx"}]
+			mobilePicUrl：手机端呈现的图片url
+			pcPicUrl：pc端显示的图片url
+			stbPicUrl：盒端显示的图片url
+			name：姓名
+			job：职务
+			readedDate:阅读日期
+			orgName：所属组织
+			areaName：驻地
+			contactWay：联系电话
+	
+	5.查询通知公告的状态	
+		功能说明：查询通知公告状态
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryNoticeStatusData?noticeCode=xx&userId=xx
+		入参说明：	
+			noticeCode：通知标识
+			userId:用户id
+		返回的数据格式:
+			{"noticeCode":"600000267","readFlag":1,"handleFlag":0}
+			readedFlag：是否阅读的标记，1：未读   2：已读
+			handleFlag:办理标记， 0：无需办理 1：未办理  2：已办理
+九、登陆
+	1、验证是否是党员(测试OK)
+		功能说明：登陆验证是否是党员
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/checkIsPartyUser?idCard=450721201709067739
+		入参说明：	
+				idCard：党员身份证号
+		返回的数据格式：
+				{"result":"ok","msg":"","isPartyUser":"true",}
+				is_party：为true表示是党员 ,false表示非党员
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+
+	2、登陆验证是否党员及同步数据至homed(测试OK)
+		功能说明：登陆验证是否党员及同步数据至homed(测试OK)
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/syncPartyUser?idCard=450721201709067739&userName=suming
+		入参说明：	
+				idCard：党员身份证号
+				userName：homed上的用户名，唯一标识
+		返回的数据格式：	
+			{"result":"ok","msg":"","is_party":"true", "party_user_data":{"name":"王小明","gender":"男","nation":"汉","birth_date":"1929.08.20"
+				"degree":"本科","category":"街道机关党员","org":"樟树三中党支部","org_id":xxx
+				"join_date":"1996.07.25",","work":"樟树三中教师","address":"三中家属院30楼382",
+				"contact_way":"13554400645","is_no_contact":"true","no_contact_date":"xxxx.xx.xx",
+				"is_floating":"true","category":1,"id_card":"xxxx","party_user_id":1}}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+			is_party：是否党员,true：是   false：否
+			如果党员则有如下字段值：
+				name：姓名
+				gender：性别
+				nation：民族
+				birth_date：出生日期
+				degree:学历
+				category：人员类别
+				org：所在党支部名称
+				org_id：所在党支部的ID
+				joinDate：加入党组织日期
+				work：工作岗位
+				address：家庭住址
+				contactWay：联系电话
+				is_no_contact：是否为失联党员, true->是  false-->否
+				no_contact_date：失联日期
+				is_floating：是否为流动党员  true-->是 false-->否
+				category：人员类别，数字1-8，说明如下：
+						1-->申请人员
+						2-->积极分子
+						3-->发展对象
+						4-->预备党员
+						5-->党员
+						6-->流动党员
+						7-->失联党员
+						8-->停止党籍
+				id_card：身份证号
+				party_user_id：党员用户ID，党建系统中的党员用户标识
+		
+	3、根据身份证号查询党员数据(测试OK)
+		功能说明：根据身份证号查询党员数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryPartyMemberByIdCard?idCard=350521199201105030
+		入参说明：	
+				idCard：党员身份证号
+		返回的数据格式：	
+			{"name":"王小明","gender":"男","nation":"汉","birth_date":"1929.08.20"
+				"degree":"本科","category":"街道机关党员","org":"樟树三中党支部","org_id":xxx
+				"join_date":"1996.07.25",","work":"樟树三中教师","address":"三中家属院30楼382",
+				"contact_way":"13554400645","is_no_contact":"true","no_contact_date":"xxxx.xx.xx",
+				"is_floating":"true","category":1,"id_card":"xxxx","party_user_id":1}
+			name：姓名
+			gender：性别
+			nation：民族
+			birth_date：出生日期
+			degree:学历
+			category：人员类别
+			org：所在党支部名称
+			org_id：所在党支部的ID
+			joinDate：加入党组织日期
+			work：工作岗位
+			address：家庭住址
+			contactWay：联系电话
+			is_no_contact：是否为失联党员, true->是  false-->否
+			no_contact_date：失联日期
+			is_floating：是否为流动党员  true-->是 false-->否
+			category：人员类别，数字1-8，说明如下：
+					1-->申请人员
+					2-->积极分子
+					3-->发展对象
+					4-->预备党员
+					5-->党员
+					6-->流动党员
+					7-->失联党员
+					8-->停止党籍
+			id_card：身份证号
+			party_user_id：党员用户ID，党建系统中的党员用户标识
+	4、功能说明：loginKG 接口：http://192.168.60.52:8080/PartyMemberBuilding/loginKG
+		入参说明：	
+				idCard--> 当前用户的党员id
+				password-->密码
+				deviceno-->设备号
+		
+十、课程管理
+	1、课件学习数据采集(测试OK)
+		功能说明：课件学习数据采集
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/collectData?courseCode=1300000165&coursewareCode=100003715&partyUserId=54&duration=300&orgId=1139&terminalType=1&category=2
+		入参说明：	
+				courseCode：课程标识
+				coursewareCode：课件标识
+				partyUserId：党员用户ID
+				duration：学习时长（单位：秒）
+				orgId：党员所在组织ID
+				terminalType：终端类型  1-->手机端   2-->stb端  3-->pc端
+				category：人员类别，数字1-8，说明如下：
+						1-->申请人员
+						2-->积极分子
+						3-->发展对象
+						4-->预备党员
+						5-->党员
+						6-->流动党员
+						7-->失联党员
+						8-->停止党籍
+
+				
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+			
+	2、查询已学习完成的课件标识(测试OK)
+		功能说明：查询指定课程下或者自修的已学习完成的课件标识
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryCompletedCourseware?partyUserId=user001&courseCode=courseCode0001
+		
+		
+		
+		入参说明：	
+				partyUserId：党员用户ID
+				courseCode：课程标识，非必选参数，此参数未传值，则查询所有已完成的自修的课件标识
+		返回的数据格式:
+			["coursewareCode001","coursewareCode002","coursewareCode003"]
+			json数组格式，每个元素为已学习完成的课件标识
+			异常或无数据时返回空字符串
+			
+	3、查询已学习完成的课件详情(测试OK)
+		功能说明：查询指定课程下或者自修的已学习完成的课件详情
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryCompletedCoursewareDetail?partyUserId=54&courseCode=1300000165
+		入参说明：	
+				partyUserId：党员用户ID
+				courseCode：课程标识，非必选参数，此参数未传值，则查询所有已完成的自修的课件标识
+		返回的数据格式:
+			[{"coursewareCode":"xx","coursewareName":"xx","duration":xxx,"score":xxx}]
+			coursewareCode：课件标识
+			name：课件名称
+			duration：时长（秒）
+			score：党分
+			异常或无数据时返回空字符串
+			
+十一、互动交流
+	1、新增互动交流(测试OK)
+		功能说明：新增互动交流
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/addCommunicationStudy
+		入参说明：	
+				post方式提交，图片附件名称不限，可多个。
+				title:学习交流的标题
+				content：学习互流的文字内容
+				userId：党员ID
+				address：用户创建互动交流时的定位
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	2、查询互动交流(测试OK)
+		功能说明：返回互动交流数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryCommunicationStudy?pageIndex=1&userId=487
+		入参说明：
+			userId：党员ID
+			pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。每次返回50条数据
+		返回的数据格式：
+			{"totalNewRemark":xxx,"dataList":[{"name":"董茜端","iconUrl":"http://xxx.xxx.xxx.xxx/xx.png","id":xxx,"title":"xx","content":"xx","releaseDate":"xxx"
+			  "picUrl":"xxx,xxx","hasNewRemark":"true","totalLike":xxx,"totalRemark":xx,"totalReading":xxxx,"address":"xxxx"
+			 }]
+			}
+			totalNewRemark：新评论的数量
+			dataList-->互动交流数据
+				name：姓名
+				iconUrl：用户图像访问的url
+				id：互动交流数据ID
+				title：标题
+				content：内容
+				releaseDate：发布日期
+				picUrl：互动交流的图片访问url，多个url间用英文逗号分隔
+				hasNewRemark：是否有未查看的新评论  true-->是  false-->否
+				totalLike：点赞数量
+				totalReading：浏览总人数
+				totalRemark：评论总数
+				address：用户创建互动交流时的定位
+				
+	3、互动交流点赞(测试OK)
+		功能说明：新增互动交流点赞
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/addCommunicationStudyUserLike?userId=478&communicationStudyId=18
+		入参说明：	
+				communicationStudyId：互动交流数据ID
+				userId：党员ID
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	4、互动交流浏览(测试OK)
+		功能说明：新增互动交流浏览，进入互动交流的详情页面时调用一下，记录哪些用户有浏览
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/addCommunicationStudyUserReading?userId=478&communicationStudyId=18
+		入参说明：	
+				communicationStudyId：互动交流数据ID
+				userId：党员ID
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	5、新增互动交流的评论(测试OK)
+		功能说明：新增互动交流评论，支持对学习交流的评论及学习交流发起人对留言评论进行的回复，不支持更深级别的回复
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/addCommunicationStudyRemark?userId=478&communicationStudyId=57&communicationStudyRemarkId=&content=不错的建议
+		入参说明：	
+				communicationStudyId：互动交流数据ID
+				userId：党员ID
+				communicationStudyRemarkId：评论ID，如果是针对某条评论进行的评论，则传入被评论数据的ID，如果是针对互动交流数据的评论，则此字段不传值
+				content：评论的内容
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明			
+				
+				
+	6、查询某条互动交流详细数据)
+		功能说明：返回互动交流详细数据
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryCommunicationStudyDetail?id=57
+		入参说明：
+			id：互动交流数据ID
+		返回的数据格式：
+			{"name":"董茜端","iconUrl":"http://xxx.xxx.xxx.xxx/xx.png","id":xxx,"title":"xx","content":"xx","releaseDate":"xxx"
+			  "picUrl":"xxx,xxx","likeUserName":"xx,xx","totalReading":xxxx,"address":"xxxx",
+			  "remark":[{"remarkId":1,"userName":"xxx","content":"xxx"}]
+			 }
+				name：姓名
+				iconUrl：用户图像访问的url
+				id：互动交流数据ID
+				title：标题
+				content：内容
+				releaseDate：发布日期
+				picUrl：互动交流的图片访问url，多个url间用英文逗号分隔
+				likeUserName：点赞的用户名
+				totalReading：浏览总人数
+				address：用户创建互动交流时的定位
+				remark：评论数据
+					remarkId：评论ID
+					userName：评论人姓名
+					content：评论内容
+				
+十二、智慧地图
+	1、查询组织(测试OK)
+		功能说明：查询组织数据，可按名称进行查询
+		接口：http://192.168.60.52:8080/PartyMemberBuilding/queryOrgData?name=水利局
+		入参说明：
+			name-->组织名称，未传此参数，返回所有组织数据
+		返回的数据格式：
+			[{"name":"xxx","orgId":xx,"address":"xx","contactUserName":"xx","contactWay":"xx","latitude":"xx","longitude":"xx"}]
+			name：组织名称
+			orgId：组织ID
+			address：地址
+			contactUserName：联系人姓名
+			contactWay：联系方式
+			latitude：纬度
+			longitude：经度
+		异常或无数据时返回空字符串
+		
+十三、数据统计
+	1、查询组织下的党员数量(测试OK)
+			功能说明：查询组织下的党员数量
+			接口：http://192.168.60.52:8080/PartyMemberBuilding/queryUserAmount?orgId=XXX
+			入参说明：
+				orgId-->组织ID
+			返回的数据格式：
+				{"totalUser":xx,"partyMemberUser":xxx,"missingUser":xxx,"floatingUser":xx}
+				totalUser：党员总人数
+				partyMemberUser：党员人数
+				missingUser：失联党员人数
+				floatingUser：流动党员人数
+				developUser: 发展党员
+				activistUser：入党积极分子
+				prepareMember：预备党员
+			
+	2、查询学习统计(测试OK)
+			功能说明：查询学习统计
+			接口：http://192.168.20.24:8080/PartyMemberBuilding/queryStatStudyData?orgId=1137&statType=4&startDate=2017-11-25&category=2
+			入参说明：
+				orgId-->组织ID
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期(yyyy-mm-dd格式)
+							月统计则传入此月第1日的日期(yyyy-mm-dd格式)
+							年统计则传入此年第1日的日期(yyyy-mm-dd格式)
+							日统计：要查看指定日期的统计数据，则传入指定日期(yyyy-mm-dd格式)
+				category：人员类别，数字1-8，说明如下：
+						1-->申请人员
+						2-->积极分子
+						3-->发展对象
+						4-->预备党员
+						5-->党员
+						6-->流动党员
+						7-->失联党员
+						8-->停止党籍
+	
+			返回的数据格式：
+				{"sortNumber":xxx,"totalDuration":xxx,"averageDuration":xxx,
+				 "partyMemberList":[{"name":"xx","pcPicUrl":"xx","stbPicUrl":"xx","mobilePicUrl":"xx","orgName":"xx",
+									"compulsory":{"studyProcess":xxx,"totalCourse":xx,"finishedCourse":xxx,"score":xxx},
+									"elective":{"studyProcess":xxx,"totalCourse":xx,"finishedCourse":xxx,"score":xxx},
+									"selfStudy":{"totalDuration":xxx,"totalCourse":xxx,"score":xxx}}]
+				}
+				sortNumber：名次
+				totalDuration：学习总时长(单位：小时)
+				averageDuration：人均学习时长(单位：小时)
+				partyMemberList：党员学习数据
+					name：党员姓名
+					pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+					stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+					mobilePicUrl：手机端显示的用户图片url，多张图片以英文逗号分隔
+					orgName：所在组织的名称
+					compulsory：必修课程的统计数据
+								studyProcess：进度 (带小数位，比如进度为35%，则此字段的值为0.35)
+								totalCourse：总课程
+								finishedCourse：完成课程
+								score：得分
+					elective：选修课程的统计数据
+					selfStudy：自修课程的统计数据
+						totalDuration：学习总时长（单位：小时）
+						totalCourse：学习的课件数量
+						score：得分
+			异常或无数据时返回空字符串
+			
+	2、查询个人学习数据
+			功能说明：查询个人学习数据(测试OK)
+			接口：http://192.168.20.24:8080/PartyMemberBuilding/queryUserStudyData?userId=66
+			入参说明：
+				userId-->党员ID
+			返回的数据格式：
+				{"compulsory":{"studyProcess":xxx,"totalCourse":xx,"finishedCourse":xxx,"score":xxx},
+				  "elective":{"studyProcess":xxx,"totalCourse":xx,"finishedCourse":xxx,"score":xxx},
+				"selfStudy":{"totalDuration":xxx,"totalCourse":xxx,"score":xxx}
+				}
+				
+				compulsory：必修课程的统计数据
+								studyProcess：进度 (带小数位，比如进度为35%，则此字段的值为0.35)
+								totalCourse：总课程
+								finishedCourse：完成课程
+								score：得分
+					elective：选修课程的统计数据
+					selfStudy：自修课程的统计数据
+						totalDuration：学习总时长（单位：小时）
+						totalCourse：学习的课件数量
+						score：得分
+			异常或无数据时返回空字符串
+			
+	3、查询课件排行统计(测试OK)
+			功能说明：查询课件排行统计
+			接口：http://192.168.20.24:8080/PartyMemberBuilding/queryStatCoursewareData?statType=4&startDate=2017-11-25&terminalType=0
+			入参说明：
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期
+							月统计则传入此月第1日的日期
+							年统计则传入此年第1日的日期
+				terminalType：终端类型
+							0-->全部
+							1-->手机端
+							2-->stb端
+							3-->pc端
+							
+							
+			返回的数据格式：
+				[{"name":"xx","totalDuration":xxx,"averageDuration":xxx,"playTimes":xxx}]
+				name：课件名称
+				totalDuration：点播时长（单位：小时)
+				averageDuration：点播平均时长(单位：小时)
+				playTimes：总点播次数
+			异常或无数据时返回空字符串
+		
+	4、查询课程排行统计(测试OK)
+			功能说明：查询课程排行统计
+			接口：http://192.168.20.24:8080/PartyMemberBuilding/queryStatCourseData?statType=4&startDate=2017-11-25&terminalType=0
+			入参说明：
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期
+							月统计则传入此月第1日的日期
+							年统计则传入此年第1日的日期
+				terminalType：终端类型
+							0-->全部
+							1-->手机端
+							2-->stb端
+							3-->pc端
+			返回的数据格式：
+				[{"name":"xx","totalDuration":xxx,"averageDuration":xxx,"playTimes":xxx}]
+				name：课程名称
+				totalDuration：点播时长（单位：小时)
+				averageDuration：点播平均时长(单位：小时)
+				playTimes：总点播次数
+			异常或无数据时返回空字符串
+			
+	5、查询通知公告排行统计
+			功能说明：查询通知公告排行统计
+			接口：http://192.168.60.52:8080/PartyMemberBuilding/queryStatNoticeData?statType=2&startDate=xx
+			入参说明：
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期
+							月统计则传入此月第1日的日期
+							年统计则传入此年第1日的日期
+
+			返回的数据格式：
+				{"newNotice":[{"title":xxx,"totalUserAmount":xxx,"readedAmount":xxx,"handledAmount":xxx,"unHandledAmount":xxx,"releaseDate":"xx"}],
+				"allNotice":[{"title":xxx,"totalUserAmount":xxx,"readedAmount":xxx,"handledAmount":xxx,"unHandledAmount":xxx,"releaseDate":"xx"}]
+				}
+				title；通知标题
+				totalUserAmount；通知人员总数
+				readedAmount：通知已阅读的人员数
+				handledAmount：已办理人员数
+				unHandledAmount：未办理人员数
+				releaseDate：通知发布日期
+			异常或无数据时返回空字符串
+			
+			
+	6、查询通知阅读及办理详情
+			功能说明：查询通知阅读及办理详情
+			接口：http://192.168.60.52:8080/PartyMemberBuilding/queryNoticeDetail?queryType=2
+			入参说明：
+				queryType：1-->查询已阅读数据  2-->查询未阅读数据  3-->查询已办理数据 4-->查询未办理数据
+			返回的数据格式：
+				[{"name":"xxx","date":"xx","pcPicUrl":"xxx","stbPicUrl":"xx","mobilePicUrl":"xx","administrationJob":"xx",
+				 "orgName":"xx","areaName":"xx","contactWay":"xx"
+				}]
+				name：党员姓名
+				date：已阅读/已办理日期
+				pcPicUrl：pc端显示的用户图片url，多张图片以英文逗号分隔
+				stbPicUrl：盒端显示的用户图片url，多张图片以英文逗号分隔
+				mobilePicUrl：手机端显示的用户图片url，多张图片以英文逗号分隔
+				administrationJob：行政职务
+				orgName：组织名称
+				areaName：区域
+				contactWay：联系电话
+			异常或无数据时返回空字符串
+			
+	7、查询组织的活动统计
+	功能说明：查询组织的活动统计
+			接口：http://192.168.60.52:8080/PartyMemberBuilding/queryStatActivityData?statType=2&startDate=xx&orgId=xx
+			入参说明：
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期
+							月统计则传入此月第1日的日期
+							年统计则传入此年第1日的日期
+				orgId-->组织ID
+			返回的数据格式：
+				{"totalAmount":xxxx}
+				totalAmount：总共开展的活动次数
+			异常或无数据时返回空字符串
+			
+	8、查询一事一记的发布统计数据
+	功能说明：查询一事一记的发布统计数据
+			接口：http://192.168.20.24:8080/PartyMemberBuilding/queryStatInformationData?statType=4&startDate=2017-01-17&type=user&category=2&pageIndex=1&pageSize=10
+			入参说明：
+				statType-->统计类型  1-->周统计  2-->月统计  3-->年统计 4-->日统计
+				startDate-->周统计则传入此周一的日期
+							月统计则传入此月第1日的日期
+							年统计则传入此年第1日的日期
+							日统计则传入此日期的期，按日统计规则：截止到此日期的统计数据，并非仅当日的统计数据
+				type--> user: 按用户统计的数据  org:按组织统计的数据  area：按区域统计的数据
+				category-->一事一记的分类ID，全部分类则传入0
+				pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。
+				pageSize：名次，非必需参数，不传入此参数，接口默认返回排名前20名的数据
+			返回的数据格式（返回的数据已按次数了排序，发布次数大的排在前面）：
+				[{"name":"xx","totalAmount":xxx,"sortNumber":xx}]
+				name：党员姓名(职务)/组织名称/区域名称
+				totalAmount：发布的
+				sortNumber：名次
+			异常或无数据时返回空字符串
+
+ 	
+		
+十四、一事一记
+	每位登陆党员都可以发布一事一记，普通党员发布的公开类型的一事一记由党员所在组织的书记或者管理员进行审核后在TV端可以呈现。
+	非公开类型的不需要审核，非公开类型数据指不在TV端进行呈现的数据。
+	1、查询一事一记类别(测试OK)
+		功能说明：查询一事一记类别
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryInformationCategory
+		入参说明：无入参
+		返回的数据格式：
+			[{"id":1,"name":"民主生活会"}]
+			id：分类ID
+			name：分类名称
+
+	2、新增一事一记(测试OK) （重新修改，加了orgId字段以及附件文件名）
+		功能说明：新增一事一记，仅书记和管理员具有新增权限。
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/addInformation
+		入参说明：	
+				post方式提交，附件可多个，提交的附件文件分为三类：标题海报图片、正文中的图片或者视频文件、正文中的其它附件类文件，提交的文件通过文件名来区分。
+				标题海报图片类的文件名前面加上icon_字符串、正文中的图片或者视频类文件加上pic_字符串、其它类的附件加上attachment_字符串。
+				例如：上传的是正文中的图片文件，文件本身的名称是noteWork.png，则加上类别区分字符，文件名称改成pic_noteWork.png，报文头中的filename属性中写入文件名称
+					
+				title:标题
+				content：具体内容
+				userId：党员ID
+				orgId：党员所在组织的组织ID
+				address：地址
+				studyDate：学习日期
+				studyCategory：分类ID，多个分类ID间用英文逗号分隔
+				isOpen：是否公开 1-->公开  2-->不公开
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	3、查询已发布的一事一记数据(测试OK)
+		功能说明：查询已发布的一事一记数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryInformationData?pageIndex=1&studyCategory=1&studyDate=&pageSize=10&orgId=3&scope=3&isOpen=1
+		入参说明：
+			pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。
+			studyCategory：分类ID，多个分类ID间用英文逗号分隔
+			studyDate：学习日期
+			isOpen：是否公开1-->公开  2-->不公开
+			pageSize：每页显示的数据记录条数
+			orgId：党员所在组织的组织ID
+			scope：1-->查询本组织及上级组织的数据（包括上上级组织）
+				   3-->仅查询本组织的数据
+				   0-->查询所有组织的数据
+			
+		返回的数据格式：
+			{"dataList":[{"picUrl":"xxx","pcPic":"","studyCategory":"1","mobilePic":"", "isOpen":xx
+						"content":"内容内容","id":92,"stbPic":"","address":"深圳罗湖高新技术产业园","studyDate":"2017-11-22 12:00:00",
+						"userId":487,"name":"xxx","createDate":"2017-11-28 18:03:33"}],"totalAmount":1}
+			totalAmount:总数据量
+			dataList-->互动交流数据
+				studyCategory：类别ID
+				name：姓名
+				pcPic：pc端显示的用户图片url，多张图片以英文逗号分隔
+				stbPic：盒端显示的用户图片url，多张图片以英文逗号分隔
+				mobilePic：手机端显示的用户图片url，多张图片以英文逗号分隔
+				id：一事一记数据ID
+				title：标题
+				content：内容
+				picUrl：正文中的图片或者视频文件的访问url，多个url间用英文逗号分隔
+				iconUrl：标题海报图片的访问url，多个url间用英文逗号分隔
+				attachmentUrl：正文中的其它附件类文件的访问url，多个url间用英文逗号分隔
+				address：用户创建一事一记时的定位
+				studyDate：学习日期
+				userId：党员ID
+				isOpen：是否公开1-->公开  2-->不公开
+				
+	4、按区域查询已发布的一事一记数据(测试OK)
+		功能说明：按区域查询已发布的一事一记数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryInformationDataByArea?pageIndex=1&studyCategory=1&studyDate=&pageSize=10&areaId=137&isOpen=1
+		入参说明：
+			pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。
+			studyCategory：分类ID，多个分类ID间用英文逗号分隔
+			studyDate：学习日期
+			isOpen：是否公开1-->公开  2-->不公开
+			pageSize：每页显示的数据记录条数
+			areaId：区域ID
+			
+		返回的数据格式：
+			{"dataList":[{"picUrl":"xxx","pcPic":"","studyCategory":"1","mobilePic":"", "isOpen":xx
+						"content":"内容内容","id":92,"stbPic":"","address":"深圳罗湖高新技术产业园","studyDate":"2017-11-22 12:00:00",
+						"userId":487,"name":"xxx","createDate":"2017-11-28 18:03:33"}],"totalAmount":1}
+			totalAmount:总数据量
+			dataList-->互动交流数据
+				studyCategory：类别ID
+				name：姓名
+				pcPic：pc端显示的用户图片url，多张图片以英文逗号分隔
+				stbPic：盒端显示的用户图片url，多张图片以英文逗号分隔
+				mobilePic：手机端显示的用户图片url，多张图片以英文逗号分隔
+				id：一事一记数据ID
+				title：标题
+				content：内容
+				picUrl：正文中的图片或者视频文件的访问url，多个url间用英文逗号分隔
+				iconUrl：标题海报图片的访问url，多个url间用英文逗号分隔
+				attachmentUrl：正文中的其它附件类文件的访问url，多个url间用英文逗号分隔
+				address：用户创建一事一记时的定位
+				studyDate：学习日期
+				userId：党员ID
+				isOpen：是否公开1-->公开  2-->不公开
+				
+	5、设置一事一记已阅读(测试OK)
+		功能说明：设置一事一记已阅读
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/readedInformation?userId=55&informationId=11&terminalType=1&terminalType=1
+		入参说明：	
+			userId：党员ID
+			informationId：一事一记数据ID
+			terminalType：终端类型 1-->手机端  2-->stb端  3-->pc端
+		返回的数据格式：
+		{"result":"ok","msg":""}
+			result：处理结果，成功处理值为ok，否则值为fail
+			msg：处理异常原因说明
+
+十五、任务
+	1、发布任务(测试OK)(DB)
+		功能说明：发布任务
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/addTask
+
+		入参说明：	
+				post方式提交，附件可多个。
+				title:任务的标题
+				content：任务详细内容
+				userId：创建任务的党员ID
+				orgId：创建任务的党员目前所在组织的组织ID
+				taskType：任务类型 1->无需反馈  2->需反馈	
+				executorId：接收任务的个人ID，多个id以英文逗号分隔
+				executorOrgId：接收任务的单位ID，多个id以英文逗号分隔 （组织的任务由组织的书记和管理员来执行）
+				startDate：开始时间
+				endDate：结束时间
+				address：任务地点
+				needSign：是否需要签到  1-->不需要签到  2-->需要签到
+				priority：优先级别 1-->低 2-->中  3-->高 4-->加 5-->特
+				taskStatus：任务状态 1-->关闭  2-->开启
+				longitude：任务签到的经度
+				latitude：任务签到的纬度
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明	
+							
+	2、编辑已发布的任务(测试OK)(DB)新增查询开机广告图片数据接口
+		功能说明：编辑已发布的任务
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/editTask
+		入参说明：	
+				post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				taskId：任务ID
+				title:任务的标题，非必需参数，未传入此值，则标题不会修改
+				content：任务详细内容，非必需参数，未传入此值，则内容不会修改
+				userId：创建任务的党员ID
+				orgId：创建任务的党员目前所在组织的组织ID
+				taskType：任务类型 1->无需反馈  2->需反馈 ，非必需参数，未传入此值，则任务类型不会修改
+				executorId：接收任务的个人ID，多个id以英文逗号分隔，非必需参数，未传入此值，则接收任务的个人ID不会修改，如果此字段传入空字符串，则此任务没有指派给个人。
+				executorOrgId：接收任务的单位ID，多个id以英文逗号分隔 （组织的任务由组织的书记和管理员来执行），非必需参数，未传入此值，则接收任务的单位ID不会修改
+								如果此字段传入空字符串，则此任务没有指派给组织。
+				startDate：开始时间，非必需参数，未传入此值，则开始时间不会修改
+				endDate：结束时间，非必需参数，未传入此值，则结束时间不会修改
+				address：任务地点,，非必需参数，未传入此值，则任务地点不会修改
+				needSign：是否需要签到  1-->不需要签到  2-->需要签到，非必需参数，未传入此值，则是否签到不需要修改
+				priority：优先级别 1-->低 2-->中  3-->高 4-->加 5-->特，非必需参数，未传入此值，则任务级别不会修改
+				taskStatus：任务状态 1-->关闭  2-->开启，非必需参数，未传入此值，则任务状态不会修改
+				longitude：经度，非必需参数，未传入此值，则经度不会修改
+				latitude：纬度，非必需参数，未传入此值，则纬度不会修改
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明			
+	
+				
+	3、查询本组织及下级组织里的党员数据(测试OK)(DB)
+		功能说明：查询本组织及下级组织（包括下下级）里的党员数据，以及如果是管理员身份，则包括所管理的组织下的党员数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryChildOrgPartyMember?userId=1411&orgId=1133
+		入参说明：	
+			orgId：党员所在的组织，即查询出党员所在组织以及下级组织中的所有党员数据
+			userName：搜索值，非需参数，传入此值，将按此姓名过滤数据
+			userId：党员ID(书记或管理员党员ID)
+		返回的数据格式:
+			[{"id":121,"name":"xx","orgName":"xx","areaName":"xx"]
+			id：党员ID
+			name：党员姓名
+			orgName：党员所属的组织名称
+			areaName：党员所属组织所在区域的名称
+			
+	4、查询书记和管理员可以向其指派任务的组织数据(测试OK)(DB)
+		功能说明：下级（包括下级的下级）组织数据，书记可以给这些组织进行指派任务，指派给组织的任务则此组织的书记或管理员执行完成
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryChildOrg?orgId=1133&userId=1411
+		入参说明：	
+			orgId：党员所在的组织，即查询出党员所在组织的下级组织数据
+			orgName：搜索值，非需参数，传入此值，将按此名称过滤数据
+			userId：党员ID(书记或管理员党员ID)
+		返回的数据格式:
+			[{"id":121,"orgName":"xx","areaName":"xx"]
+			id：组织ID
+			orgName：组织名称
+			areaName：组织所在区域的名称
+			
+	 5、查询指定组织下的书记和管理员数据(测试OK)
+		功能说明：查询指定组织下的书记和管理员数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryManageUser?orgId=1133
+		入参说明：	
+			orgId：组织ID 
+		返回的数据格式:
+			[{"id":121,"userName":"xx","isSecretary":"xx","isManager":"xx"]
+			id：组织ID
+			userName：党员姓名
+			isSecretary：是否为书记 true-->是  false-->否
+			isManager：是否为管理员 true-->是  false-->否
+	
+	6、查询我执行的任务列表数据(测试OK)(DB)
+		功能说明：查询任务列表数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryMyTask?userId=1411&orgId=3&status=&taskType=
+		入参说明：	
+			userId：党员ID
+			orgId：党员所在的组织
+			taskType：任务类型，1->无需反馈  2->需反馈	非必需字段，传入此字段值则按此字段值进行过滤数据
+			status：任务完成状态，1-->进行中  2-->已完成 非必需字段，传入此字段值则按此字段值进行过滤数据
+		返回的数据格式:
+			[{"id":121,"startDate":"2017-11-22 12:00:00","title":"新任务新任务新任务","status":"未完成","endDate":"2017-11-22 12:00:00","finishedDate":"xx","executorType":1,"needSign":1}]
+			id：任务ID
+			title:任务的标题
+			status：任务状态
+			startDate：开始时间
+			endDate：结束时间
+			taskType：任务类型 1->无需反馈  2->需反馈	
+			finishedDate：任务完成时间
+			executorType：任务执行者类型 1-->指派给党员个人的任务  2-->指派给组织的任务，由书记和管理员来执行的
+			taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID），任务执行者类型为个人时，此值为0
+				       任务可以被派给多个组织（如指派给A、B组织），假如某用户同时管理A、B组织，那么该用户执行的任务列表中会有两条相同的任务数据，但任务进展、签到等各自独立
+			needSign：是否需要签到  1-->不需要签到  2-->需要签到
+			priority：优先级别 1-->低 2-->中  3-->高 4-->加 5-->特
+			createUser：指派人姓名
+			
+			
+	7、我执行的任务的详情(测试OK)（DB）
+		功能说明：我执行的任务的详情
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryTaskDetail?id=160&userId=1&executorType=1&taskOrgId=0
+		入参说明：	
+			id：任务ID  
+			userId：党员ID
+			executorType：任务执行者类型 1-->个人  2-->组织
+			taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID）,任务执行者类型为组织时需要传入此字段，由于一条任务可以被指派到多个组织，需要此值来查询数据
+		返回的数据格式:
+			{"id":xx,"title":"xx","content":"xxx","status":"xxx","startDate":"xx","endDate":"xx","address":"xx","fileUrl":"xx",
+			 "needSign":xx,"signedDate":"xx","executeEndDate":"xx","feedbackContent":[{"content":"xx","createDate":"2017-12-29 14:11:35","fileUrl":"xx"}]
+			}
+			id：任务ID  
+			title:任务的标题
+			content：任务的内容
+			status：任务状态
+			startDate：开始时间
+			endDate：结束时间
+			address：地址
+			fileUrl：任务的附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"device_wifi_ssid.zip","url":"http://xxx/xx.zip"}]
+			needSign：是否需要签到  1-->不需要签到  2-->需要签到
+			signedDate：签到日期
+			executeEndDate：任务执行完成时间
+			longitude：经度
+			latitude：纬度
+			feedbackContent：任务进展
+				content：进展内容
+				createData：进展添加的日期
+				fileUrl：进展相关的附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"device_wifi_ssid.zip","url":"http://xxx/xx.zip"}]
+
+			
+	8、查询我发表的任务列表数据(测试OK)(DB)
+		功能说明：查询我发表的任务列表数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryMyCreateTask?userId=54&taskType=1&taskStatus=1&orderType=1
+		入参说明：	
+			userId：党员ID
+			taskType：任务类型，1->无需反馈  2->需反馈	 非必需字段，传入此字段值则按此字段值进行过滤数据
+			taskStatus：1-->关闭  2-->开启，非必需字段，传入此字段值则按此字段值进行过滤数据
+			orderType：1-->按日期由近至远 2-->优先级从高至低
+		返回的数据格式: 
+			[{"id":121,"startDate":"2017-11-22 12:00:00","title":"新任务新任务新任务","endDate":"2017-11-22 12:00:00","taskType":1,"needSign":1,"priority":1}]
+			id：任务ID
+			title:任务的标题
+			startDate：开始时间
+			endDate：结束时间
+			taskType：任务类型 1->无需反馈  2->需反馈	
+			needSign：是否需要签到  1-->不需要签到  2-->需要签到
+			priority：优先级别 1-->低 2-->中  3-->高 4-->加 5-->特
+			taskStatus：任务状态 1-->关闭  2-->开启
+			createDate：任务创建日期
+				
+	9、我发布的任务详情(测试OK)（DB）
+		功能说明：我发表的任务的详情
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryMyCreateTaskDetail?id=140
+		入参说明：	
+			id：任务ID  
+		返回的数据格式:
+			{"id":xx,"title":"xx","content":"xxx","createDate":"xx","startDate":"xx","endDate":"xx","address":"xx",
+			 "needSign":xx,"fileUrl":"xx","priority":xx,"taskType":xxx,
+			 "executivePerson":[{"userId":XXX,"userName":"xx"}],"executiveOrg":[{"orgId":xx,"orgName":"xx"}],
+			 "executeStatus":[{"userId":xx,"userName":"xx","executeEndDate":"xx"}],
+			 "feedbackContent":[{"content":"xx","createDate":"xx","fileUrl":"xx","userName":"xx","userId":xxx}]
+			}
+			id：任务ID  
+			title:任务的标题  
+			content：任务的内容
+			createData：任务创建的日期
+			startDate：开始时间 
+			endDate：结束时间
+			address：地址
+			longitude：经度
+			latitude：纬度
+			needSign：是否需要签到  1-->不需要签到  2-->需要签到
+			fileUrl：任务的附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"device_wifi_ssid.zip","url":"http://xxx/xx.zip"}]
+			priority：优先级别 1-->低 2-->中  3-->高 4-->加 5-->特
+			taskType：任务类型 1->无需反馈  2->需反馈	
+			executivePerson：接收任务的个人相关信息
+				userId：接收任务的党员ID
+				userName：接收任务的党员姓名
+			executiveOrg：接收任务的组织相关信息
+				orgId：接收任务的组织ID
+				orgName：接收任务的组织名称
+			executeStatus：任务完成状态数据 
+				userId：完成任务的党员ID
+				userName：完成任务的党员姓名 
+				executeStatus；完成状态 1-->未完成  2-->已完成
+				executeEndDate：任务执行完成时间
+				orgId：组织ID(指派给组织的任务此处才返回接受任务的组织ID，接收任务的主体为个人，则此处的值为0。任务由组织的书记或管理员执行)
+			feedbackContent：任务进展
+				content：进展内容
+				createData：进展添加的日期
+				fileUrl：进展相关的附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"device_wifi_ssid.zip","url":"http://xxx/xx.zip"}]
+				userName：添加进展的党员姓名
+				userId：添加进展的党员ID
+				orgId：组织ID(指派给组织的任务此处才返回接受任务的组织ID，接收任务的主体为个人，则此处的值为0。任务进展由组织的书记或管理员填写)
+				
+			
+	10、设置任务为完成状态(测试OK)(DB)
+		功能说明：设置任务为完成状态
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/setTaskFinishedStatus?id=121&userId=2&executorType=2&taskOrgId=4
+		入参说明：	
+			id：任务ID 
+			userId：党员ID
+			executorType：任务执行者类型 1-->个人  2-->组织
+			taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID），任务执行者类型为个人时，此值为0
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+			
+	11、新增任务的反馈信息(测试OK)(DB)
+		功能说明：新增任务的反馈信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/addTaskFeedback
+		入参说明：	
+				post方式提交，附件可多个。
+				content：反馈内容
+				userId：提交反馈信息的党员ID
+				executorType：任务执行者类型 1-->个人  2-->组织
+				taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID），任务执行者类型为个人时，此值为0
+				taskId：任务ID
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	12、任务提醒(测试OK)
+		功能说明：任务提醒
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryTaskRemind?userId=54&orgId=1139
+		入参说明：	
+			userId：党员ID
+			orgId：党员所在组织的组织ID
+		返回的数据格式：
+			{"myNeedSignTask":[{"id":xxx,"executorType":xxx,"taskOrgId","title":"xx","startDate":"xxxx","endDate":"xxx"}],"myTaskAmount":2}
+			myNeedSignTask：党员需要进行签到但未签到的任务
+				id：任务id
+				executorType：任务执行者类型 1-->指派给党员个人的任务  2-->指派给组织的任务，由书记和管理员来执行的
+				taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID），任务执行者类型为个人时，此值为0
+				title：任务标题
+				startDate：任务开始时间
+				endDate：任务结束时间
+			myTaskAmount：
+				我要执行的任务的总数量(包括已执行完成的)
+	
+			
+
+			
+十六、签到
+	1、新增签到(测试OK)
+		功能说明：新增签到
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/addSign?signAddress=深圳罗湖区&relationId=137&userId=54&goOutReason=xx&reterence=xx&reterenceTel=xx&signType=2&longitude=xx&latitude=xx&taskOrgId=2
+		入参说明：
+			signAddress：签到的地址
+			signType：签到类型  1-->每日打卡签到  2-->任务签到
+			relationId：关联的ID,比如任务签到，此字段值为任务ID
+			taskOrgId：任务被指派给组织的组织ID（即接受任务的组织ID），任务执行者类型为个人时，可不用传此值
+			userId：签到的党员ID
+			goOutReason：外出事由,非必要参数
+			reterence： 证明人,非必要参数
+			reterenceTel：证明人联系电话,非必要参数
+			latitude：签到地点的纬度
+			longitude：签到地点的经度
+
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+		
+	2、查询签到(测试OK)
+		功能说明：查询签到
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/querySign?userId=54&pageIndex=1&pageSize=10
+		入参说明：
+			userId：党员ID
+			pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。
+			pageSize：每页显示的数据记录条数，不传此参数值，默认返回20条		
+		返回的数据格式:
+			{"totalAmount":1,"dataList":[{"signDate":"xxx","signAdress":"xx","goOutReason":"xx","reterence":"xx",
+			"reterenceTel":"xxx","title":"xx","relationId":xxx,"startDate":"xx","endDate":"xx","signType":xxx}]}	
+			totalAmount：签到的总次数
+			signDate：签到日期
+			signAddress：签到的地址
+			goOutReason：外出事由
+			reterence：证明人
+			reterenceTel：证明人联系电话
+			title：主题(任务签到则为任务的标题)
+			relationId：关联的ID,比如任务签到，此字段值为任务ID
+			startDate：开始时间(任务签到则为任务的开始时间)
+			endDate：结束时间(任务签到则为任务的开始时间)
+			signType：签到类型  1-->每日打卡签到  2-->任务签到
+				
+	3、查询用户签到地点及考勤相关配置(测试OK)
+		功能说明：查询用户签到地点及考勤相关配置
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/querySignRule?userId=54
+		入参说明：
+			userId：党员ID
+		返回的数据格式:
+			{"longitude":"xx","latitude":"xx", "address":"xxx","workDateMorningStart":"","workDateMorningEnd":"xx","workDateAfternoonStart":"xx",
+			"workDateAfternoonEnd":"xx","noonBreakDateStart":"xx","noonBreakDateEnd":"xx","distance":"xx","workPeriodStart":"xx","workPeriodEnd":"xx"}
+			longitude：经度
+			latitude；纬度
+			address：地址
+			workDateMorningStart：上午工作的开始时间(hh:mm格式)
+			workDateMorningEnd：上午工作的结束时间(hh:mm格式)
+			workDateAfternoonStart：下午工作的开始时间(hh:mm格式)
+			workDateAfternoonEnd：下午工作的结束始时间(hh:mm格式)
+			noonBreakDateStart：中午午休开始时间(hh:mm格式)
+			noonBreakDateEnd：中午午休结束始时间(hh:mm格式)
+			distance：允许的考勤距离，单位:米，在此范围以内才可正常打卡签到
+			workPeriodStart：工作周期的开始时间：1-7表示星期一到星期天
+			workPeriodEnd：工作周期的结束时间：1-7表示星期一到星期天
+			
+			
+	4、查询用户当日工作考勤签到数据(测试OK)
+		功能说明：查询用户当日工作考勤签到数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryTodaySign?userId=54
+		入参说明：
+			userId：党员ID
+		返回的数据格式:
+			{"morning":[{"signDate":"xxx","signAdress":"xx","latitude":"xx","longitude":"xx"}],
+			"afternoon":[{"signDate":"xxx","signAdress":"xx","latitude":"xx","longitude":"xx"}]}
+			morning：上午的签到数据
+				signDate-->签到时间
+				signAdress-->签到的地址
+				latitude-->签到的纬度
+				longitude-->签到的经度
+			afternoon：下午的签到数据
+			
+			
+十七、组织换届
+	1、换届申请(测试OK)
+		功能说明：组织换届，由组织的书记和管理员进行换届申请
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/applyChangeCommittee
+		入参说明：	
+				post方式提交，附件可多个
+				content：内容
+				userId：发起申请的党员ID
+				orgId：需换届的组织ID
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	2、查询已提交的换届申请(测试OK)
+		功能说明：查询已提交的换届申请。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryApplyChangeCommittee?orgId=1150&termIndex=xx
+		入参说明：	
+				orgId：组织ID
+				termIndex：届次
+		返回的数据格式:
+			{"name":"王小明","userId":xx, "content":"xx","fileUrl":"xx","orgId":xx,"id":xxx,"auditStatus":"xx","termIndex":xx
+				"auditUserName":"xx","auditDate":"xx","auditContent":"xx"}
+			name：换届申请人姓名
+			userId：换届申请人的ID
+			content：换届申请的正文内容
+			fileUrl：换届申请相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+			orgId：换届的组织ID
+			id：数据记录ID
+			status：换届申请审核状态
+			auditUserName：审核人姓名
+			auditUserId：审核人ID
+			auditDate：审核日期
+			auditContent：审核说明（即驳回说明）
+			termIndex：届次
+				
+	3、查询保存为草稿的换届申请(测试OK)
+		功能说明：查询保存为草稿的换届申请。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryApplyChangeCommitteeFromDraft?orgId=1150&userId=1411&termIndex=xx
+		入参说明：	
+				orgId：组织ID
+				userId：换届申请的党员ID
+				termIndex：届次
+		返回的数据格式:
+			[{"name":"王小明","content":"xx","fileUrl":"xx","orgId":xx,"applyId":x}]
+			name：发起人姓名
+			content：换届申请的正文内容
+			fileUrl：换届申请相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+			orgId：需要换届的组织ID
+			id：数据记录ID
+			termIndex：届次
+			
+	4、换届申请的草稿数据的编辑(已提交的申请数据不可修改，仅草稿数据可以修改)(测试OK)
+		功能说明：修改换届申请的草稿数据，或者将草稿数据正式提交进行申请
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/editApplyChangeCommittee
+		入参说明：	
+				post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				id：数据记录ID
+				userId：换届申请的党员ID
+				content：内容 
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+			
+	5、审批换届申请(测试OK)
+		功能说明：上级组织的书记和管理员审批下级组织的换届申请
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/auditApplyChangeCommittee?id=2&auditStatus=2&auditUserId=56
+		入参说明：	
+			id：数据记录ID
+			auditStatus： 2：审核未通过 3：审核已通过
+			auditUserId：审核用户ID
+			content：内容，驳回的原因
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+	
+	6、上传换届选举批复文件(测试OK)
+		功能说明：上传换届选举批复文件，由本组织的书记和管理员进行操作
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/uploadChangeCommitteeReplyFile
+		入参说明：	
+				post方式提交，附件可多个
+				termIndex：本次换届的届次
+				content：内容
+				userId：上传选举批复文件的党员ID
+				orgId：需换届组织的组织ID
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	7、查询保存为草稿的换届选举批复文件(测试OK)
+		功能说明：查询指定用户指定届次的保存为草稿的换届选举批复文件。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryElectionReplyFileFromDraft?orgId=1150&userId=1411&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				userId：换届申请的党员ID
+				termIndex：届次
+		返回的数据格式:
+			[{"name":"王小明","content":"xx","fileUrl":"xx","orgId":xx,"termIndex":xx}]
+			name：上传选举批复文件人姓名
+			content：正文内容
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"选举批复文件.zip","url":"http://xxx/xx.zip"}]
+			orgId：需要换届的组织ID
+			termIndex：届次
+			id：数据记录ID
+			
+	8、查询已提交的换届选举批复文件(测试OK)
+		功能说明：查询已提交的换届选举批复文件。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryElectionReplyFile?orgId=1150&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				termIndex：届次
+		返回的数据格式:
+			{"name":"王小明","userId":xx, "content":"xx","fileUrl":"xx","orgId":xx,"applyId":x,"auditStatus":"xx","termIndex":xx
+				"auditUserName":"xx","auditDate":"xx","auditContent":"xx"}
+			name：提交选举批复文件数据的用户姓名
+			userId：提交选举批复文件数据的用户ID
+			content：正文内容
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+			orgId：组织ID
+			status：审核状态
+			auditUserName：审核人姓名
+			auditUserId：审核人ID
+			auditDate：审核日期
+			auditContent：审核说明（即驳回说明）
+			termIndex：届次
+			id：数据记录ID
+			
+	9、换届选举批复文件草稿数据的编辑(已提交的数据不可修改，仅草稿数据可以修改)(测试OK)
+		功能说明：修改换届选举批复文件的草稿数据，或者将草稿数据正式提交
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/editElectionReplyFile
+		入参说明：	
+				post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				id：数据记录ID
+				content：内容 
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	10、审批换届选举批复文件(测试OK)
+		功能说明：上级组织的书记和管理员审批下级组织的审批换届选举批复文件
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/auditElectionReplyFile?id=4&auditStatus=2&auditUserId=1411&content=审核
+		入参说明：	
+			id：需要审批的数据记录ID
+			auditStatus： 2：审核未通过 3：审核已通过
+			auditUserId：审核用户ID
+			content：内容，驳回的原因
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	11、录入届次、差额人选名单信息(测试OK)
+		功能说明：录入届次、差额人选名单信息，组织的书记和管理员录入
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/addCommitteeUser?orgId=1150&termIndex=1&userId=1411&secretary=1&deputySecretary=2&committeeMember=3&partySecretary=4&partyDeputySecretary=5&partyCommitteeMember=6&saveType=1
+		入参说明：	
+			orgId：组织ID
+			userId：提交差额人选名单的党员ID
+			termIndex：届次
+			secretary：书记候选人ID
+			deputySecretary：副书记候选人ID
+			committeeMember：委员候选人ID
+			partySecretary：纪委书记候选人ID
+			partyDeputySecretary；纪委副书记候选人ID
+			partyCommitteeMember：纪委委员候选人ID
+			saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	12、查询保存为草稿的届次、差额人选名单信息(测试OK)
+		功能说明：查询保存为草稿的届次、差额人选名单信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryCommitteeUserFromDraft?orgId=1150&userId=1411&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				userId：上传差额人选名单数据的用户ID
+				termIndex：届次
+		返回的数据格式:
+			[{"id":xx,"userId":xx, "name":"王小明","orgId":xx,"orgName":"xx","parentOrgId":xx,"parentOrgName":"xx","areaName":"xx","termIndex":xx,"secretary":xx,"secretaryName":"xx","deputySecretary":xx,"deputySecretaryName":xx,
+				"committeeMember":xx,"committeeMemberName":"xx","partySecretary":xx,"partySecretaryName":"xx","partyDeputySecretary":xx,"partyDeputySecretaryName":"xx",
+				"partyCommitteeMember":xx,"partyCommitteeMemberName":"xx"		
+			}]
+			id：数据记录ID
+			userId：上传差额人选名单数据的用户ID
+			name：上传名单数据的党员姓名
+			orgId：换届的组织ID
+			parentOrgId：换届的上级组织ID
+			orgName：换届的组织名称
+			parentOrgName：换届的上级组织的名称
+			areaName：组织所在区域的名称
+			termIndex：届次
+			secretary：书记候选人ID
+			deputySecretary：副书记候选人ID
+			committeeMember：委员候选人ID
+			partySecretary：纪委书记候选人ID
+			partyDeputySecretary；纪委副书记候选人ID
+			partyCommitteeMember：纪委委员候选人ID
+			secretaryName：书记候选人姓名
+			deputySecretaryName：副书记候选人姓名
+			committeeMemberName：委员候选人姓名
+			partySecretaryName：纪委书记候选人姓名
+			partyDeputySecretaryName；纪委副书记候选人姓名
+			partyCommitteeMemberName：纪委委员候选人姓名
+			
+	13、查询已提交的届次、差额人选名单信息(测试OK)
+		功能说明：查询已提交的届次、差额人选名单信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryCommitteeUser?orgId=1150&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				termIndex：届次
+		返回的数据格式:
+			[{"id":xx,"userId":xx, "name":"王小明","orgId":xx,"orgName":"xx","parentOrgId":xx,"parentOrgName":"xx","areaName":"xx","termIndex":xx,"secretary":xx,"secretaryName":"xx","deputySecretary":xx,"deputySecretaryName":xx,
+				"committeeMember":xx,"committeeMemberName":"xx","partySecretary":xx,"partySecretaryName":"xx","partyDeputySecretary":xx,"partyDeputySecretaryName":"xx",
+				"partyCommitteeMember":xx,"partyCommitteeMemberName":"xx","auditStatus":"通过","auditUserId":1411,"auditContent":"审核","auditUserName":"章国华",
+				"auditDate":"2018-01-25 17:55:24"				
+			}]
+			id：数据记录ID
+			userId：上传差额人选名单数据的用户ID
+			name：上传名单数据的党员姓名
+			orgId：换届的组织ID
+			parentOrgId：换届的上级组织ID
+			orgName：换届的组织名称
+			parentOrgName：换届的上级组织的名称
+			areaName：组织所在区域的名称
+			termIndex：届次
+			secretary：书记候选人ID
+			deputySecretary：副书记候选人ID
+			committeeMember：委员候选人ID
+			partySecretary：纪委书记候选人ID
+			partyDeputySecretary；纪委副书记候选人ID
+			partyCommitteeMember：纪委委员候选人ID
+			secretaryName：书记候选人姓名
+			deputySecretaryName：副书记候选人姓名
+			committeeMemberName：委员候选人姓名
+			partySecretaryName：纪委书记候选人姓名
+			partyDeputySecretaryName；纪委副书记候选人姓名
+			partyCommitteeMemberName：纪委委员候选人姓名
+			auditStatus：审核状态  通过或驳回
+			auditContent：审核说明（即驳回说明）
+			auditUserName：审核人姓名
+			auditUserId：审核用户ID
+			auditDate：审核日期
+			
+	14、审批差额人选名单信息(测试OK)
+		功能说明：上级组织的书记和管理员审批下级组织的差额人选名单信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/auditCommitteeUser?id=4&auditStatus=2&auditUserId=1411&content=审核
+		入参说明：	
+			id：需要审批的数据记录ID
+			auditStatus： 2：审核未通过 3：审核已通过
+			auditUserId：审核用户ID
+			content：内容，驳回的原因
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	15、上传选举结果文件(测试OK)
+		功能说明：上传选举结果文件，由本组织的书记和管理员进行操作
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/uploadElectionResultFile
+		入参说明：	
+				post方式提交，附件可多个
+				termIndex：本次换届的届次
+				content：内容
+				userId：上传选举结果文件的党员ID
+				orgId：需换届组织的组织ID
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	16、查询保存为草稿的选举结果文件(测试OK)
+		功能说明：查询指定用户指定届次的保存为草稿的换届选举结果文件。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryElectionResultFileFromDraft?orgId=1150&userId=1411&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				userId：上传选举结果的党员ID
+				termIndex：届次
+		返回的数据格式:
+			[{"name":"王小明","content":"xx","fileUrl":"xx","orgId":xx,"termIndex":xx}]
+			name：上传选举批复文件人姓名
+			content：正文内容
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"选举批复文件.zip","url":"http://xxx/xx.zip"}]
+			orgId：需要换届的组织ID
+			termIndex：届次
+			id：数据记录ID
+			
+	17、查询已提交的选举结果文件(测试OK)
+		功能说明：查询已提交的选举结果文件。
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryElectionResultFile?orgId=1150&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				termIndex：届次
+		返回的数据格式:
+			{"name":"王小明","userId":xx, "content":"xx","fileUrl":"xx","orgId":xx,"applyId":x,"auditStatus":"xx","termIndex":xx
+				"auditUserName":"xx","auditDate":"xx","auditContent":"xx"}
+			name：提交选举批复文件数据的用户姓名
+			userId：提交选举批复文件数据的用户ID
+			content：正文内容
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+			orgId：组织ID
+			status：审核状态
+			auditUserName：审核人姓名
+			auditUserId：审核人ID
+			auditDate：审核日期
+			auditContent：审核说明（即驳回说明）
+			termIndex：届次
+			id：数据记录ID
+			
+	18、选举结果文件草稿数据的编辑(已提交的数据不可修改，仅草稿数据可以修改)(测试OK)
+		功能说明：修改选举结果文件的草稿数据，或者将草稿数据正式提交
+		接口：http://192.168.53.238:8080/PartyMemberBuilding/editElectionResultFile
+		入参说明：	
+				post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				id：数据记录ID
+				content：内容 
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	19、审批选举结果文件(测试OK)
+		功能说明：上级组织的书记和管理员审批下级组织的审批选举结果文件
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/auditElectionResultFile?id=4&auditStatus=2&auditUserId=1411&content=审核
+		入参说明：	
+			id：需要审批的数据记录ID
+			auditStatus： 2：审核未通过 3：审核已通过
+			auditUserId：审核用户ID
+			content：内容，驳回的原因
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	20、录入换届结果名单信息(测试OK)
+		功能说明：录入换届结果名单信息，该组织的书记和管理员录入
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/addCommitteeFullMember
+		入参说明：	
+			post方式提交，附件可多个		
+			orgId：组织ID
+			userId：提交数据的党员ID
+			termIndex：届次
+			electionDate：当选日期
+			expiryDate：届满日期
+			electionPeopleNumber：选举应到人数
+			attendedPeopleNumber：选举实到人数
+			committeeCreateForm：产生方式 1-->定额
+			secretary：书记用户ID
+			deputySecretary：副书记用户ID
+			committeeMember：委员用户ID
+			partySecretary：纪委书记用户ID
+			partyDeputySecretary；纪委副书记用户ID 
+			partyCommitteeMember：纪委委员用户ID
+			saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+			
+	21、查询已提交的结果名单信息(测试OK)
+		功能说明：查询已提交的结果名单信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryCommitteeFullMember?orgId=1150&termIndex=1
+		入参说明：	
+				orgId：组织ID
+				termIndex：届次
+		返回的数据格式:
+			[{"id":xx,"userId":xx, "name":"王小明","orgId":xx,"orgName":"xx","parentOrgId":xx,"parentOrgName":"xx","areaName":"xx","termIndex":xx,"secretary":xx,"secretaryName":"xx","deputySecretary":xx,"deputySecretaryName":xx,
+				"committeeMember":xx,"committeeMemberName":"xx","partySecretary":xx,"partySecretaryName":"xx","partyDeputySecretary":xx,"partyDeputySecretaryName":"xx",
+				"partyCommitteeMember":xx,"partyCommitteeMemberName":"xx","auditStatus":"通过","auditUserId":1411,"auditContent":"审核","auditUserName":"章国华",
+				"auditDate":"2018-01-25 17:55:24"				
+			}]
+			id：数据记录ID
+			userId：上传名单数据的用户ID
+			name：上传名单数据的党员姓名
+			orgId：换届的组织ID
+			parentOrgId：换届的上级组织ID
+			orgName：换届的组织名称
+			parentOrgName：换届的上级组织的名称
+			areaName：组织所在区域的名称
+			termIndex：届次
+			electionDate：当选日期
+			expiryDate：届满日期
+			electionPeopleNumber：选举应到人数
+			attendedPeopleNumber：选举实到人数
+			committeeCreateForm：产生方式 1-->定额
+			secretary：书记ID
+			deputySecretary：副书记ID
+			committeeMember：委员候ID
+			partySecretary：纪委书记ID
+			partyDeputySecretary；纪委副书记ID
+			partyCommitteeMember：纪委委员ID
+			secretaryName：书记姓名
+			deputySecretaryName：副书记姓名
+			committeeMemberName：委员候姓名
+			partySecretaryName：纪委书记姓名
+			partyDeputySecretaryName；纪委副书记姓名
+			partyCommitteeMemberName：纪委委员姓名
+			auditStatus：审核状态  通过或驳回
+			auditContent：审核说明（即驳回说明）
+			auditUserName：审核人姓名
+			auditUserId：审核用户ID
+			auditDate：审核日期
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+			
+	22、审批结果名单信息(测试OK)
+		功能说明：上级组织的书记和管理员审批下级组织的结果名单信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/auditCommitteeFullMember?id=4&auditStatus=2&auditUserId=1411&content=审核
+		入参说明：	
+			id：需要审批的数据记录ID
+			auditStatus： 2：审核未通过 3：审核已通过
+			auditUserId：审核用户ID
+			content：内容，驳回的原因
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+				
+	23：查询换届的整体流程数据
+		功能说明：查询换届的整体流程数据
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryAllFlowData?orgId=1150&termIndex=1
+		入参说明：	
+			orgId：换届的组织ID
+			termIndex：届次
+		返回的数据格式	
+			[{"index":xx,"name":"xx","isEnd":"true","userName":"xxx","userId":xx,"endDate":"xx"}] 
+			index：流程索引值
+			name：流程名称，简述
+			isEnd：是否已完成  true-->已完成  false-->未完成
+			userName：此流程执行人姓名
+			userId：此流程执行人的ID
+			endDate：执行完成的日期
+			
+	24、查询当前正在换届的届次等相关信息
+		功能说明：查询当前正在换届的届次等相关信息
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/queryCurrentTermIndexData?orgId=1150
+		入参说明：
+			orgId：当前正在换届的组织ID
+		返回的数据格式：
+			{"orgId":xx,"currentTermIndex":xxx,"orgName":"xx","parentOrgName":"xx","areaName":"xx"}
+		   orgId：组织ID
+		   currentTermIndex：当前正在换届的届次，返回值如为0，表示此组织当前尚未在进行换届
+		   orgName：组织名称
+		   parentOrgName；上级组织名称
+		   areaName：区域名称
+				
+ 	25、查询所管理的组织 正在换届的委员会的届次和组织id
+       		接口：http://localhost:8080/PartyMemberBuilding/queryManagerOrgEleciton?userId=78
+		入参说明:
+			userId:用户的id
+		返回的数据格式:
+			[{"orgId":45,"termIndex":5,"orgName":""},{"orgId":27,"termIndex":5,"orgName":""}]
+	26、编辑差额名单信息
+		接口:	http://localhost:8080/PartyMemberBuilding/editCommitteeUser
+		post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				id：数据记录ID
+				userId：换届申请的党员ID
+				secretary:书记
+				deputySecretary:副书记
+				committeeMember:委员
+				partySecretary:纪委书记
+				partyDeputySecretary:纪委副书记
+				partyCommitteeMember:纪委委员
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+	27、编辑录入结果
+		接口:	http://localhost:8080/PartyMemberBuilding/editCommitteeFullMember
+		post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				clearFileUrl：需要删除的文件url,文件需要修改就在这个参数里加入访问这个文件的url
+								接口先删除文件旧的访问url，处理新上传的文件生成新的url。多个url间用英文逗号分隔
+				id：数据记录ID
+				userId：换届申请的党员ID
+				electionDate：当选日期
+				expiryDate：届满日期
+				electionPeopleNumber：选举应到人数
+				attendedPeopleNumber：选举实到人数
+				committeeCreateForm：产生方式 1-->定额
+				secretary：书记用户ID
+				deputySecretary：副书记用户ID
+				committeeMember：委员用户ID
+				partySecretary：纪委书记用户ID
+				partyDeputySecretary；纪委副书记用户ID 
+				partyCommitteeMember：纪委委员用户ID
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+	28、查看换届结果草稿
+		接口:	http://localhost:8080/PartyMemberBuilding/queryCommitteeFullMemberFromDraft?orgId=xx&userId&termIndex=xx
+		post方式提交，附件可多个。非必需参数，未传入文件，则文件不会修改
+				orgId：组织ID
+				userId：换届申请的党员ID
+				termIndex：届次
+		返回的数据格式:
+			id：数据记录ID
+			userId：上传名单数据的用户ID
+			name：上传名单数据的党员姓名
+			orgId：换届的组织ID
+			parentOrgId：换届的上级组织ID
+			orgName：换届的组织名称
+			parentOrgName：换届的上级组织的名称
+			areaName：组织所在区域的名称
+			termIndex：届次
+			electionDate：当选日期
+			expiryDate：届满日期
+			electionPeopleNumber：选举应到人数
+			attendedPeopleNumber：选举实到人数
+			committeeCreateForm：产生方式 1-->定额
+			secretary：书记ID
+			deputySecretary：副书记ID
+			committeeMember：委员候ID
+			partySecretary：纪委书记ID
+			partyDeputySecretary；纪委副书记ID
+			partyCommitteeMember：纪委委员ID
+			secretaryName：书记姓名
+			deputySecretaryName：副书记姓名
+			committeeMemberName：委员候姓名
+			partySecretaryName：纪委书记姓名
+			partyDeputySecretaryName；纪委副书记姓名
+			partyCommitteeMemberName：纪委委员姓名
+			auditStatus：审核状态  通过或驳回
+			auditContent：审核说明（即驳回说明）
+			auditUserName：审核人姓名
+			auditUserId：审核用户ID
+			auditDate：审核日期
+			fileUrl：相关附件访问地址,json数组格式,fileName-->文件名  url-->访问地址，样例如下：[{"fileName":"换届申请.zip","url":"http://xxx/xx.zip"}]
+十七、党员资料库
+	功能说明：查询党员资料库
+	接口：http://192.168.20.24:8080/PartyMemberBuilding/queryPartyDocument?pageIndex=1&pageSize=10&name=xx
+	入参说明：
+		pageIndex：页次，从1开始，表示第1页，不传此参数值，默认返回第1页的数据。
+		pageSize：每页显示的数据记录条数，不传此参数值，默认返回20条
+		name：文档名称，传入此值，则按此名称进行模糊查询
+	返回的数据格式：
+		{"totalAmount":xx,"dataList":[{"name":"xx","size":xxx,"uploadDate":"xx","downloadUrl":"xx","posterUrl":"xx"}]}
+		totalAmount：文档总数量
+		name：文档名称
+		size：文档大小,单位；KB
+		uploadDate：上传日期
+		downloadUrl：下载地址
+		posterUrl：海报地址
+		
+十八、发展党员
+	1、书面申请发展成党员
+		功能说明：书面申请发展成党员
+		接口：http://192.168.20.24:8080/PartyMemberBuilding/applyJoinParty
+		入参说明：	
+				post方式提交，附件可多个，
+				title:标题
+				content：具体内容
+				userId：用户ID(非党员用户，比如入党积极份子、发展对象等类型的党员)
+				orgId：用户所在组织的组织ID
+				applyDate：日期
+				saveType：1-->保存为草稿  2-->提交
+		返回的数据格式:
+			{"result":"ok","msg":""}
+				result：处理结果，成功处理值为ok，否则值为fail
+				msg：处理异常原因说明
+	
+		
+
+			
+			 
+
+
+
+
+	
+	
+	
+
+	
+		
+	
+	
+	
+	
+	
+		
